@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<spacescapelayers>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0.03</ditherAmount>
+        <gain>0.8</gain>
+        <gpu>false</gpu>
+        <innerColor>0.239216 0.478431 1 1</innerColor>
+        <lacunarity>2</lacunarity>
+        <name>Mask Test</name>
+        <noiseType>fbm</noiseType>
+        <octaves>5</octaves>
+        <offset>1</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <persistance>0.8</persistance>
+        <powerAmount>1</powerAmount>
+        <previewTextureSize>256</previewTextureSize>
+        <scale>0.25</scale>
+        <seed>1</seed>
+        <shelfAmount>0.5</shelfAmount>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0.0901961 0.137255 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.8</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>fbm</maskNoiseType>
+        <maskOctaves>5</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>0.25</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.5</maskThreshold>
+        <name>Outer Point Star Dark Size 3</name>
+        <nearColor>0 0.117647 0.352941 1</nearColor>
+        <numPoints>10000</numPoints>
+        <pointSize>3</pointSize>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0.0901961 0.27451 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.8</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>fbm</maskNoiseType>
+        <maskOctaves>5</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>0.25</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.5</maskThreshold>
+        <name>Inner Point Star Light Size 2</name>
+        <nearColor>0.0901961 0.278431 0.278431 1</nearColor>
+        <numPoints>10000</numPoints>
+        <pointSize>2</pointSize>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0.0745098 0.231373 0.231373 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.8</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>fbm</maskNoiseType>
+        <maskOctaves>5</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>0.25</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.5</maskThreshold>
+        <name>Inner Point Star Light Size 1</name>
+        <nearColor>0.462745 0.694118 0.694118 1</nearColor>
+        <numPoints>10000</numPoints>
+        <pointSize>1</pointSize>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+    </layer>
+</spacescapelayers>

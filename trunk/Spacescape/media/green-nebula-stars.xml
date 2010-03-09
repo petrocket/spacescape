@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<spacescapelayers>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0.01</ditherAmount>
+        <gain>0.5</gain>
+        <gpu>false</gpu>
+        <innerColor>0.129412 0.494118 0.27451 1</innerColor>
+        <lacunarity>2</lacunarity>
+        <name>Green Nebula</name>
+        <noiseType>fbm</noiseType>
+        <octaves>12</octaves>
+        <offset>1</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <persistance>0.5</persistance>
+        <powerAmount>1</powerAmount>
+        <previewTextureSize>1024</previewTextureSize>
+        <scale>1</scale>
+        <seed>1</seed>
+        <shelfAmount>0.45</shelfAmount>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>fbm</maskNoiseType>
+        <maskOctaves>6</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.45</maskThreshold>
+        <name>Large Green Point Stars (subtle)</name>
+        <nearColor>0.0313726 0.0784314 0.0235294 1</nearColor>
+        <numPoints>15000</numPoints>
+        <pointSize>2</pointSize>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>fbm</maskNoiseType>
+        <maskOctaves>6</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.45</maskThreshold>
+        <name>Small Green Point Stars</name>
+        <nearColor>0.0392157 0.0823529 0.0235294 1</nearColor>
+        <numPoints>10000</numPoints>
+        <pointSize>1</pointSize>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0.109804 0.137255 0.0862745 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>fbm</maskNoiseType>
+        <maskOctaves>6</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.48</maskThreshold>
+        <name>Large  Bright Green Point Stars</name>
+        <nearColor>0.12549 0.258824 0.0588235 1</nearColor>
+        <numPoints>500</numPoints>
+        <pointSize>2</pointSize>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0.180392 0.223529 0.145098 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>fbm</maskNoiseType>
+        <maskOctaves>6</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.48</maskThreshold>
+        <name>Small Bright Green Point Stars</name>
+        <nearColor>0.333333 0.670588 0.164706 1</nearColor>
+        <numPoints>500</numPoints>
+        <pointSize>1</pointSize>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>1 1 1 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType></maskNoiseType>
+        <maskOctaves>6</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.45</maskThreshold>
+        <maxSize>0.01</maxSize>
+        <minSize>0.05</minSize>
+        <name>Green Billboard Stars</name>
+        <nearColor>0.270588 0.333333 0 1</nearColor>
+        <numBillboards>60</numBillboards>
+        <seed>3</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <texture>flare-green1.png</texture>
+        <type>billboards</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0.01</ditherAmount>
+        <gain>0.7</gain>
+        <gpu>false</gpu>
+        <innerColor>0.309804 0.309804 0.14902 1</innerColor>
+        <lacunarity>2</lacunarity>
+        <name>Green Nebula</name>
+        <noiseType>ridged</noiseType>
+        <octaves>10</octaves>
+        <offset>1</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <persistance>0.7</persistance>
+        <powerAmount>0.5</powerAmount>
+        <previewTextureSize>1024</previewTextureSize>
+        <scale>1</scale>
+        <seed>3</seed>
+        <shelfAmount>0.85</shelfAmount>
+        <sourceBlendFactor>src_colour</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one_minus_src_alpha</destBlendFactor>
+        <ditherAmount>0.03</ditherAmount>
+        <gain>0.8</gain>
+        <gpu>false</gpu>
+        <innerColor>0 0 0 1</innerColor>
+        <lacunarity>2.5</lacunarity>
+        <name>Nebula Black Mask</name>
+        <noiseType>ridged</noiseType>
+        <octaves>8</octaves>
+        <offset>0.975</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <persistance>0.8</persistance>
+        <powerAmount>0.5</powerAmount>
+        <previewTextureSize>1024</previewTextureSize>
+        <scale>4</scale>
+        <seed>0</seed>
+        <shelfAmount>0.5</shelfAmount>
+        <sourceBlendFactor>src_alpha</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>fbm</maskNoiseType>
+        <maskOctaves>6</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.35</maskThreshold>
+        <name>Large Misc Green Stars</name>
+        <nearColor>0.0392157 0.0862745 0.027451 1</nearColor>
+        <numPoints>10000</numPoints>
+        <pointSize>2</pointSize>
+        <seed>2</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>fbm</maskNoiseType>
+        <maskOctaves>6</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.35</maskThreshold>
+        <name>Small Misc Green Stars</name>
+        <nearColor>0.133333 0.207843 0.0745098 1</nearColor>
+        <numPoints>10000</numPoints>
+        <pointSize>1</pointSize>
+        <seed>2</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+</spacescapelayers>
