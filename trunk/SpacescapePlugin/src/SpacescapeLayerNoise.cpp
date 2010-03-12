@@ -302,7 +302,9 @@ namespace Ogre
                 TEX_TYPE_CUBE_MAP,
                 mPreviewTextureSize, mPreviewTextureSize,
                 1,
-                SpacescapePlugin::_log2(mPreviewTextureSize),
+                // not sure if we need mip maps on this cube face? 
+                // enabling mipmaps causes image corruption on some ATI cards x1950 Pro
+                0,//SpacescapePlugin::_log2(mPreviewTextureSize),
                 PF_BYTE_RGBA,
                 TU_RENDERTARGET
             );
@@ -478,6 +480,9 @@ namespace Ogre
     */
     void SpacescapeLayerNoise::setDisplayHighRes(bool displayHighRes)
     {
+        // disabled for now - makes complex scenes crash on export
+        return;
+
         if(mDisplayHighRes == displayHighRes) {
             return;
         }

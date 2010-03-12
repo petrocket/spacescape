@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include/;../../../ogre/OgreMain/include/"
+				AdditionalIncludeDirectories="../include/;../../../../ogre/OgreMain/include/"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;OGRE_SPACESCAPEPLUGIN_EXPORTS;TIXML_USE_TICPP"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -66,7 +66,7 @@
 				AdditionalDependencies="OgreMain_d.lib"
 				OutputFile="$(OutDir)/Plugin_Spacescape_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;../../../ogre/lib/&quot;;&quot;../../../ogre/Dependencies/lib/$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="&quot;../../../../ogre/lib/&quot;;&quot;../../../../ogre/Dependencies/lib/$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -93,7 +93,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy  /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Spacescape/app/win/debug/$(TargetFileName)&quot;&#x0D;&#x0A;copy  /Y &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(SolutionDir)Spacescape/lib/$(TargetName).lib&quot;"
+				CommandLine="copy  /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Spacescape/app/win/debug/$(TargetFileName)&quot;&#x0D;&#x0A;copy  /Y &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(SolutionDir)Spacescape/lib/$(TargetName).lib&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -129,7 +129,7 @@
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="../include/;../../../ogre/OgreMain/include/"
+				AdditionalIncludeDirectories="../include/;../../../../ogre/OgreMain/include/"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;OGRE_SPACESCAPEPLUGIN_EXPORTS;TIXML_USE_TICPP"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -156,7 +156,7 @@
 				AdditionalDependencies="OgreMain.lib"
 				OutputFile="$(OutDir)/Plugin_Spacescape.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;../../../ogre/lib/&quot;;&quot;../../../ogre/Dependencies/lib/$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="&quot;../../../../ogre/lib/&quot;;&quot;../../../../ogre/Dependencies/lib/$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -187,7 +187,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy  /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Spacescape/app/win/release/$(TargetFileName)&quot;&#x0D;&#x0A;copy  /Y &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(SolutionDir)Spacescape/lib/$(TargetName).lib&quot;"
+				CommandLine="copy  /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Spacescape/app/win/release/$(TargetFileName)&quot;&#x0D;&#x0A;copy  /Y &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(SolutionDir)Spacescape/lib/$(TargetName).lib&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

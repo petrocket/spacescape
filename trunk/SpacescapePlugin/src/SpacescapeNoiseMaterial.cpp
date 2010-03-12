@@ -82,7 +82,7 @@ namespace Ogre
             } \n\
 \n\
             // noise values returned are between -1.0 and 1.0!!!\n\
-            float noise2(vec3 p)\n\
+            float perlinNoise(vec3 p)\n\
             {\n\
                 vec3 P = mod(floor(p), 256.0);     // FIND UNIT CUBE THAT CONTAINS POINT  \n\
                 p -= floor(p);                      // FIND RELATIVE X,Y,Z OF POINT IN CUBE.  \n\
@@ -117,7 +117,7 @@ namespace Ogre
                 \n\
                 // make some fbm noise\n\
                 for( int i = 0; i < octaves; i++) {\n\
-                    noiseSum += noise2(v) * amplitude;\n\
+                    noiseSum += perlinNoise(v) * amplitude;\n\
                     amplitudeSum += amplitude;\n\
                     amplitude *= gain;\n\
                     v *= lacunarity;\n\
@@ -183,7 +183,7 @@ namespace Ogre
             } \n\
 \n\
             // noise values returned are between -1.0 and 1.0!!!\n\
-            float noise2(vec3 p)\n\
+            float perlinNoise(vec3 p)\n\
             {\n\
                 vec3 P = mod(floor(p), 256.0);     // FIND UNIT CUBE THAT CONTAINS POINT  \n\
                 p -= floor(p);                      // FIND RELATIVE X,Y,Z OF POINT IN CUBE.  \n\
@@ -229,7 +229,7 @@ namespace Ogre
                 \n\
                 // make some ridged fbm noise\n\
                 for( int i = 0; i < octaves; i++) {\n\
-                    n = ridge(noise2(v), offset);\n\
+                    n = ridge(perlinNoise(v), offset);\n\
                     noiseSum += n * amplitude * prev;\n\
                     prev = n;\n\
                     amplitudeSum += amplitude;\n\

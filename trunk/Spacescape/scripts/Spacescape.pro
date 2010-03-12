@@ -1,5 +1,5 @@
 # Ogre include path
-INCLUDEPATH += ../../../ogre/OgreMain/include/
+INCLUDEPATH += ../../../../ogre/OgreMain/include/
 
 # Spacescape includes
 INCLUDEPATH += ../include/;../include/QtPropertyBrowser/;../../SpacescapePlugin/include/

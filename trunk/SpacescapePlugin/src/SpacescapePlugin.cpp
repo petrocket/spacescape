@@ -706,8 +706,9 @@ namespace Ogre
         // first update the rtt texture
         updateRTT(size);
 
-        // get number of mip maps
-        int numMips = SpacescapePlugin::_log2(size);
+        // get number of mip maps - disabled for now
+        //int numMips = SpacescapePlugin::_log2(size);
+        int numMips = 1;
 
         // get the render to texture object
         TexturePtr rtt = TextureManager::getSingleton().getByName("SpacescapeRTT");
