@@ -87,6 +87,7 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
 
     
     mPropertyTitles["destBlendFactor"] = QString("Dest Blend Factor");
+    mPropertyTitles["ditherAmount"] = QString("Dither Amount");
     mPropertyTitles["farColor"] = QString("Far Color");
     mPropertyTitles["gain"] = QString("Gain");
     mPropertyTitles["innerColor"] = QString("Inner Color");
@@ -316,37 +317,52 @@ Ogre::String QtSpacescapeMainWindow::getColor(QColor color)
 QLatin1String QtSpacescapeMainWindow::getPropertyStatusTip(const Ogre::String& prop)
 {
     if(prop == "name") {
-        return QLatin1String("Layer name");
+        return QLatin1String("Layer name. What? Spacescapelayer0 isn't descriptive enough for you?!");
+    }
+    else if(prop == "destBlendFactor") {
+        return QLatin1String("Destination blend factor.");
+    }
+    else if(prop == "ditherAmount") {
+        return QLatin1String("Add additional fine grain noise to help with banding in the noise gradients - most noticable in dark colors.");
     }
     else if(prop == "gain" || prop == "maskGain") {
-        return QLatin1String("A multiplier that determines how quickly the amplitudes diminish for each successive octave");
+        return QLatin1String("A multiplier that determines how quickly the amplitudes diminish for each successive octave.");
     }
     else if(prop == "lacunarity" || prop == "maskLacunarity") {
-        return QLatin1String("A multiplier that determines how quickly the frequency increases for each successive octave");
+        return QLatin1String("A multiplier that determines how quickly the frequency increases for each successive octave.");
     }
     else if(prop == "octaves" || prop == "maskOctaves") {
-        return QLatin1String("Number of noise functions in a series of noise functions that are added together");
+        return QLatin1String("Number of noise functions in a series of noise functions that are added together.");
     }
     else if(prop == "noiseType" || prop == "maskNoiseType") {
-        return QLatin1String("Noise type can be either FBM noise (smooth) or Ridged FBM noise");
+        return QLatin1String("Noise type can be either FBM noise (smooth) or Ridged FBM noise.");
     }
     else if(prop == "offset" || prop == "maskOffset") {
-        return QLatin1String("I honestly don't know exactly how this effects ridged noise. Have fun!");
+        return QLatin1String("I honestly don't know exactly how this effects ridged noise, but it is only used for ridged noise. Have fun!");
     }
     else if(prop == "scale" || prop == "maskScale") {
-        return QLatin1String("Multiplier applied to initial noise coordinates");
+        return QLatin1String("Multiplier applied to initial noise coordinates.");
     }
     else if(prop == "power" || prop == "maskPower") {
         return QLatin1String("The final noise value is raised to this power.  Useful for changing the noise gradient slope.");
     }
     else if(prop == "seed") {
-        return QLatin1String("This number is used as the basis for the random number generator");
+        return QLatin1String("This number is used as the basis for the random number generator.");
+    }
+    else if(prop == "maskEnabled") {
+        return QLatin1String("Makes points or billboards appear in greater density where noise values are higher.");
+    }
+    else if(prop == "maskSeed") {
+        return QLatin1String("This number is used as the basis for the random number generator for the noise mask.");
+    }
+    else if(prop == "sourceBlendFactor") {
+        return QLatin1String("Source blend factor.");
     }
     else if(prop == "type") {
-        return QLatin1String("Layer type: Point, Billboards or Noise");
+        return QLatin1String("Layer type: Point, Billboards or Noise.");
     }
     else if(prop == "visible") {
-        return QLatin1String("Show or hide this layer");
+        return QLatin1String("Show or hide this layer.");
     }
     else {
         return QLatin1String("");
