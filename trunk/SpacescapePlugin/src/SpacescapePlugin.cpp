@@ -49,6 +49,7 @@ namespace Ogre
         mSceneNode(0),
         mUniqueId(0)
 	{
+        mProgressListeners.clear();
 	}
 
     /** Add a layer with the given params
@@ -113,6 +114,23 @@ namespace Ogre
         mSceneNode->createChildSceneNode(layerName)->attachObject(mLayers[layerId]->getMovableObject());
 
         return layerId;
+    }
+
+    /** Add a progress listener for receiving progress updates
+    @param listener The listener to add
+    */
+    void SpacescapePlugin::addProgressListener(SpacescapeProgressListener* listener)
+    {
+        // make sure this listener isn't already in the list
+        for(unsigned int i = 0; i < mProgressListeners.size(); i++) {
+            if(mProgressListeners[i] == listener) {
+                // already in the list
+                return;
+            }
+        }
+
+        // add to the list
+        mProgressListeners.push_back(listener);
     }
 
     /** Clear all layers
@@ -232,6 +250,13 @@ namespace Ogre
     bool SpacescapePlugin::loadConfigFile(DataStreamPtr& stream)
     {
         ticpp::Document config;
+        ticpp::Iterator<ticpp::Element> child;
+        unsigned int numLayers = 0;
+        unsigned int currentLayer = 1;
+        unsigned int progressAmount = 0;
+
+        // update progress
+        updateProgress(progressAmount, "Loading .xml");
 
         try {
             config.Parse(stream->getAsString());
@@ -241,10 +266,24 @@ namespace Ogre
             return false;
         }
 
+        // update progress amount
+        progressAmount += 10;
+
         // clear the current scene first
         clear();
 
-        ticpp::Iterator<ticpp::Element> child;
+        // get number of layers to add
+        for(child = child.begin(config.FirstChildElement()); child != child.end(); child++) {
+            std::string key;
+
+            // top level items should be layers
+            child->GetValue(&key);
+
+            if(key == "layer") {
+                numLayers++;
+            }
+        }
+
         for(child = child.begin(config.FirstChildElement()); child != child.end(); child++) {
             std::string key, value;
 
@@ -282,10 +321,30 @@ namespace Ogre
                     }
                 }
 
+                // update progress
+                if(params["name"].empty()) {
+                    updateProgress(progressAmount, "Creating layer " + 
+                        StringConverter::toString(currentLayer) + " of " +
+                        StringConverter::toString(numLayers));
+                }
+                else {
+                    updateProgress(progressAmount, "Creating layer " + params["name"] + " (" + 
+                        StringConverter::toString(currentLayer) + " of " +
+                        StringConverter::toString(numLayers) + ")");
+                }
+
                 // add the layer
                 addLayer(layerType, params);
+
+                // update progress amount
+                progressAmount += (unsigned int)(90.0 / (Real)numLayers);
+                progressAmount = std::min<unsigned int>(progressAmount, 100);
+                currentLayer++;
             }
         }
+
+        // update progress
+        updateProgress(100, "Layers created");
 
         return true;
     }
@@ -369,6 +428,20 @@ namespace Ogre
         return amount != 0;
     }
 
+    /** Remove a progress listener
+    @param listener The listener to remove
+    */
+    void SpacescapePlugin::removeProgressListener(SpacescapeProgressListener* listener)
+    {
+        // find and remove from our list of listeners
+        std::vector<SpacescapeProgressListener* >::iterator ii;
+        for( ii = mProgressListeners.begin(); ii != mProgressListeners.end(); ii++) {
+            if(*ii == listener) {
+                mProgressListeners.erase(ii);
+            }
+        }
+    }
+
     /** For internal use only - layers use this render to texture function
     to render to texture
     @param texture The texture to rtt to - must be cubic
@@ -403,8 +476,8 @@ namespace Ogre
  
         int numMips = (numMipMaps == -1) ? SpacescapePlugin::_log2((uint)texture->getWidth()) : numMipMaps;
         
-        // be sure to have at least one mip map (the main level)
-        numMips = std::max<int>(1,numMips);
+        // be sure to not go negative
+        numMips = std::max<int>(0,numMips);
 
         // point the camera in six different directions and rtt
         Vector3 forward,up,right;
@@ -453,7 +526,7 @@ namespace Ogre
             q.FromAxes(right,up,forward);
             rttCam->setOrientation(q);
 
-            for(int j = 0; j < numMips; ++j) {
+            for(int j = 0; j <= numMips; ++j) {
                 // get render target for mipmap
                 RenderTarget* target = (RenderTarget*)texture->getBuffer(i,j)->getRenderTarget();
                 target->setAutoUpdated(false);
@@ -637,6 +710,22 @@ namespace Ogre
         return true;
     }
 
+   /** Utility function to send progress events to all listeners
+    @param percentComplete Percent complete
+    @param msg Task status message
+    */
+    void SpacescapePlugin::updateProgress(unsigned int percentComplete, const String& msg)
+    {
+        if(mProgressListeners.empty()) {
+            return;
+        }
+
+        // send to all listeners
+        for(unsigned int i = 0; i < mProgressListeners.size(); ++i) {
+            mProgressListeners[i]->updateProgressBar(percentComplete, msg);
+        }
+    }
+
     /** Utility function to update the render to texture surface & mipmaps
     for all 6 faces of the skybox with the current settings
     @param size The size / resolution of the skybox image
@@ -648,7 +737,9 @@ namespace Ogre
             return false;
         }
 
-        int numMips = SpacescapePlugin::_log2(size);
+        // don't do mip maps  because some ATI cards x1950 pro have issues and
+        // draw the mipmaps on the same surface
+        int numMips = 0;//SpacescapePlugin::_log2(size);
 
         bool createTexture = false;
 
@@ -703,12 +794,27 @@ namespace Ogre
     */
     void SpacescapePlugin::writeToFile(const String& filename, unsigned int size, TextureType type)
     {
+        unsigned int progressAmount = 0;
+
+        Ogre::LogManager::getSingleton().getDefaultLog()->stream() << 
+            "Writing to file " << filename << " size: " << StringConverter::toString(size);
+
+        // update progress
+        updateProgress(progressAmount,"Updating RTT");
+
+        Ogre::LogManager::getSingleton().getDefaultLog()->stream() << 
+            "Updating RTT";
+
         // first update the rtt texture
         updateRTT(size);
 
-        // get number of mip maps - disabled for now
+        // update progress
+        progressAmount+= 40;
+
+        // get number of mip maps - disabled for now because ATI x1950 pro draws them funny
+        // and it doesn't look like we need them
         //int numMips = SpacescapePlugin::_log2(size);
-        int numMips = 1;
+        int numMips = 0;
 
         // get the render to texture object
         TexturePtr rtt = TextureManager::getSingleton().getByName("SpacescapeRTT");
@@ -736,13 +842,19 @@ namespace Ogre
             for(int i = 0; i < 6; ++i) {
                 Image* img = OGRE_NEW Image();
 
+                Ogre::LogManager::getSingleton().getDefaultLog()->stream() << 
+                    "Saving image " << basename << "_" << suffixes[i] << ext;
+
+                // update progress
+                updateProgress(progressAmount,"Exporting " + suffixes[i]);
+
                 // allocate room for this image and its mip maps
                 size_t numBytes = img->calculateSize(numMips,1,size,size,1,PF_BYTE_RGB);
                 uchar* data = OGRE_ALLOC_T(uchar,numBytes,MEMCATEGORY_GENERAL);
 
                 // load all the data into the image
                 img->loadDynamicImage(data,size,size,1,PF_BYTE_RGB,false,1,numMips);
-                for(int j = 0; j < numMips; ++j) {
+                for(int j = 0; j <= numMips; ++j) {
                     rtt->getBuffer(i,j)->getRenderTarget()->copyContentsToMemory(
                         img->getPixelBox(0,j),
                         RenderTarget::FB_FRONT
@@ -756,6 +868,9 @@ namespace Ogre
 
                 OGRE_FREE(data,MEMCATEGORY_GENERAL);
                 OGRE_DELETE img;
+
+                // update progress
+                progressAmount += 10;
             }
         }
         else {
@@ -771,7 +886,7 @@ namespace Ogre
 
             // combine the six textures into one image with 6 faces
             for(int i = 0; i < 6; ++i) {
-                for(int j = 0; j < numMips; ++j) {
+                for(int j = 0; j <= numMips; ++j) {
                     rtt->getBuffer(i,j)->getRenderTarget()->copyContentsToMemory(
                         img->getPixelBox(i,j),
                         RenderTarget::FB_FRONT
@@ -786,6 +901,11 @@ namespace Ogre
             OGRE_FREE(data,MEMCATEGORY_GENERAL);
             OGRE_DELETE img;
         }
+
+        updateProgress(100, "Export complete");
+
+        Ogre::LogManager::getSingleton().getDefaultLog()->stream() << 
+            "Export complete";
 
         // unload the rtt texture
         //TextureManager::getSingletonPtr()->unload(rtt->getHandle());

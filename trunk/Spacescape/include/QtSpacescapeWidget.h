@@ -114,6 +114,11 @@ public:
     */
     void setLayerVisible(unsigned int layerID, bool visible);
 
+    /** Set the progress listener
+    @param listener The new listener object
+    */
+    void setProgressListener(Ogre::SpacescapeProgressListener* listener) { mProgressListener = listener; }
+
     /** Update the params or a SpacescapeLayer
     @param layerID The layer ID of the layer to move
     @param params The new params
@@ -194,6 +199,9 @@ private:
     @return the spacescape plugin or NULL
     */
     Ogre::SpacescapePlugin* getPlugin();
+
+    // Our spacescape progress listener
+    Ogre::SpacescapeProgressListener* mProgressListener;
 };
 
 #endif

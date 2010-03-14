@@ -805,13 +805,13 @@ namespace Ogre
         mParams["destBlendFactor"] = getBlendMode(mDestBlendFactor);
         mParams["ditherAmount"] = StringConverter::toString(mDitherAmount);
         mParams["gain"] = StringConverter::toString(mGain);
-        mParams["gpu"] = StringConverter::toString(mGPU);
+        //mParams["gpu"] = StringConverter::toString(mGPU);
         mParams["innerColor"] = StringConverter::toString(mInnerColor);
         mParams["lacunarity"] = StringConverter::toString(mLacunarity);
         mParams["offset"] = StringConverter::toString(mOffset);
         mParams["octaves"] = StringConverter::toString(mOctaves);
         mParams["outerColor"] = StringConverter::toString(mOuterColor);
-        mParams["persistance"] = StringConverter::toString(mGain);
+        //mParams["persistance"] = StringConverter::toString(mGain);
         mParams["powerAmount"] = StringConverter::toString(mPowerAmount);
         mParams["previewTextureSize"] = StringConverter::toString(mPreviewTextureSize);
         mParams["noiseType"] = mNoiseType;

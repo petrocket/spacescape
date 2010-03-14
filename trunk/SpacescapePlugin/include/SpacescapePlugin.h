@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include "OgreCommon.h"
 #include "OgreDataStream.h"
 #include "OgreTexture.h"
+#include "SpacescapeProgressListener.h"
 
 namespace Ogre
 {
@@ -66,6 +67,11 @@ namespace Ogre
         @return the layer id of the created layer or -1 on error
         */
         int addLayer(int type, const NameValuePairList& params);
+
+        /** Add a progress listener for receiving progress updates
+        @param listener The listener to add
+        */
+        void addProgressListener(SpacescapeProgressListener* listener);
 
         /** Clear all layers
         @return true on success
@@ -140,6 +146,11 @@ namespace Ogre
         */
         bool moveLayer(unsigned int layerId, int amount);
 
+        /** Remove a progress listener
+        @param listener The listener to remove
+        */
+        void removeProgressListener(SpacescapeProgressListener* listener);
+
         /** Save a config file
         @param filename The filename of the config file to save
         @return true on success, false on error
@@ -199,6 +210,12 @@ namespace Ogre
         bool _rtt(TexturePtr& texture, int numMipMaps);
  
     private:
+        /** Utility function to send progress events to all listeners
+        @param percentComplete Percent complete
+        @param msg Task status message
+        */
+        void updateProgress(unsigned int percentComplete, const String& msg);
+
         /** Utility function to update the render to texture surface & mipmaps
         for all 6 faces of the skybox with the current settings
         @param size The size / resolution of the skybox image
@@ -208,6 +225,9 @@ namespace Ogre
 
         // layers list
         SpacescapeLayerList mLayers;
+
+        // progress listeners
+        std::vector<SpacescapeProgressListener* > mProgressListeners;
 
         // scene node all layers are attached to
         SceneNode* mSceneNode;

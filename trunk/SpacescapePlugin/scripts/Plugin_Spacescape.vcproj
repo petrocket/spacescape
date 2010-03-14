@@ -228,6 +228,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\SpacescapeProgressListener.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\ticpp.h"
 				>
 			</File>

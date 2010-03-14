@@ -39,6 +39,7 @@ THE SOFTWARE.
 #endif
 #include "OgrePrerequisites.h"
 #include "SpacescapeLayer.h"
+#include "SpacescapeProgressListener.h"
 #if defined(Q_WS_WIN)
 #pragma warning( pop )
 #endif
@@ -49,7 +50,7 @@ namespace Ui {
 
 /** QtSpacescapeMainWindow is the main UI window for Spacescape.
 */
-class QtSpacescapeMainWindow : public QMainWindow {
+class QtSpacescapeMainWindow : public QMainWindow, Ogre::SpacescapeProgressListener {
     Q_OBJECT
 public:
     /** Constructor
@@ -61,6 +62,12 @@ public:
     */
     ~QtSpacescapeMainWindow();
 
+    /** Function used to update the progress bar
+    @param percentComplete The percentage complete 0 - 100
+    @param msg The current task message
+    */
+    void updateProgressBar(unsigned int percentComplete, const Ogre::String& msg);
+
     // property manager
     QtVariantPropertyManager* mPropertyManager;
 
@@ -71,6 +78,12 @@ protected:
     void changeEvent(QEvent *e);
 
 public Q_SLOTS:
+    /** Current selected layer property has changed so update the status bar
+    with this property's tip if it has one.
+    @param item The selected item
+    */
+    void currentItemChanged(QtBrowserItem *item);
+
     /** The about action was clicked
     */
     void onAbout();
@@ -156,11 +169,16 @@ private:
     */
     Ogre::String getProperty(const QString& prop);
 
+    /** Utility function to get the status tip for a property type
+    @param prop - the property to get the status tip for
+    */
+    QLatin1String getPropertyStatusTip(const Ogre::String& prop);
+
     /** Utility function to convert between string types and property names and titles
     For example you provied destBlendFactor and get Dest Blend Factor
     @param prop - the property to get the title for
     */
-    QLatin1String getPropertyTitle(const Ogre::String& prop);
+    QString getPropertyTitle(const Ogre::String& prop);
 
     /** Utility function to get the property type by name
     @param name The name of the property i.e. seed or maskEnabled etc.
@@ -202,6 +220,9 @@ private:
 
     // last save directory path
     QString mLastSaveDir;
+
+    // mapping of ogre property names to readable titles
+    std::map<Ogre::String, QString> mPropertyTitles;
 };
 
 #endif // __QTSPACESCAPEMAINWINDOW_H__

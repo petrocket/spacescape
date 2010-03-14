@@ -28,7 +28,7 @@
 				CleanCommandLine="nmake $(ConfigurationName)-clean"
 				Output="../app/win/debug/Spacescape.exe"
 				PreprocessorDefinitions="WIN32;_DEBUG"
-				IncludeSearchPath="&quot;$(QTDIR)\include&quot;;../../../ogre/OgreMain/include;../include/;../../SpacescapePlugin/include/;&quot;$(QTPROPBROWSERDIR)/src&quot;"
+				IncludeSearchPath="&quot;$(QTDIR)\include&quot;;../../../ogre/OgreMain/include;../include/;../../SpacescapePlugin/include/;&quot;$(QTPROPBROWSERDIR)&quot;;&quot;C:\Users\alex\Downloads\qtpropertybrowser-2.5_1-opensource\qtpropertybrowser-2.5_1-opensource\src&quot;"
 				ForcedIncludes=""
 				AssemblySearchPath=""
 				ForcedUsingAssemblies=""

@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<spacescapelayers>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0.03</ditherAmount>
+        <gain>0.5</gain>
+        <gpu>false</gpu>
+        <innerColor>1 0 0.6 1</innerColor>
+        <lacunarity>2</lacunarity>
+        <name>Pink Purple Nebula</name>
+        <noiseType>fbm</noiseType>
+        <octaves>8</octaves>
+        <offset>1</offset>
+        <outerColor>0.00392157 0.309804 0.356863 1</outerColor>
+        <persistance>0.5</persistance>
+        <powerAmount>1</powerAmount>
+        <previewTextureSize>256</previewTextureSize>
+        <scale>1</scale>
+        <seed>0</seed>
+        <shelfAmount>0</shelfAmount>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>false</maskEnabled>
+        <maskGain>0.7</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>ridged</maskNoiseType>
+        <maskOctaves>10</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1.25</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.4</maskThreshold>
+        <name>Large Purple Point Stars</name>
+        <nearColor>0.196078 0.156863 0.254902 1</nearColor>
+        <numPoints>30000</numPoints>
+        <pointSize>2</pointSize>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>src_alpha</destBlendFactor>
+        <ditherAmount>0.03</ditherAmount>
+        <gain>0.5</gain>
+        <gpu>false</gpu>
+        <innerColor>0 0 0 1</innerColor>
+        <lacunarity>2</lacunarity>
+        <name>Black Smooth Nebula Mask</name>
+        <noiseType>ridged</noiseType>
+        <octaves>7</octaves>
+        <offset>1</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <persistance>0.5</persistance>
+        <powerAmount>1</powerAmount>
+        <previewTextureSize>256</previewTextureSize>
+        <scale>1</scale>
+        <seed>0</seed>
+        <shelfAmount>0.4</shelfAmount>
+        <sourceBlendFactor>one_minus_src_alpha</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>false</maskEnabled>
+        <maskGain>0.7</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>ridged</maskNoiseType>
+        <maskOctaves>10</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1.25</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0.4</maskThreshold>
+        <name>Large Purple Point Stars Copy</name>
+        <nearColor>0.156863 0.121569 0.203922 1</nearColor>
+        <numPoints>30000</numPoints>
+        <pointSize>2</pointSize>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>false</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType>fbm</maskNoiseType>
+        <maskOctaves>1</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0</maskThreshold>
+        <name>Small Purple Point Stars</name>
+        <nearColor>0.278431 0.188235 0.317647 1</nearColor>
+        <numPoints>30000</numPoints>
+        <pointSize>1</pointSize>
+        <seed>0</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one_minus_src_alpha</destBlendFactor>
+        <ditherAmount>0.01</ditherAmount>
+        <gain>0.7</gain>
+        <gpu>false</gpu>
+        <innerColor>0 0 0 1</innerColor>
+        <lacunarity>2</lacunarity>
+        <name>Black Ridged Nebula Mask</name>
+        <noiseType>ridged</noiseType>
+        <octaves>10</octaves>
+        <offset>1</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <persistance>0.7</persistance>
+        <powerAmount>1.25</powerAmount>
+        <previewTextureSize>1024</previewTextureSize>
+        <scale>1</scale>
+        <seed>1</seed>
+        <shelfAmount>0</shelfAmount>
+        <sourceBlendFactor>src_alpha</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0.03</ditherAmount>
+        <gain>0.6</gain>
+        <gpu>false</gpu>
+        <innerColor>0 0.054902 0.133333 1</innerColor>
+        <lacunarity>2.2</lacunarity>
+        <name>Blue Nebula</name>
+        <noiseType>ridged</noiseType>
+        <octaves>10</octaves>
+        <offset>1</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <persistance>0.6</persistance>
+        <powerAmount>1</powerAmount>
+        <previewTextureSize>1024</previewTextureSize>
+        <scale>0.5</scale>
+        <seed>2</seed>
+        <shelfAmount>0.8</shelfAmount>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>1 1 1 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2.2</maskLacunarity>
+        <maskNoiseType>ridged</maskNoiseType>
+        <maskOctaves>4</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>0.5</maskScale>
+        <maskSeed>2</maskSeed>
+        <maskThreshold>0.8</maskThreshold>
+        <maxSize>0.01</maxSize>
+        <minSize>0.03</minSize>
+        <name>Small Blue Billboard Stars</name>
+        <nearColor>1 1 1 1</nearColor>
+        <numBillboards>25</numBillboards>
+        <seed>9</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <texture>flare-blue-purple2.png</texture>
+        <type>billboards</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0.956863 1 0.894118 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.6</maskGain>
+        <maskLacunarity>2.2</maskLacunarity>
+        <maskNoiseType>ridged</maskNoiseType>
+        <maskOctaves>4</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>0.5</maskScale>
+        <maskSeed>2</maskSeed>
+        <maskThreshold>0.85</maskThreshold>
+        <maxSize>0.025</maxSize>
+        <minSize>0.04</minSize>
+        <name>Large Blue Billboard Stars</name>
+        <nearColor>0.188235 0.376471 0.564706 1</nearColor>
+        <numBillboards>10</numBillboards>
+        <seed>5</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <texture>flare-blue-purple2.png</texture>
+        <type>billboards</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0.956863 1 0.894118 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.71</maskGain>
+        <maskLacunarity>2.22</maskLacunarity>
+        <maskNoiseType>ridged</maskNoiseType>
+        <maskOctaves>7</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>0.5</maskScale>
+        <maskSeed>2</maskSeed>
+        <maskThreshold>0.86</maskThreshold>
+        <maxSize>0.025</maxSize>
+        <minSize>0.04</minSize>
+        <name>Large Yellow  Billboard Stars</name>
+        <nearColor>0.866667 0.960784 1 1</nearColor>
+        <numBillboards>11</numBillboards>
+        <seed>15</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <texture>flare-red-yellow1.png</texture>
+        <type>billboards</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2.2</maskLacunarity>
+        <maskNoiseType>ridged</maskNoiseType>
+        <maskOctaves>4</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>0.5</maskScale>
+        <maskSeed>2</maskSeed>
+        <maskThreshold>0.7</maskThreshold>
+        <name>Large Green Blue Point Stars</name>
+        <nearColor>0 0.00784314 0.0627451 1</nearColor>
+        <numPoints>30000</numPoints>
+        <pointSize>2</pointSize>
+        <seed>3</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2.2</maskLacunarity>
+        <maskNoiseType>ridged</maskNoiseType>
+        <maskOctaves>4</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>0.5</maskScale>
+        <maskSeed>2</maskSeed>
+        <maskThreshold>0.7</maskThreshold>
+        <name>Small Green Blue Point Stars</name>
+        <nearColor>0.12549 0.227451 0.27451 1</nearColor>
+        <numPoints>30000</numPoints>
+        <pointSize>1</pointSize>
+        <seed>3</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2.2</maskLacunarity>
+        <maskNoiseType>ridged</maskNoiseType>
+        <maskOctaves>4</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>0.5</maskScale>
+        <maskSeed>2</maskSeed>
+        <maskThreshold>0.75</maskThreshold>
+        <name>Large Green Blue Point Stars copy</name>
+        <nearColor>0.0156863 0.054902 0.14902 1</nearColor>
+        <numPoints>3000</numPoints>
+        <pointSize>4</pointSize>
+        <seed>4</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2.2</maskLacunarity>
+        <maskNoiseType>ridged</maskNoiseType>
+        <maskOctaves>4</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>0.5</maskScale>
+        <maskSeed>2</maskSeed>
+        <maskThreshold>0.75</maskThreshold>
+        <name>Large Green Blue Point Stars copy copy</name>
+        <nearColor>0.00784314 0.129412 0.435294 1</nearColor>
+        <numPoints>3000</numPoints>
+        <pointSize>2</pointSize>
+        <seed>4</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>0 0 0 1</farColor>
+        <maskEnabled>true</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2.2</maskLacunarity>
+        <maskNoiseType>ridged</maskNoiseType>
+        <maskOctaves>4</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>0.5</maskScale>
+        <maskSeed>2</maskSeed>
+        <maskThreshold>0.75</maskThreshold>
+        <name>Small Green Blue Point Stars copy</name>
+        <nearColor>0.4 0.717647 0.839216 1</nearColor>
+        <numPoints>3000</numPoints>
+        <pointSize>1</pointSize>
+        <seed>4</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>points</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0.03</ditherAmount>
+        <gain>0.7</gain>
+        <gpu>false</gpu>
+        <innerColor>0.247059 0.352941 0.639216 1</innerColor>
+        <lacunarity>2.2</lacunarity>
+        <name>Blue Inner Nebula</name>
+        <noiseType>ridged</noiseType>
+        <octaves>7</octaves>
+        <offset>1</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <persistance>0.7</persistance>
+        <powerAmount>0.3</powerAmount>
+        <previewTextureSize>1024</previewTextureSize>
+        <scale>0.5</scale>
+        <seed>2</seed>
+        <shelfAmount>0.82</shelfAmount>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0.03</ditherAmount>
+        <gain>0.71</gain>
+        <gpu>false</gpu>
+        <innerColor>0 1 0.917647 1</innerColor>
+        <lacunarity>2.22</lacunarity>
+        <name>Light Blue Nebula</name>
+        <noiseType>ridged</noiseType>
+        <octaves>7</octaves>
+        <offset>1</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <persistance>0.71</persistance>
+        <powerAmount>0.3</powerAmount>
+        <previewTextureSize>1024</previewTextureSize>
+        <scale>0.5</scale>
+        <seed>2</seed>
+        <shelfAmount>0.84</shelfAmount>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0.03</ditherAmount>
+        <gain>0.71</gain>
+        <gpu>false</gpu>
+        <innerColor>0.337255 0.109804 0.180392 1</innerColor>
+        <lacunarity>3</lacunarity>
+        <name>Pink Scattered nebula</name>
+        <noiseType>ridged</noiseType>
+        <octaves>7</octaves>
+        <offset>1</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <persistance>0.71</persistance>
+        <powerAmount>0.3</powerAmount>
+        <previewTextureSize>1024</previewTextureSize>
+        <scale>0.5</scale>
+        <seed>3</seed>
+        <shelfAmount>0.8</shelfAmount>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <farColor>1 0.847059 0.996078 1</farColor>
+        <maskEnabled>false</maskEnabled>
+        <maskGain>0.5</maskGain>
+        <maskLacunarity>2</maskLacunarity>
+        <maskNoiseType></maskNoiseType>
+        <maskOctaves>1</maskOctaves>
+        <maskOffset>1</maskOffset>
+        <maskPower>1</maskPower>
+        <maskScale>1</maskScale>
+        <maskSeed>1</maskSeed>
+        <maskThreshold>0</maskThreshold>
+        <maxSize>0.01</maxSize>
+        <minSize>0.02</minSize>
+        <name>Sparse Red Billboard Stars</name>
+        <nearColor>1 0.94902 0.988235 1</nearColor>
+        <numBillboards>30</numBillboards>
+        <seed>10</seed>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <texture>flare-red1.png</texture>
+        <type>billboards</type>
+    </layer>
+</spacescapelayers>

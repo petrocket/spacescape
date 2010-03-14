@@ -34,7 +34,8 @@ const float QtSpacescapeWidget::mRADIUS = (float)0.8;
 
 /** Constructor
 */
-QtSpacescapeWidget::QtSpacescapeWidget(QWidget *parent) : QtOgreWidget(parent) {
+QtSpacescapeWidget::QtSpacescapeWidget(QWidget *parent) : QtOgreWidget(parent),
+    mProgressListener(0) {
 	mSceneMgr = NULL;
 	mViewPort = NULL;
 	mMousePressed = false;
@@ -272,6 +273,9 @@ bool QtSpacescapeWidget::open(const QString& filename)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
+        if(mProgressListener) {
+            plugin->addProgressListener(mProgressListener);
+        }
         return plugin->loadConfigFile(filename.toStdString());
     }
 

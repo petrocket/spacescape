@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/spacescape">
+        <file>images/page_white_add.png</file>
+        <file>images/page_white_copy.png</file>
+        <file>images/page_white_delete.png</file>
+        <file>images/page_white_get.png</file>
+        <file>images/page_white_put.png</file>
+        <file>images/bullet_arrow_down.png</file>
+        <file>images/bullet_arrow_up.png</file>
+        <file>images/spacescape-logo.png</file>
+    </qresource>
+</RCC>

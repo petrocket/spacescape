@@ -203,7 +203,7 @@ void QtOgreWidget::resizeRenderWindow(void) {
 /** Update the Ogre render window
 */
 void QtOgreWidget::update(void) {
-	if (mRenderWindow) {
+	if (mRenderWindow && this->isEnabled()) {
 		mOgreRoot->_fireFrameStarted();
 		mRenderWindow->update();
 		mOgreRoot->_fireFrameEnded();

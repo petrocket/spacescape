@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "qtvariantproperty.h"
 #include "qttreepropertybrowser.h"
 #include "QFileDialog"
+#include <QProgressDialog>
 #include "QtSpacescapeExportFileDialog.h"
 #include "QtSpacescapeAboutDialog.h"
 
@@ -56,12 +57,21 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     QtVariantEditorFactory *variantFactory = new QtVariantEditorFactory();
     ui->layerProperties->setFactoryForManager(mPropertyManager, variantFactory);
     ui->layerProperties->setPropertiesWithoutValueMarked(true);
-    ui->layerProperties->setRootIsDecorated(false);
 
+    // we want the little arrows on root properties to indicate they're expandable
+    ui->layerProperties->setRootIsDecorated(true);
+
+    // set us as a progress listener
+    ui->ogreWindow->setProgressListener(this);
 
     // add a signal for when properties are changed
     connect(mPropertyManager, SIGNAL(valueChanged(QtProperty *, const QVariant &)),
                 this, SLOT(valueChanged(QtProperty *, const QVariant &)));
+
+    // add a signal to detect when layer items change so we can update status bar
+    // with a tip
+    connect(ui->layerProperties, SIGNAL(currentItemChanged(QtBrowserItem*)),
+            this,SLOT(currentItemChanged(QtBrowserItem*)));
 
     // add a signal for when the open menu item is selected
     connect(ui->action_Open, SIGNAL(triggered()), this, SLOT(onOpen()));
@@ -74,6 +84,45 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
 
     // add a signal for when the about menu item is selected
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
+
+    
+    mPropertyTitles["destBlendFactor"] = QString("Dest Blend Factor");
+    mPropertyTitles["farColor"] = QString("Far Color");
+    mPropertyTitles["gain"] = QString("Gain");
+    mPropertyTitles["innerColor"] = QString("Inner Color");
+    mPropertyTitles["lacunarity"] = QString("Lacunarity");
+    mPropertyTitles["maskEnabled"] = QString("Mask Enabled");
+    mPropertyTitles["maskGain"] = QString("Mask Gain");
+    mPropertyTitles["maskInnerColor"] = QString("Mask Inner Color");
+    mPropertyTitles["maskLacunarity"] = QString("Mask Lacunarity");
+    mPropertyTitles["maskNoiseType"] = QString("Mask Noise Type");
+    mPropertyTitles["maskOffset"] = QString("Mask Offset");
+    mPropertyTitles["maskOctaves"] = QString("Mask Octaves");
+    mPropertyTitles["maskOuterColor"] = QString("Mask Outer Color");
+    mPropertyTitles["maskPower"] = QString("Mask Power");
+    mPropertyTitles["maskScale"] = QString("Mask Noise Scale");
+    mPropertyTitles["maskSeed"] = QString("Mask Random Seed");
+    mPropertyTitles["maskThreshold"] = QString("Mask Threshold");
+    mPropertyTitles["maxSize"] = QString("Max Billboard Size");
+    mPropertyTitles["minSize"] = QString("Min Billboard Size");
+    mPropertyTitles["name"] = QString("Layer Name");
+    mPropertyTitles["nearColor"] = QString("Near Color");
+    mPropertyTitles["noiseType"] = QString("Noise Type");
+    mPropertyTitles["numBillboards"] = QString("Number of Billboards");
+    mPropertyTitles["numPoints"] = QString("Number of Points");
+    mPropertyTitles["octaves"] = QString("Octaves");
+    mPropertyTitles["offset"] = QString("Noise Offset");
+    mPropertyTitles["outerColor"] = QString("Outer Color");
+    mPropertyTitles["pointSize"] = QString("Point Size");
+    mPropertyTitles["powerAmount"] = QString("Power");
+    mPropertyTitles["previewTextureSize"] = QString("Preview Texture Size");
+    mPropertyTitles["texture"] = QString("Billboard Texture");
+    mPropertyTitles["type"] = QString("Layer Type");
+    mPropertyTitles["scale"] = QString("Noise Scale");
+    mPropertyTitles["seed"] = QString("Random Seed");
+    mPropertyTitles["shelfAmount"] = QString("Threshold");
+    mPropertyTitles["sourceBlendFactor"] = QString("Source Blend Factor");
+    mPropertyTitles["visible"] = QString("Layer Visible");
 }
 
 /** Destructor
@@ -118,7 +167,9 @@ QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& ke
     QtVariantProperty* property;
 
     property = mPropertyManager->addProperty(propertyType, getPropertyTitle(key));
-    
+    property->setStatusTip(getPropertyStatusTip(key));
+    property->setToolTip(getPropertyStatusTip(key));
+
     if(propertyType == QVariant::Int) {
         property->setValue(Ogre::StringConverter::parseInt(value));
         property->setAttribute(QLatin1String("minimum"), 0);
@@ -171,6 +222,21 @@ QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& ke
 
     return property;
 }
+
+/** Current selected layer property has changed so update the status bar
+with this property's tip if it has one.
+@param item The selected item
+*/
+void QtSpacescapeMainWindow::currentItemChanged(QtBrowserItem *item)
+{
+    // a hack to prevent invalid item checking when moving layers around
+    if(mRefreshing) return;
+
+    if(item && item->property() && !item->property()->statusTip().isNull()) {
+        ui->statusBar->showMessage(item->property()->statusTip());
+    }
+}
+
 
 /** Utility function to convert a blend mode string to int
 @param param blend mode string like "one" or "dest_colour"
@@ -244,17 +310,60 @@ Ogre::String QtSpacescapeMainWindow::getColor(QColor color)
         Ogre::StringConverter::toString(color.alpha() * scale);
 }
 
+/** Utility function to get the status tip for a property type
+@param prop - the property to get the status tip for
+*/
+QLatin1String QtSpacescapeMainWindow::getPropertyStatusTip(const Ogre::String& prop)
+{
+    if(prop == "name") {
+        return QLatin1String("Layer name");
+    }
+    else if(prop == "gain" || prop == "maskGain") {
+        return QLatin1String("A multiplier that determines how quickly the amplitudes diminish for each successive octave");
+    }
+    else if(prop == "lacunarity" || prop == "maskLacunarity") {
+        return QLatin1String("A multiplier that determines how quickly the frequency increases for each successive octave");
+    }
+    else if(prop == "octaves" || prop == "maskOctaves") {
+        return QLatin1String("Number of noise functions in a series of noise functions that are added together");
+    }
+    else if(prop == "noiseType" || prop == "maskNoiseType") {
+        return QLatin1String("Noise type can be either FBM noise (smooth) or Ridged FBM noise");
+    }
+    else if(prop == "offset" || prop == "maskOffset") {
+        return QLatin1String("I honestly don't know exactly how this effects ridged noise. Have fun!");
+    }
+    else if(prop == "scale" || prop == "maskScale") {
+        return QLatin1String("Multiplier applied to initial noise coordinates");
+    }
+    else if(prop == "power" || prop == "maskPower") {
+        return QLatin1String("The final noise value is raised to this power.  Useful for changing the noise gradient slope.");
+    }
+    else if(prop == "seed") {
+        return QLatin1String("This number is used as the basis for the random number generator");
+    }
+    else if(prop == "type") {
+        return QLatin1String("Layer type: Point, Billboards or Noise");
+    }
+    else if(prop == "visible") {
+        return QLatin1String("Show or hide this layer");
+    }
+    else {
+        return QLatin1String("");
+    }
+}
+
 /** Utility function to convert between string types and property names and titles
 For example you provied destBlendFactor and get Dest Blend Factor
 @param prop - the property to get the title for
 */
-QLatin1String QtSpacescapeMainWindow::getPropertyTitle(const Ogre::String& prop)
+QString QtSpacescapeMainWindow::getPropertyTitle(const Ogre::String& prop)
 {
-    if(prop.c_str() == "destBlendFactor") {
-        return QLatin1String("Dest Blend Factor");
+    if(mPropertyTitles[prop].isEmpty()) {
+        return QString(prop.c_str());
     }
     else {
-        return QLatin1String(prop.c_str());
+        return mPropertyTitles[prop];
     }
 }
 
@@ -264,15 +373,14 @@ For example you provide Dest Blend Factor and get destBlendFactor
 */
 Ogre::String QtSpacescapeMainWindow::getProperty(const QString& prop)
 {
-    if(prop == "Dest Blend Factor") {
-        return Ogre::String("destBlendFactor");
+    std::map<Ogre::String,QString>::iterator ii;
+    for(ii = mPropertyTitles.begin(); ii != mPropertyTitles.end(); ii++) {
+        if(ii->second == prop) {
+            return ii->first;
+        }
     }
-    else if(prop == "Random Seed") {
-        return Ogre::String("seed");
-    }
-    else {
-        return Ogre::String(prop.toStdString());
-    }
+
+    return Ogre::String(QString(prop).toStdString());
 }
 
 /** Utility function to get the property type by name
@@ -469,6 +577,9 @@ void QtSpacescapeMainWindow::onExport()
         &imageSize
     );
 
+    // disable ogre window till done exporting to prevent crashes
+    ui->ogreWindow->setDisabled(true);
+
     if(!filename.isNull() && !filename.isEmpty()) {
         // make sure we have an extension on the filename
         QFileInfo fi(filename);
@@ -490,6 +601,9 @@ void QtSpacescapeMainWindow::onExport()
 
         ui->statusBar->showMessage("Exported skybox " + filename,3000);
     }
+
+    ui->ogreWindow->setDisabled(false);
+
 }
 
 /** The move down button was clicked
@@ -512,12 +626,22 @@ void QtSpacescapeMainWindow::onMoveLayerDown()
             ui->layerProperties->insertProperty(p,bl[index + 1]->property());
 
             // re-apply property tree visiblity settings
-            ui->layerProperties->setExpanded(bl[index],expanded);
+            bl = ui->layerProperties->topLevelItems();
+            ui->layerProperties->setExpanded(bl[index + 1],expanded);
+
+            // un-expand the color items
+            QList<QtProperty *> sl = p->subProperties();
+            for(int i = 0; i < sl.size(); i++) {
+                if(((QtVariantProperty*)sl[i])->propertyType() == QVariant::Color) {
+                    QList<QtBrowserItem *> bi = ui->layerProperties->items(sl[i]);
+                    ui->layerProperties->setExpanded(bi.first(),false);
+                }
+            }
 
             // re-select the item
             ui->layerProperties->setFocus();
-            ui->layerProperties->setCurrentItem(bl[index]);
-
+            bl = ui->layerProperties->topLevelItems();
+            ui->layerProperties->setCurrentItem(bl[index + 1]);
         }
     }
 }
@@ -547,11 +671,21 @@ void QtSpacescapeMainWindow::onMoveLayerUp()
             }
 
             // re-apply property tree visiblity settings
-            ui->layerProperties->setExpanded(bl[index],expanded);
+            bl = ui->layerProperties->topLevelItems();
+            ui->layerProperties->setExpanded(bl[index - 1],expanded);
+
+            // un-expand the color items
+            QList<QtProperty *> sl = p->subProperties();
+            for(int i = 0; i < sl.size(); i++) {
+                if(((QtVariantProperty*)sl[i])->propertyType() == QVariant::Color) {
+                    QList<QtBrowserItem *> bi = ui->layerProperties->items(sl[i]);
+                    ui->layerProperties->setExpanded(bi.first(),false);
+                }
+            }
 
             // re-select the item
             ui->layerProperties->setFocus();
-            ui->layerProperties->setCurrentItem(bl[index]);
+            ui->layerProperties->setCurrentItem(bl[index - 1]);
         }
     }
 }
@@ -593,12 +727,20 @@ void QtSpacescapeMainWindow::onOpen()
          QLatin1String("XML Files (*.xml)")
     );
 
+    // disable ogre window till done opening to prevent crashes
+    ui->ogreWindow->setDisabled(true);
+
     if(!filename.isNull() && !filename.isEmpty()) {
         QFileInfo fi(filename);
         mLastOpenDir = fi.absolutePath();
         mLastSaveDir = mLastOpenDir;
 
         ui->statusBar->showMessage("Opening " + filename + " ...");
+
+        // open the progress dialog
+        ui->mProgressDialog->setValue(0);
+        ui->mProgressDialog->show();
+
         if(ui->ogreWindow->open(filename)) {
             mFilename = filename;
 
@@ -614,6 +756,8 @@ void QtSpacescapeMainWindow::onOpen()
             ui->statusBar->showMessage("Failed to load " + filename,3000);
         }
     }
+
+    ui->ogreWindow->setDisabled(false);
 }
 
 /** The save action was clicked
@@ -647,7 +791,7 @@ void QtSpacescapeMainWindow::onSave()
                 ui->statusBar->showMessage("Saved " + mFilename,3000);
             }
             else {
-                    ui->statusBar->showMessage("Failed to save " + mFilename,3000);
+                ui->statusBar->showMessage("Failed to save " + mFilename,3000);
             }
         }
     }
@@ -707,6 +851,17 @@ void QtSpacescapeMainWindow::refreshProperties()
     }
 
     mRefreshing = false;
+}
+
+/** Function used to update the progress bar
+@param percentComplete The percentage complete 0 - 100
+@param msg The current task message
+*/
+void QtSpacescapeMainWindow::updateProgressBar(unsigned int percentComplete, const Ogre::String& msg)
+{
+    ui->mProgressDialog->setValue(percentComplete);
+    ui->mProgressDialog->setLabelText(QString(msg.c_str()));
+    qApp->processEvents();
 }
 
 /** A layer property was changed in the UI. Update the layer and 

@@ -1,0 +1,11 @@
+1. More error checking - specificly for invalid renderers, failed shader compilation and other hardware incompatibilities like RTT ability.  Notify the user with message box and note the problem in the log.
+
+2. OPTION # 1
+When exporting bump up the preview texture sizes to a resolution that is suitable for export. i.e. if exporting 512x512 images then preview textures size should be at least 512.  Then return to normal preview texture size after export. 
+
+OPTION #2 
+Free up as much vid memory as possible by freeing preview materials & textures before turning on the GPU noise shaders when exporting - NOTE this may make for really slow exporting.
+
+4. Re-enable mip maps for writeToMaterial on NVIDIA cards at least.
+
+5. Twinkle stars!
