@@ -4,7 +4,6 @@
         <destBlendFactor>one</destBlendFactor>
         <ditherAmount>0.03</ditherAmount>
         <gain>0.8</gain>
-        <gpu>false</gpu>
         <innerColor>0.239216 0.478431 1 1</innerColor>
         <lacunarity>2</lacunarity>
         <name>Mask Test</name>
@@ -12,7 +11,6 @@
         <octaves>5</octaves>
         <offset>1</offset>
         <outerColor>0 0 0 1</outerColor>
-        <persistance>0.8</persistance>
         <powerAmount>1</powerAmount>
         <previewTextureSize>256</previewTextureSize>
         <scale>0.25</scale>

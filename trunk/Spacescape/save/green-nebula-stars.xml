@@ -4,7 +4,6 @@
         <destBlendFactor>one</destBlendFactor>
         <ditherAmount>0.01</ditherAmount>
         <gain>0.5</gain>
-        <gpu>false</gpu>
         <innerColor>0.129412 0.494118 0.27451 1</innerColor>
         <lacunarity>2</lacunarity>
         <name>Green Nebula</name>
@@ -12,7 +11,6 @@
         <octaves>12</octaves>
         <offset>1</offset>
         <outerColor>0 0 0 1</outerColor>
-        <persistance>0.5</persistance>
         <powerAmount>1</powerAmount>
         <previewTextureSize>1024</previewTextureSize>
         <scale>1</scale>
@@ -132,7 +130,6 @@
         <destBlendFactor>one</destBlendFactor>
         <ditherAmount>0.01</ditherAmount>
         <gain>0.7</gain>
-        <gpu>false</gpu>
         <innerColor>0.309804 0.309804 0.14902 1</innerColor>
         <lacunarity>2</lacunarity>
         <name>Green Nebula</name>
@@ -140,7 +137,6 @@
         <octaves>10</octaves>
         <offset>1</offset>
         <outerColor>0 0 0 1</outerColor>
-        <persistance>0.7</persistance>
         <powerAmount>0.5</powerAmount>
         <previewTextureSize>1024</previewTextureSize>
         <scale>1</scale>
@@ -153,7 +149,6 @@
         <destBlendFactor>one_minus_src_alpha</destBlendFactor>
         <ditherAmount>0.03</ditherAmount>
         <gain>0.8</gain>
-        <gpu>false</gpu>
         <innerColor>0 0 0 1</innerColor>
         <lacunarity>2.5</lacunarity>
         <name>Nebula Black Mask</name>
@@ -161,7 +156,6 @@
         <octaves>8</octaves>
         <offset>0.975</offset>
         <outerColor>0 0 0 1</outerColor>
-        <persistance>0.8</persistance>
         <powerAmount>0.5</powerAmount>
         <previewTextureSize>1024</previewTextureSize>
         <scale>4</scale>

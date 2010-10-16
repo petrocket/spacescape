@@ -27,7 +27,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#include "..\include\SpacescapeLayerBillboards.h"
+#include "SpacescapeLayerBillboards.h"
 #include "OgreRoot.h"
 #include "OgreBillboard.h"
 #include "OgreMaterialManager.h"
@@ -60,7 +60,7 @@ namespace Ogre
         mSourceBlendFactor(SBF_ONE)
     {
         mMaterial.setNull();
-        mTextureName = "";
+        mTextureName = "default.png";
     }
 
     /** Destructor

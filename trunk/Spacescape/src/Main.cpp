@@ -27,11 +27,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#include <QtGui/QApplication>
+#include <QApplication>
 #include "QtSpacescapeMainWindow.h"
 
-int main(int argc, char *argv[])
-{
+#ifdef WIN32
+#ifdef _DEBUG
+int main(int argc, char *argv[]) {
+#else
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nShowCmd) {
+	int argc = 0;
+	char** argv = 0;
+#endif
+
+#else
+int main(int argc, char *argv[]) {
+#endif
+
     QApplication app(argc, argv);
     QtSpacescapeMainWindow w;
     w.show();

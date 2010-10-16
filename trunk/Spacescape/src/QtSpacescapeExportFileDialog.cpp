@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include <QGridLayout>
 #include <QFileDialog>
 #include <QLabel>
-#include <QCheckbox>
+#include <QCheckBox>
 
 struct QFileDialogArgs
 {

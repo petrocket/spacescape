@@ -232,11 +232,11 @@ public:
         AboutDialog->setWindowTitle(QApplication::translate("AboutDialog", "About Spacescape", 0, QApplication::UnicodeUTF8));
         logo->setText(QString());
         versionLabel->setText(QApplication::translate("AboutDialog", "Version", 0, QApplication::UnicodeUTF8));
-        version->setText(QApplication::translate("AboutDialog", "0.2", 0, QApplication::UnicodeUTF8));
+        version->setText(QApplication::translate("AboutDialog", "0.3", 0, QApplication::UnicodeUTF8));
         aboutTitle->setText(QApplication::translate("AboutDialog", "Spacescape", 0, QApplication::UnicodeUTF8));
         author->setText(QApplication::translate("AboutDialog", "by Alex Peterson", 0, QApplication::UnicodeUTF8));
         releaseDateLabel->setText(QApplication::translate("AboutDialog", "Release Date", 0, QApplication::UnicodeUTF8));
-        releaseDate->setText(QApplication::translate("AboutDialog", "3/13/2010", 0, QApplication::UnicodeUTF8));
+        releaseDate->setText(QApplication::translate("AboutDialog", "10/12/2010", 0, QApplication::UnicodeUTF8));
         authorUrlLabel->setText(QApplication::translate("AboutDialog", "Developer Website:", 0, QApplication::UnicodeUTF8));
         authorUrl->setText(QApplication::translate("AboutDialog", "http://alexcpeterson.com/spacescape", 0, QApplication::UnicodeUTF8));
         blogUrlLabel->setText(QApplication::translate("AboutDialog", "Blog:", 0, QApplication::UnicodeUTF8));

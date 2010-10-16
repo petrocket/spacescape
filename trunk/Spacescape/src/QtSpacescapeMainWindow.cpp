@@ -36,6 +36,7 @@ THE SOFTWARE.
 #include <QProgressDialog>
 #include "QtSpacescapeExportFileDialog.h"
 #include "QtSpacescapeAboutDialog.h"
+#include <QSettings>
 
 /** Constructor
 @param parent
@@ -44,11 +45,19 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QtSpacescapeUI),
     mFilename(""),
-    mLastExportDir(""),
-    mLastOpenDir(""),
-    mLastSaveDir(""),
     mRefreshing(false)
 {
+	QCoreApplication::setOrganizationName("Spacescape");
+	QCoreApplication::setOrganizationDomain("alexcpeterson.com");
+	QCoreApplication::setApplicationName("Spacescape");
+
+	// we store last settings used in registry/settings
+	QSettings settings;
+
+    mLastExportDir = settings.value("LastExportDir","../../../export/").toString();
+	mLastOpenDir = settings.value("LastOpenDir","../../../save/").toString();
+	mLastSaveDir = settings.value("LastSaveDir","../../../save/").toString();
+
     // setup the ui
     ui->setupUi(this);
 
@@ -104,8 +113,8 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     mPropertyTitles["maskScale"] = QString("Mask Noise Scale");
     mPropertyTitles["maskSeed"] = QString("Mask Random Seed");
     mPropertyTitles["maskThreshold"] = QString("Mask Threshold");
-    mPropertyTitles["maxSize"] = QString("Max Billboard Size");
-    mPropertyTitles["minSize"] = QString("Min Billboard Size");
+    mPropertyTitles["maxSize"] = QString("Near Billboard Size");
+    mPropertyTitles["minSize"] = QString("Far Billboard Size");
     mPropertyTitles["name"] = QString("Layer Name");
     mPropertyTitles["nearColor"] = QString("Near Color");
     mPropertyTitles["noiseType"] = QString("Noise Type");
@@ -162,7 +171,7 @@ QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& ke
         << "one_minus_dest_colour" << "one_minus_src_colour" 
         << "dest_alpha" << "src_alpha" << "one_minus_dest_alpha" 
         << "one_minus_src_alpha";
-    textureSizes << "64" << "128" << "256" << "512" << "1024" << "2048" << "4096" << "8192";
+    textureSizes << "256" << "512" << "1024" << "2048" << "4096";
 
     int propertyType = getPropertyType(key);
     QtVariantProperty* property;
@@ -209,7 +218,7 @@ QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& ke
         property->setValue(valueIndex);
     }
     else if(propertyType == QVariant::Double) {
-        property->setValue(Ogre::StringConverter::parseReal(value));
+		property->setValue(Ogre::StringConverter::parseReal(value));
         property->setAttribute(QLatin1String("singleStep"), 0.01);
         property->setAttribute(QLatin1String("decimals"), 3);
     }
@@ -286,9 +295,10 @@ QColor QtSpacescapeMainWindow::getColor(const Ogre::String& color)
 /** Utility function to convert an ogre color to a string
 @param color String color with values between 0 and 255
 */
+#include <string>
 Ogre::ColourValue QtSpacescapeMainWindow::getColor(const QString& color)
 {
-    std::vector<Ogre::String> vec = Ogre::StringUtil::split(color.toStdString());
+	Ogre::StringVector vec = Ogre::StringUtil::split(color.toStdString());
     double scale = 1.0 / 255.0;
 
     return Ogre::ColourValue(
@@ -365,7 +375,9 @@ QLatin1String QtSpacescapeMainWindow::getPropertyStatusTip(const Ogre::String& p
         return QLatin1String("Show or hide this layer.");
     }
     else {
-        return QLatin1String("");
+		// made this a space because if you just return "" then the value
+		// does not get updated because the default value is ""
+        return QLatin1String(" ");
     }
 }
 
@@ -610,6 +622,11 @@ void QtSpacescapeMainWindow::onExport()
         
         mLastExportDir = fi.absolutePath();
 
+		// save the last export dir in the registry
+		QSettings settings;
+		settings.setValue("LastExportDir",mLastExportDir);
+
+
         ui->statusBar->showMessage("Exporting skybox " + filename);
 
         // ogre can't export dds files doh!
@@ -751,6 +768,11 @@ void QtSpacescapeMainWindow::onOpen()
         mLastOpenDir = fi.absolutePath();
         mLastSaveDir = mLastOpenDir;
 
+		// save in the registry
+		QSettings settings;
+		settings.setValue("LastOpenDir",mLastOpenDir);
+		settings.setValue("LastSaveDir",mLastSaveDir);
+
         ui->statusBar->showMessage("Opening " + filename + " ...");
 
         // open the progress dialog
@@ -797,6 +819,10 @@ void QtSpacescapeMainWindow::onSave()
             QFileInfo fi(mFilename);
             mLastSaveDir = fi.absolutePath();
 
+			// save the last save dir in the registry
+			QSettings settings;
+			settings.setValue("LastSaveDir",mLastSaveDir);
+
             ui->statusBar->showMessage("Saving " + mFilename);
 
             // save this file!
@@ -831,6 +857,10 @@ void QtSpacescapeMainWindow::onSaveAs()
         else {
             QFileInfo fi(mFilename);
             mLastSaveDir = fi.absolutePath();
+
+			// save the last save dir in the registry
+			QSettings settings;
+			settings.setValue("LastSaveDir",mLastSaveDir);
 
             // save this file!
             if(ui->ogreWindow->save(mFilename)) {

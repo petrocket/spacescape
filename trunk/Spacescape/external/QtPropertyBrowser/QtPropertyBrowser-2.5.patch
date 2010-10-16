@@ -1,0 +1,56 @@
+--- qtpropertybrowser-2.5-opensource/src/qteditorfactory.cpp	Wed Dec 16 11:42:56 2009
++++ qtpropertybrowser-2.5-opensource/src/qteditorfactory.cpp	Sat Mar 13 21:55:32 2010
+@@ -2150,6 +2150,8 @@
+ 
+ private Q_SLOTS:
+     void buttonClicked();
++    void colorSelected(const QColor &value);
++    void currentColorChanged(const QColor &value);
+ 
+ Q_SIGNALS:
+     void valueChanged(const QColor &value);
+@@ -2195,15 +2197,39 @@
+     }
+ }
+ 
++void QtColorEditWidget::colorSelected(const QColor &value)
++{
++    setValue(QColor(0,0,100));
++    if(value.isValid() && value != m_color) {
++        setValue(value);
++        emit valueChanged(m_color);
++    }
++}
++
++void QtColorEditWidget::currentColorChanged(const QColor &value)
++{
++    setValue(QColor(0,100,0));
++    
++    if(value.isValid() && value != m_color) {
++        setValue(value);
++        emit valueChanged(m_color);
++    }
++}
++
+ void QtColorEditWidget::buttonClicked()
+ {
+-    bool ok = false;
+-    QRgb oldRgba = m_color.rgba();
+-    QRgb newRgba = QColorDialog::getRgba(oldRgba, &ok, this);
+-    if (ok && newRgba != oldRgba) {
+-        setValue(QColor::fromRgba(newRgba));
++    QColor oldColor = m_color;
++    QColorDialog *q = new QColorDialog(m_color, this);
++    
++    connect(q, SIGNAL(currentColorChanged(QColor)), this, SLOT(currentColorChanged(QColor)));
++    connect(q, SIGNAL(colorSelected(QColor)), this, SLOT(colorSelected(QColor)));
++    q->exec();
++
++    if(!q->selectedColor().isValid() && q->selectedColor() != m_color) {
++        setValue(oldColor);
+         emit valueChanged(m_color);
+     }
++    delete q;
+ }
+ 
+ bool QtColorEditWidget::eventFilter(QObject *obj, QEvent *ev)

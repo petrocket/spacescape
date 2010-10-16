@@ -8,5 +8,6 @@
         <file>images/bullet_arrow_down.png</file>
         <file>images/bullet_arrow_up.png</file>
         <file>images/spacescape-logo.png</file>
+	<file>images/spacescape-logo.ico</file>
     </qresource>
 </RCC>

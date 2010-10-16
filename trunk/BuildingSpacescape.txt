@@ -1,0 +1,22 @@
+Spacescape uses CMake as its build system on all supported platforms.
+
+CMake is a cross-platform build system/configurator availabe from http://www.cmake.org
+You need a CMake version >=2.8
+
+Create a build directory for Spacescape somewhere outside Spacescape's sources.  This is
+the directory where CMake will create the build system for your chosen platform and
+compiler.
+
+Run the cmake-gui program and in the field 'Where is the source code' enter the path to 
+the Spacescape source directory (the directory which contains this file).  In the field 
+'Where to build the binaries' enter the path to the build directory you created.
+
+Hit 'Configure' and select a platform and compiler, then click 'Finish'.
+
+At this point you can change build option settings or fix errors for required libraries 
+that have not been found. After you make any changes hit 'Configure' again.
+
+When you are happy with the settings hit 'Generate' and CMake will create the build 
+system for you. 
+
+Go to your chosen build directory and open the solution/project file and compile away!

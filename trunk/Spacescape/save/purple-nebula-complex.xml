@@ -4,7 +4,6 @@
         <destBlendFactor>one</destBlendFactor>
         <ditherAmount>0.03</ditherAmount>
         <gain>0.5</gain>
-        <gpu>false</gpu>
         <innerColor>1 0 0.6 1</innerColor>
         <lacunarity>2</lacunarity>
         <name>Pink Purple Nebula</name>
@@ -12,7 +11,6 @@
         <octaves>8</octaves>
         <offset>1</offset>
         <outerColor>0.00392157 0.309804 0.356863 1</outerColor>
-        <persistance>0.5</persistance>
         <powerAmount>1</powerAmount>
         <previewTextureSize>256</previewTextureSize>
         <scale>1</scale>
@@ -46,7 +44,6 @@
         <destBlendFactor>src_alpha</destBlendFactor>
         <ditherAmount>0.03</ditherAmount>
         <gain>0.5</gain>
-        <gpu>false</gpu>
         <innerColor>0 0 0 1</innerColor>
         <lacunarity>2</lacunarity>
         <name>Black Smooth Nebula Mask</name>
@@ -54,7 +51,6 @@
         <octaves>7</octaves>
         <offset>1</offset>
         <outerColor>0 0 0 1</outerColor>
-        <persistance>0.5</persistance>
         <powerAmount>1</powerAmount>
         <previewTextureSize>256</previewTextureSize>
         <scale>1</scale>
@@ -109,7 +105,6 @@
         <destBlendFactor>one_minus_src_alpha</destBlendFactor>
         <ditherAmount>0.01</ditherAmount>
         <gain>0.7</gain>
-        <gpu>false</gpu>
         <innerColor>0 0 0 1</innerColor>
         <lacunarity>2</lacunarity>
         <name>Black Ridged Nebula Mask</name>
@@ -117,7 +112,6 @@
         <octaves>10</octaves>
         <offset>1</offset>
         <outerColor>0 0 0 1</outerColor>
-        <persistance>0.7</persistance>
         <powerAmount>1.25</powerAmount>
         <previewTextureSize>1024</previewTextureSize>
         <scale>1</scale>
@@ -130,7 +124,6 @@
         <destBlendFactor>one</destBlendFactor>
         <ditherAmount>0.03</ditherAmount>
         <gain>0.6</gain>
-        <gpu>false</gpu>
         <innerColor>0 0.054902 0.133333 1</innerColor>
         <lacunarity>2.2</lacunarity>
         <name>Blue Nebula</name>
@@ -138,7 +131,6 @@
         <octaves>10</octaves>
         <offset>1</offset>
         <outerColor>0 0 0 1</outerColor>
-        <persistance>0.6</persistance>
         <powerAmount>1</powerAmount>
         <previewTextureSize>1024</previewTextureSize>
         <scale>0.5</scale>
@@ -325,7 +317,6 @@
         <destBlendFactor>one</destBlendFactor>
         <ditherAmount>0.03</ditherAmount>
         <gain>0.7</gain>
-        <gpu>false</gpu>
         <innerColor>0.247059 0.352941 0.639216 1</innerColor>
         <lacunarity>2.2</lacunarity>
         <name>Blue Inner Nebula</name>
@@ -333,7 +324,6 @@
         <octaves>7</octaves>
         <offset>1</offset>
         <outerColor>0 0 0 1</outerColor>
-        <persistance>0.7</persistance>
         <powerAmount>0.3</powerAmount>
         <previewTextureSize>1024</previewTextureSize>
         <scale>0.5</scale>
@@ -346,7 +336,6 @@
         <destBlendFactor>one</destBlendFactor>
         <ditherAmount>0.03</ditherAmount>
         <gain>0.71</gain>
-        <gpu>false</gpu>
         <innerColor>0 1 0.917647 1</innerColor>
         <lacunarity>2.22</lacunarity>
         <name>Light Blue Nebula</name>
@@ -354,7 +343,6 @@
         <octaves>7</octaves>
         <offset>1</offset>
         <outerColor>0 0 0 1</outerColor>
-        <persistance>0.71</persistance>
         <powerAmount>0.3</powerAmount>
         <previewTextureSize>1024</previewTextureSize>
         <scale>0.5</scale>
@@ -367,7 +355,6 @@
         <destBlendFactor>one</destBlendFactor>
         <ditherAmount>0.03</ditherAmount>
         <gain>0.71</gain>
-        <gpu>false</gpu>
         <innerColor>0.337255 0.109804 0.180392 1</innerColor>
         <lacunarity>3</lacunarity>
         <name>Pink Scattered nebula</name>
@@ -375,7 +362,6 @@
         <octaves>7</octaves>
         <offset>1</offset>
         <outerColor>0 0 0 1</outerColor>
-        <persistance>0.71</persistance>
         <powerAmount>0.3</powerAmount>
         <previewTextureSize>1024</previewTextureSize>
         <scale>0.5</scale>

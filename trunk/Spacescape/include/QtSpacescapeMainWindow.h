@@ -189,7 +189,7 @@ private:
     /** Utiltiy function for retrieving the selected layer id
     @return int The id of the selected layer or -1
     */
-    int QtSpacescapeMainWindow::getSelectedLayerId();
+    int getSelectedLayerId();
 
     /** Utility function for creating and inserting layer properties
     @param layer Spacescape layer

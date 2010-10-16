@@ -27,7 +27,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-#include "..\include\SpacescapeLayerNoise.h"
+#include "SpacescapeLayerNoise.h"
 #include "OgreMaterialManager.h"
 #include "OgreMaterial.h"
 #include "OgreTechnique.h"
@@ -527,7 +527,7 @@ namespace Ogre
         TexturePtr t = mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->_getTexturePtr();
         if(t->getWidth() != mPreviewTextureSize) {
             // remove the old texture
-            TextureManager::getSingleton().remove(t->getHandle());
+			TextureManager::getSingleton().remove(t->getHandle());
 
             // create the texture for the cube face
             t = TextureManager::getSingleton().createManual(
@@ -536,7 +536,7 @@ namespace Ogre
                 TEX_TYPE_CUBE_MAP,
                 mPreviewTextureSize, mPreviewTextureSize,
                 1,
-                SpacescapePlugin::_log2(mPreviewTextureSize),
+                0,// Creating mipmaps on a cubic RTT texture crashes some ATI cards so don't do it!
                 PF_BYTE_RGBA,
                 TU_RENDERTARGET
             );
@@ -546,6 +546,7 @@ namespace Ogre
             mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureAddressingMode(TextureUnitState::TAM_CLAMP);
             mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(TFO_TRILINEAR);
             mMaterial->load();
+
         }
 
         // render the gpu noise to our cubic texture

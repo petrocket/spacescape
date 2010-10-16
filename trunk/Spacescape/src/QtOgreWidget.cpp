@@ -79,11 +79,12 @@ void QtOgreWidget::configure(void) {
 #endif
 	if (!mOgreRoot->restoreConfig()) {
 		// setup a renderer
-		Ogre::RenderSystemList *renderers = mOgreRoot->getAvailableRenderers();
-		assert(!renderers->empty()); // we need at least one renderer to do anything useful
+		Ogre::RenderSystemList renderers = mOgreRoot->getAvailableRenderers();
+		assert(!renderers.empty()); // we need at least one renderer to do anything useful
 		
 		//Ogre::RenderSystem *renderSystem = chooseRenderer(renderers);
-		Ogre::RenderSystem *renderSystem = *renderers->begin();
+		// TODO: does this work right?
+		Ogre::RenderSystem *renderSystem = *renderers.begin();
 		assert(renderSystem); // user might pass back a null renderer, which would be bad!
 		
 		mOgreRoot->setRenderSystem(renderSystem);
@@ -112,15 +113,16 @@ void QtOgreWidget::createRenderWindow(void) {
 #else
     QX11Info info = x11Info();
 	Ogre::String winHandle;
-	winHandle  = Ogre::StringConverter::toString(reinterpret_cast<unsigned long>(info.display()));
+	winHandle  = Ogre::StringConverter::toString((unsigned long)(info.display()));
 	winHandle += ":";
-	winHandle += Ogre::StringConverter::toString(static_cast<unsigned int>(info.screen()));
+	winHandle += Ogre::StringConverter::toString((unsigned int)(info.screen()));
 	winHandle += ":";
-	winHandle += Ogre::StringConverter::toString(reinterpret_cast<unsigned long>(parentWidget()->winId()));
+	winHandle += Ogre::StringConverter::toString((unsigned long)(this->parentWidget()->winId()));
 	params["parentWindowHandle"] = winHandle;
+
 #endif
-	mRenderWindow = mOgreRoot->createRenderWindow("View" + Ogre::StringConverter::toString(reinterpret_cast<unsigned long>(this)),
-													width(), height(), false, &params);
+	mRenderWindow = mOgreRoot->createRenderWindow("View" + Ogre::StringConverter::toString((unsigned long) this),
+			width(), height(), false, &params);
 	
 #if defined(Q_WS_MAC)
 	// store context for hack

@@ -39,7 +39,7 @@ THE SOFTWARE.
 #include "OgreRenderTexture.h"
 #include "OgreSceneNode.h"
 #include <iostream>
-#include <ticpp.h>
+#include "ticpp.h"
 
 namespace Ogre 
 {
@@ -574,7 +574,8 @@ namespace Ogre
             ticpp::Element *n = config.InsertEndChild(elem)->ToElement();
             for(unsigned int i = 0; i < mLayers.size(); i++) {
                 // create the layer node
-                ticpp::Element *layerNode = n->InsertEndChild(ticpp::Element("layer"))->ToElement();
+				ticpp::Element temp_element = ticpp::Element("layer");
+                ticpp::Element *layerNode = n->InsertEndChild(temp_element)->ToElement();
 
                 // create all the layer data nodes
                 NameValuePairList pl = mLayers[i]->getParams();
