@@ -28,6 +28,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 #include "QtOgreWidget.h"
+#include <QApplication>
 #if defined(Q_WS_MAC)
 #include <Carbon/Carbon.h>
 #include <Ogre/OgreOSXContext.h>
@@ -60,6 +61,20 @@ void QtOgreWidget::configure(void) {
 	if (mOgreRoot)
 		return;
 	
+#ifdef WIN32
+	// set the current working directory to the path where the
+	// executable resides
+	QString path = QApplication::applicationDirPath();
+
+	if(!path.contains("app/win",Qt::CaseInsensitive)) {
+		path += "/app/win/release";
+	}
+
+	//MessageBox(NULL, path.toStdString().c_str(), "App Path", MB_OK);
+
+	SetCurrentDirectory(path.toStdString().c_str());
+#endif
+
 #if defined(Q_WS_X11)
         mOgreRoot = new Ogre::Root("plugins.cfg", "app.cfg", "app.log");
 #else

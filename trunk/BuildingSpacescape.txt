@@ -20,3 +20,6 @@ When you are happy with the settings hit 'Generate' and CMake will create the bu
 system for you. 
 
 Go to your chosen build directory and open the solution/project file and compile away!
+
+***IMPORTANT***
+The output of the build will NOT be in the build directory, it will be in the source directory.

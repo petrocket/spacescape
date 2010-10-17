@@ -42,9 +42,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nSho
 #else
 int main(int argc, char *argv[]) {
 #endif
-
     QApplication app(argc, argv);
     QtSpacescapeMainWindow w;
     w.show();
+
     return app.exec();
 }
