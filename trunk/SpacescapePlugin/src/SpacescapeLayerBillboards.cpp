@@ -185,7 +185,7 @@ namespace Ogre
             maskSize, maskSize, 
             1,
             0, // no mip maps
-            PF_BYTE_RGBA,
+            mFBOPixelFormat,
             TU_RENDERTARGET
         );
 
@@ -213,7 +213,7 @@ namespace Ogre
         for(int i = 0 ; i < 6; ++i) {
             faceBuffers[i] = OGRE_ALLOC_T( uchar, maskSize * maskSize * 4, MEMCATEGORY_GENERAL);
             t->getBuffer(i)->blitToMemory(
-                PixelBox(t->getWidth(), t->getHeight(), 1, PF_BYTE_RGBA, faceBuffers[i])
+                PixelBox(t->getWidth(), t->getHeight(), 1, t->getFormat(), faceBuffers[i])
             );
         }
 

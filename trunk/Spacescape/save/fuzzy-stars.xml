@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<spacescapelayers>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0.03</ditherAmount>
+        <gain>1.5</gain>
+        <innerColor>0.0862745 0.443137 0.909804 1</innerColor>
+        <lacunarity>2</lacunarity>
+        <name>Fuzzy Blue Stars</name>
+        <noiseType>ridged</noiseType>
+        <octaves>8</octaves>
+        <offset>0.94</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <powerAmount>1</powerAmount>
+        <previewTextureSize>512</previewTextureSize>
+        <scale>10</scale>
+        <seed>4</seed>
+        <shelfAmount>0.78</shelfAmount>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+    <layer>
+        <destBlendFactor>one</destBlendFactor>
+        <ditherAmount>0.03</ditherAmount>
+        <gain>1.5</gain>
+        <innerColor>1 1 1 1</innerColor>
+        <lacunarity>2</lacunarity>
+        <name>Fuzzy White Star Overlay</name>
+        <noiseType>ridged</noiseType>
+        <octaves>8</octaves>
+        <offset>0.94</offset>
+        <outerColor>0 0 0 1</outerColor>
+        <powerAmount>1</powerAmount>
+        <previewTextureSize>512</previewTextureSize>
+        <scale>10</scale>
+        <seed>4</seed>
+        <shelfAmount>0.81</shelfAmount>
+        <sourceBlendFactor>one</sourceBlendFactor>
+        <type>noise</type>
+    </layer>
+</spacescapelayers>

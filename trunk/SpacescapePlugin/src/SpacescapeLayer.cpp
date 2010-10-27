@@ -36,6 +36,8 @@ THE SOFTWARE.
 #include "OgreHardwarePixelBuffer.h"
 #include "OgreBlendMode.h"
 #include "OgreSceneNode.h"
+#include "OgreRoot.h"
+#include "OgreRenderSystemCapabilities.h"
 
 namespace Ogre
 {
@@ -62,6 +64,16 @@ namespace Ogre
 
         // create our noise material
         mNoiseMaterial = OGRE_NEW_T(SpacescapeNoiseMaterial,MEMCATEGORY_GENERAL);
+
+		// get the right FBO pixel format to use
+		PixelFormat validPixelFormats[] = {PF_BYTE_BGRA, PF_BYTE_RGBA};
+		for(int i = 0; i < 2; ++i) {
+			if(TextureManager::getSingletonPtr()->isEquivalentFormatSupported(
+				TEX_TYPE_3D, validPixelFormats[i],TU_RENDERTARGET)) {
+				mFBOPixelFormat = validPixelFormats[i];
+				break;
+			}
+		}
     }
 
     /* Destructor

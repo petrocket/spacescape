@@ -305,7 +305,7 @@ namespace Ogre
                 // not sure if we need mip maps on this cube face? 
                 // enabling mipmaps causes image corruption on some ATI cards x1950 Pro
                 0,//SpacescapePlugin::_log2(mPreviewTextureSize),
-                PF_BYTE_RGBA,
+                mFBOPixelFormat,
                 TU_RENDERTARGET
             );
 
@@ -537,7 +537,7 @@ namespace Ogre
                 mPreviewTextureSize, mPreviewTextureSize,
                 1,
                 0,// Creating mipmaps on a cubic RTT texture crashes some ATI cards so don't do it!
-                PF_BYTE_RGBA,
+                mFBOPixelFormat,
                 TU_RENDERTARGET
             );
 

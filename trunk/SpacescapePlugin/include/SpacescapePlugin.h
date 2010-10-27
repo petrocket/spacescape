@@ -73,6 +73,12 @@ namespace Ogre
         */
         void addProgressListener(SpacescapeProgressListener* listener);
 
+		/** Check if this hardware rendering device is capable of running spacescape
+		@param errors Return param
+		@return true if supported
+		*/
+		bool checkDeviceSupported(std::string &errors);
+
         /** Clear all layers
         @return true on success
         */

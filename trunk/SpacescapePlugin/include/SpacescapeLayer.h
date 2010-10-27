@@ -265,6 +265,9 @@ namespace Ogre
         // perlin noise permutations
         unsigned char mPermutations[512];
 
+		// the pixel format to use for FBO
+		PixelFormat mFBOPixelFormat;
+
         // plugin owner
         SpacescapePlugin* mPlugin;
 

@@ -133,6 +133,62 @@ namespace Ogre
         mProgressListeners.push_back(listener);
     }
 
+	/** Check if this hardware rendering device is capable of running spacescape
+	@param errors Return param
+	@return true if supported
+	*/
+	bool checkDeviceSupported(std::string &errors)
+	{
+		bool supported = true;
+
+		// make sure we have a render system
+		if(!Root->getSingletonPtr()->getRenderSystem()) {
+			errors = "No render system available";
+			return false;
+		}
+
+		const RenderSystemCapabilities* caps = Root::getSingletonPtr()->getRenderSystem()->getCapabilities();
+
+		// we need:
+		// - render to texture
+		if(!caps->hasCapability(Capabilities::RSC_HWRENDER_TO_TEXTURE)) {
+			supported = false;
+			errors << "No hardware render to texture support.";
+		}
+
+		// - cubic texture support
+		if(!caps->hasCapability(Capabilities::RSC_TEXTURE_3D)) {
+			supported = false;
+			errors << "No cubic texture support.";
+		}
+
+		// - valid rtt pixel formats
+		PixelFormat validPixelFormats[] = {PF_BYTE_BGRA, PF_BYTE_RGBA};
+		PixelFormat supportedFormat = 0;
+		for(int i = 0; i < 2; ++i) {
+			if(TextureManager::getSingletonPtr()->isEquivalentFormatSupported(
+				TEX_TYPE_3D, validPixelFormats[i],TU_RENDERTARGET)) {
+				supportedFormat = validPixelFormats[i];
+				break;
+			}
+		}
+		if(!supportedFormat) {
+			supported = false;
+			errors << "No valid render to texture pixel format.";
+		}
+
+		// - support for our vertex and frag shader profiles
+		if(!caps->isShaderProfileSupported("vs_1_1")) {
+			supported = false;
+			errors << "No vertex shader profile vs_1_1 support.";
+		}
+		if(!caps->isShaderProfileSupported("vs_1_1")) {
+			supported = false;
+			errors << "No vertex shader profile vs_1_1 support.";
+		}
+
+	}
+
     /** Clear all layers
     @return true on success
     */
@@ -766,7 +822,7 @@ namespace Ogre
                 size, size,
                 1,
                 numMips,
-                PF_BYTE_RGB,
+                PF_BYTE_RGB, // FIX THIS? OK?
                 TU_RENDERTARGET
             );
         }

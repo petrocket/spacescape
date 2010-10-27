@@ -131,7 +131,7 @@ namespace Ogre
             maskSize, maskSize, 
             1,
             0, // no mip maps
-            PF_BYTE_RGBA,
+            mFBOPixelFormat,
             TU_RENDERTARGET
         );
 

@@ -42,7 +42,6 @@ namespace Ogre
 
         // Register with plugin manager
         Root::getSingleton().installPlugin(spacescapePlugin);
-
     }
     extern "C" void _SpacescapePluginExport dllStopPlugin( void )
     {
