@@ -1,0 +1,539 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 34;
+	objects = {
+		D7BA7D76DAB5DD13389D6332 = {
+			buildActionMask = 2147483647;
+			files = (
+				);
+			generatedFileNames = (
+				);
+			isa = PBXShellScriptBuildPhase;
+			name = "Qt Qmake";
+			neededFileNames = (
+				);
+			shellPath = "/bin/sh";
+			shellScript = "make\ -C\ /Users/alex/Documents/spacescape-git/trunk/Spacescape/external/QtPropertyBrowser\ -f\ \'QtSolutions_PropertyBrowser-2.5_debug.pbproj/qt_makeqmake.mak\'";
+		};
+		9A0C959A6164468987F14BBB = {
+			isa = PBXFileReference;
+			name = "qtpropertybrowser.cpp";
+			path = "src/qtpropertybrowser.cpp";
+			refType = 4;
+		};
+		9B0B0DAFF4DB7AB2220BE54B = {
+			fileRef = "9A0C959A6164468987F14BBB";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		69A142E0810368356A9B5545 = {
+			isa = PBXFileReference;
+			name = "qtpropertymanager.cpp";
+			path = "src/qtpropertymanager.cpp";
+			refType = 4;
+		};
+		8D83BF2625286E93C7D552E1 = {
+			fileRef = "69A142E0810368356A9B5545";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		741B7D26A2B47EFD30C71DFF = {
+			isa = PBXFileReference;
+			name = "qteditorfactory.cpp";
+			path = "src/qteditorfactory.cpp";
+			refType = 4;
+		};
+		CCBA9DFB7765B133ED1ED83B = {
+			fileRef = "741B7D26A2B47EFD30C71DFF";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		ECBAC8BE131ED05808D5DBCF = {
+			isa = PBXFileReference;
+			name = "qtvariantproperty.cpp";
+			path = "src/qtvariantproperty.cpp";
+			refType = 4;
+		};
+		B9EBC7CF551B98847D346B71 = {
+			fileRef = "ECBAC8BE131ED05808D5DBCF";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		2E582C4960829BC5B27946D9 = {
+			isa = PBXFileReference;
+			name = "qttreepropertybrowser.cpp";
+			path = "src/qttreepropertybrowser.cpp";
+			refType = 4;
+		};
+		F747CC437C20CC0F3076172B = {
+			fileRef = "2E582C4960829BC5B27946D9";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		DFBEC091318D891394CD3094 = {
+			isa = PBXFileReference;
+			name = "qtbuttonpropertybrowser.cpp";
+			path = "src/qtbuttonpropertybrowser.cpp";
+			refType = 4;
+		};
+		C5C741F91AE7D582BD8B15A3 = {
+			fileRef = "DFBEC091318D891394CD3094";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		D3DFBA2EB356EAF05941126C = {
+			isa = PBXFileReference;
+			name = "qtgroupboxpropertybrowser.cpp";
+			path = "src/qtgroupboxpropertybrowser.cpp";
+			refType = 4;
+		};
+		9B0D74E6ADDDBD145EA4A77F = {
+			fileRef = "D3DFBA2EB356EAF05941126C";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		FB05711A8BB1609DF144413B = {
+			isa = PBXFileReference;
+			name = "qtpropertybrowserutils.cpp";
+			path = "src/qtpropertybrowserutils.cpp";
+			refType = 4;
+		};
+		E35BD779C20A8EC91863365F = {
+			fileRef = "FB05711A8BB1609DF144413B";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		4B3312ED357EFAB4A3D28A90 = {
+			isa = PBXFileReference;
+			name = "moc_qtpropertybrowserutils_p.cpp";
+			path = "moc_qtpropertybrowserutils_p.cpp";
+			refType = 4;
+		};
+		269253783FF6BA1DABF35A7B = {
+			fileRef = "4B3312ED357EFAB4A3D28A90";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		B53F7940D044FCAEAADE8753 = {
+			isa = PBXFileReference;
+			name = "qrc_qtpropertybrowser.cpp";
+			path = "qrc_qtpropertybrowser.cpp";
+			refType = 4;
+		};
+		A45EBA43B2DE2F6A1C9D33AE = {
+			fileRef = "B53F7940D044FCAEAADE8753";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		8EE9DF46FFBFF01D102FD889 = {
+			isa = PBXFileReference;
+			name = "qtpropertybrowser.h";
+			path = "src/qtpropertybrowser.h";
+			refType = 4;
+		};
+		B8822225E95DD6DBC4BF98F1 = {
+			isa = PBXFileReference;
+			name = "qtpropertymanager.h";
+			path = "src/qtpropertymanager.h";
+			refType = 4;
+		};
+		E79F823D21FCCF1518878D28 = {
+			isa = PBXFileReference;
+			name = "qteditorfactory.h";
+			path = "src/qteditorfactory.h";
+			refType = 4;
+		};
+		73EF0BE2A34F935D26B39BED = {
+			isa = PBXFileReference;
+			name = "qtvariantproperty.h";
+			path = "src/qtvariantproperty.h";
+			refType = 4;
+		};
+		AE8F7CE5EF13926F4646EDE2 = {
+			isa = PBXFileReference;
+			name = "qttreepropertybrowser.h";
+			path = "src/qttreepropertybrowser.h";
+			refType = 4;
+		};
+		89267BEB3A98E199E58ABCC6 = {
+			isa = PBXFileReference;
+			name = "qtbuttonpropertybrowser.h";
+			path = "src/qtbuttonpropertybrowser.h";
+			refType = 4;
+		};
+		246C9779AD420FBC22A01A6A = {
+			isa = PBXFileReference;
+			name = "qtgroupboxpropertybrowser.h";
+			path = "src/qtgroupboxpropertybrowser.h";
+			refType = 4;
+		};
+		E7C19C617674354B8DC17E84 = {
+			isa = PBXFileReference;
+			name = "qtpropertybrowserutils_p.h";
+			path = "src/qtpropertybrowserutils_p.h";
+			refType = 4;
+		};
+		B66A32679B0ED8DD6A4E9BCA = {
+			isa = PBXFileReference;
+			name = "qtpropertybrowser.pro";
+			path = "qtpropertybrowser.pro";
+			refType = 4;
+		};
+		FBC29DBFF5CCA61BCB30446F = {
+			isa = PBXFileReference;
+			name = "qtpropertybrowser.qrc";
+			path = "src/qtpropertybrowser.qrc";
+			refType = 4;
+		};
+		AB7610DBC8B2A95BE9ECDD38 = {
+			fileRef = "FBC29DBFF5CCA61BCB30446F";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		883D7615C4D2DE3FA1218F12 = {
+			isa = PBXGroup;
+			children = (
+				"F4AF6147B42623F6B3284738");
+			name = "Headers";
+			refType = 4;
+		};
+		F4AF6147B42623F6B3284738 = {
+			isa = PBXGroup;
+			children = (
+				"8EE9DF46FFBFF01D102FD889",
+				"B8822225E95DD6DBC4BF98F1",
+				"E79F823D21FCCF1518878D28",
+				"73EF0BE2A34F935D26B39BED",
+				"AE8F7CE5EF13926F4646EDE2",
+				"89267BEB3A98E199E58ABCC6",
+				"246C9779AD420FBC22A01A6A",
+				"E7C19C617674354B8DC17E84");
+			name = "src";
+			refType = 4;
+		};
+		AD9ACC223F7F1D34AE289570 = {
+			isa = PBXGroup;
+			children = (
+				"FBC29DBFF5CCA61BCB30446F");
+			name = "src";
+			refType = 4;
+		};
+		06674E1DE8D3EB6E763DFFDA = {
+			isa = PBXGroup;
+			children = (
+				"9A0C959A6164468987F14BBB",
+				"69A142E0810368356A9B5545",
+				"741B7D26A2B47EFD30C71DFF",
+				"ECBAC8BE131ED05808D5DBCF",
+				"2E582C4960829BC5B27946D9",
+				"DFBEC091318D891394CD3094",
+				"D3DFBA2EB356EAF05941126C",
+				"FB05711A8BB1609DF144413B");
+			name = "src";
+			refType = 4;
+		};
+		FB61758D0F0FDA4BA867C3D5 = {
+			isa = PBXGroup;
+			children = (
+				"06674E1DE8D3EB6E763DFFDA");
+			name = "Sources";
+			refType = 4;
+		};
+		52C235EBF1C9B07808119459 = {
+			isa = PBXGroup;
+			children = (
+				"AD9ACC223F7F1D34AE289570");
+			name = "Sources [RCC]";
+			refType = 4;
+		};
+		7CABE3C80E79AD2B307756D2 = {
+			isa = PBXGroup;
+			children = (
+				"B66A32679B0ED8DD6A4E9BCA");
+			name = "Sources [qmake]";
+			refType = 4;
+		};
+		46E892BBB6BB6952967E0561 = {
+			isa = PBXGroup;
+			children = (
+				"4B3312ED357EFAB4A3D28A90",
+				"B53F7940D044FCAEAADE8753");
+			name = "Temporary Sources";
+			refType = 4;
+		};
+		A0A52A2ADF7A1E2A99738674 = {
+			buildActionMask = 2147483647;
+			files = (
+				);
+			generatedFileNames = (
+				"9B0B0DAFF4DB7AB2220BE54B",
+				"8D83BF2625286E93C7D552E1",
+				"CCBA9DFB7765B133ED1ED83B",
+				"B9EBC7CF551B98847D346B71",
+				"F747CC437C20CC0F3076172B",
+				"C5C741F91AE7D582BD8B15A3",
+				"9B0D74E6ADDDBD145EA4A77F",
+				"E35BD779C20A8EC91863365F",
+				"269253783FF6BA1DABF35A7B",
+				"A45EBA43B2DE2F6A1C9D33AE");
+			isa = PBXShellScriptBuildPhase;
+			name = "Qt Preprocessors";
+			neededFileNames = (
+				"9B0B0DAFF4DB7AB2220BE54B",
+				"8D83BF2625286E93C7D552E1",
+				"CCBA9DFB7765B133ED1ED83B",
+				"B9EBC7CF551B98847D346B71",
+				"F747CC437C20CC0F3076172B",
+				"C5C741F91AE7D582BD8B15A3",
+				"9B0D74E6ADDDBD145EA4A77F",
+				"E35BD779C20A8EC91863365F",
+				"269253783FF6BA1DABF35A7B",
+				"A45EBA43B2DE2F6A1C9D33AE");
+			shellPath = "/bin/sh";
+			shellScript = "make\ -C\ /Users/alex/Documents/spacescape-git/trunk/Spacescape/external/QtPropertyBrowser\ -f\ \'QtSolutions_PropertyBrowser-2.5_debug.pbproj/qt_preprocess.mak\'";
+		};
+		C29B8785722055ED95EF7B57 = {
+			buildActionMask = 2147483647;
+			files = (
+				"9B0B0DAFF4DB7AB2220BE54B",
+				"8D83BF2625286E93C7D552E1",
+				"CCBA9DFB7765B133ED1ED83B",
+				"B9EBC7CF551B98847D346B71",
+				"F747CC437C20CC0F3076172B",
+				"C5C741F91AE7D582BD8B15A3",
+				"9B0D74E6ADDDBD145EA4A77F",
+				"E35BD779C20A8EC91863365F",
+				"269253783FF6BA1DABF35A7B",
+				"A45EBA43B2DE2F6A1C9D33AE");
+			isa = PBXSourcesBuildPhase;
+			name = "Build Sources";
+		};
+		9B36DA7E32F0304E780E7972 = {
+			isa = PBXFrameworkReference;
+			name = "QtGui.framework";
+			path = "/Library/Frameworks/QtGui.framework";
+			refType = 0;
+		};
+		501667F26B3C1FF6767A7C12 = {
+			fileRef = "9B36DA7E32F0304E780E7972";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		7BC2E65A5E699A5E5D834CA2 = {
+			isa = PBXFrameworkReference;
+			name = "QtCore.framework";
+			path = "/Library/Frameworks/QtCore.framework";
+			refType = 0;
+		};
+		069D05B0128AE5DC7EE31738 = {
+			fileRef = "7BC2E65A5E699A5E5D834CA2";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		ED1E82605DD74B483AF3C982 = {
+			children = (
+				"9B36DA7E32F0304E780E7972",
+				"7BC2E65A5E699A5E5D834CA2");
+			isa = PBXGroup;
+			name = "External Frameworks and Libraries";
+			path = "";
+			refType = 4;
+		};
+		2A1043669E6E5A7426EA502A = {
+			buildActionMask = 2147483647;
+			files = (
+				"501667F26B3C1FF6767A7C12",
+				"069D05B0128AE5DC7EE31738");
+			isa = PBXFrameworksBuildPhase;
+			name = "Frameworks & Libraries";
+		};
+		F6069D5A5DA8AA28EDB8B3C6 = {
+			name = "Project Copy";
+			buildActionMask = 2147483647;
+			dstPath = "/Users/alex/Documents/spacescape-git/trunk/Spacescape/external/QtPropertyBrowser/lib";
+			dstSubfolderSpec = 0;
+			files = (
+"07E0DFA73EB56DCB9E28CDD9");
+			isa = PBXCopyFilesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		07E0DFA73EB56DCB9E28CDD9 = {
+			fileRef = "B3B61E51C86FA4DC1ABE3ED5";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		05596AB53D8D521C69802C27 = {
+			children = (
+				"FB61758D0F0FDA4BA867C3D5",
+				"46E892BBB6BB6952967E0561",
+				"883D7615C4D2DE3FA1218F12",
+				"7CABE3C80E79AD2B307756D2",
+				"52C235EBF1C9B07808119459",
+				"ED1E82605DD74B483AF3C982");
+			isa = PBXGroup;
+			name = "QtSolutions_PropertyBrowser-2.5_debug";
+			path = "";
+			refType = 4;
+		};
+		B3B61E51C86FA4DC1ABE3ED5 = {
+			isa = PBXFileReference;
+			explicitFileType = "compiled.mach-o.dylib";
+			path = "libQtSolutions_PropertyBrowser-2.5_debug.dylib";
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		068F80C7519D0528FB08E821 = {
+			children = (
+				"B3B61E51C86FA4DC1ABE3ED5");
+			isa = PBXGroup;
+			name = "Products";
+			refType = 4;
+		};
+		D024814FD1E2E9BF66037764 = {
+			buildPhases = (
+				"D7BA7D76DAB5DD13389D6332",
+				"A0A52A2ADF7A1E2A99738674",
+				"F6069D5A5DA8AA28EDB8B3C6",
+				"C29B8785722055ED95EF7B57",
+				"2A1043669E6E5A7426EA502A");
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"/Library/Frameworks/QtCore.framework/Versions/4/Headers",
+					"/usr/include/QtCore",
+					"/Library/Frameworks/QtGui.framework/Versions/4/Headers",
+					"/usr/include/QtGui",
+					"/usr/include",
+					"src",
+					".",
+					".",
+					"/usr/local/include",
+					"/System/Library/Frameworks/CarbonCore.framework/Headers",
+					"/usr/local/Qt4.7/mkspecs/macx-xcode");
+				LIBRARY_SEARCH_PATHS = (
+					"/Library/Frameworks");
+				OPTIMIZATION_CFLAGS = (
+					);
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED");
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-fPIC",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED");
+				LEXFLAGS = "";
+				YACCFLAGS = "-d";
+				OTHER_REZFLAGS = "";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				PREBINDING = NO;
+				BUILD_ROOT = "/Users/alex/Documents/spacescape-git/trunk/Spacescape/external/QtPropertyBrowser";
+				OTHER_LDFLAGS = (
+						"-headerpad_max_install_names",
+						"-single_module",
+						"-dynamiclib",
+						"-L/Library/Frameworks",
+						"-F/Library/Frameworks");
+				INSTALL_DIR = "/Users/alex/Documents/spacescape-git/trunk/Spacescape/external/QtPropertyBrowser/lib/";
+				INSTALL_PATH = "";
+				DYLIB_CURRENT_VERSION = "1.0.0";
+				DYLIB_COMPATIBILITY_VERSION = "1.0";
+				MACOSX_DEPLOYMENT_TARGET = "10.4";
+				LIBRARY_STYLE = "DYNAMIC";
+				PRODUCT_NAME = "libQtSolutions_PropertyBrowser-2.5_debug";
+			};
+			conditionalBuildSettings = {
+			};
+			dependencies = (
+				);
+			productReference = "B3B61E51C86FA4DC1ABE3ED5";
+			shouldUseHeadermap = 1;
+			name = "libQtSolutions_PropertyBrowser-2.5_debug";
+			productName = "libQtSolutions_PropertyBrowser-2.5_debug";
+			isa = PBXLibraryTarget;
+			startupPath = "<<ProjectDirectory>>";
+			productInstallPath = "lib/";
+		};
+		8D0921A599A626D1569D9498 = {
+			buildRules = (
+				);
+			buildSettings = {
+				COPY_PHASE_STRIP = "NO";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = "YES";
+				GCC_OPTIMIZATION_LEVEL = "0";
+			};
+			isa = "PBXBuildStyle";
+			name = "Development";
+		};
+		4CFAD8B741C7FF5A47E1CF98 = {
+			buildRules = (
+				);
+			buildSettings = {
+				COPY_PHASE_STRIP = "YES";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = "NO";
+			};
+			isa = "PBXBuildStyle";
+			name = "Deployment";
+		};
+		91B15E841AA80083484172DE = {
+			buildStyles = (
+				"8D0921A599A626D1569D9498");
+			hasScannedForEncodings = 1;
+			isa = PBXProject;
+			mainGroup = "05596AB53D8D521C69802C27";
+			projectDirPath = "";
+			targets = (
+				"D024814FD1E2E9BF66037764");
+		};
+	};
+	rootObject = "91B15E841AA80083484172DE";
+}

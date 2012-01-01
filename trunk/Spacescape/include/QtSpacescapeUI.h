@@ -348,7 +348,9 @@ public:
         splitter->addWidget(helpText);
         splitter_2->addWidget(splitter);
         ogreWindow = new QtSpacescapeWidget(splitter_2);
-        ogreWindow->setObjectName(QString::fromUtf8("ogreWindow"));
+        ogreWindow->setAccessibleName(QString::fromUtf8("ogreWindow"));
+
+//        ogreWindow->setObjectName(QString::fromUtf8("ogreWindow"));
 
         QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Expanding);
         sizePolicy3.setHorizontalStretch(100);

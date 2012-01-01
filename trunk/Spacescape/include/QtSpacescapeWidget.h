@@ -30,9 +30,16 @@ THE SOFTWARE.
 #ifndef QtSpacescapeWidget_H
 #define QtSpacescapeWidget_H
 
-#include "QtOgreWidget.h"
+//#if defined(Q_WS_MAC)
+#include "QtOgreWidgetOSX.h"
+//#else
+//#include "QtOgreWidget.h"
+//#endif
 #include "SpacescapePlugin.h"
 #include "SpacescapeLayer.h"
+
+#include <QTimer>
+//using namespace QtOgre;
 
 /** QtSpacescapeWidget is a subclass of QtOgreWidget and it interacts
 with the Spacescape Ogre Plugin and Ogre.
@@ -125,6 +132,10 @@ public:
     @return true on success
     */
     bool updateLayer(unsigned int layerID, const Ogre::NameValuePairList& params);
+    
+public slots:
+    
+    void initRenderWindow();
 
 protected:
     /** Create Ogre scene
@@ -149,7 +160,7 @@ protected:
     /** Handle a paint event (just render again, if needed create render window)
     @param e The event data
     */
-    void paintEvent(QPaintEvent *e);
+    virtual void paintEvent(QPaintEvent *e);
 
     /** Handle a timer event - calls update()
     @param e The event data
@@ -194,6 +205,8 @@ protected:
 	static const float mRADIUS;
 
 private:
+    QTimer *mTimer;
+    
     /** Utility function for getting a pointer to 
     the Spacescape Ogre plugin
     @return the spacescape plugin or NULL

@@ -38,6 +38,8 @@ THE SOFTWARE.
 #include "QtSpacescapeAboutDialog.h"
 #include <QSettings>
 
+#include "OGRE/Ogre.h"
+
 /** Constructor
 @param parent
 */
@@ -47,6 +49,8 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     mFilename(""),
     mRefreshing(false)
 {
+    setAttribute(Qt::WA_NativeWindow);
+    
 	QCoreApplication::setOrganizationName("Spacescape");
 	QCoreApplication::setOrganizationDomain("alexcpeterson.com");
 	QCoreApplication::setApplicationName("Spacescape");
@@ -926,7 +930,7 @@ void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QVariant &
     int layerId = -1;
 
     // find the layer that contains this property
-    for(topLevelIndex; topLevelIndex < l.size(); topLevelIndex++) {
+    for(; topLevelIndex < l.size(); topLevelIndex++) {
         if(l[topLevelIndex] == property) {
             layerId = l.size() - 1 - topLevelIndex;
             break;

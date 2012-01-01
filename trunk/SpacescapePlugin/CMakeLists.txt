@@ -52,9 +52,22 @@ IF(WIN32)
 	target_link_libraries(SpacescapePlugin debug ${OGRE_LIBRARY_DBG} optimized ${OGRE_LIBRARY_REL})
 
 	ADD_CUSTOM_COMMAND(TARGET SpacescapePlugin POST_BUILD COMMAND copy "\"$(TargetPath)\"" "\"${CMAKE_SOURCE_DIR}\\Spacescape\\app\\win\\$(OutDir)\\\"" COMMENT "Copying Spacescape_Plugin dll to Spacescape app directory")
+ELSEIF(APPLE)
+	TARGET_LINK_LIBRARIES(SpacescapePlugin "${OGRE_LIBRARIES}")
+
+    # Add the path where the Ogre framework was found
+    if(NOT ${OGRE_FRAMEWORK_PATH} STREQUAL "")
+      set_target_properties(SpacescapePlugin PROPERTIES
+        COMPILE_FLAGS "-F${OGRE_FRAMEWORK_PATH}"
+        LINK_FLAGS "-F${OGRE_FRAMEWORK_PATH}"
+      )
+    endif()
 
 ELSE(WIN32)
 	SET_TARGET_PROPERTIES(SpacescapePlugin PROPERTIES OUTPUT_NAME "Plugin_Spacescape" PREFIX "")
 ENDIF(WIN32)
 
+if (OGRE_THREAD_PROVIDER EQUAL 2)
+	TARGET_LINK_LIBRARIES(SpacescapePlugin "${POCO_LIBRARY_REL}")
+endif()
 #TODO If OGRE uses a threading library like boost or POCO then we'll probably need to add it to the includes directory

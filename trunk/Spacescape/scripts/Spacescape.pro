@@ -9,6 +9,7 @@ RESOURCES += Spacescape.qrc
 
 TARGET = Spacescape
 TEMPLATE = app
+QT += core gui
 
 message("CONFIG : " $$CONFIG)
 
@@ -31,12 +32,12 @@ else {
 
 SOURCES += ../src/Main.cpp \
     ../src/QtSpacescapeMainWindow.cpp \
-    ../src/QtOgreWidget.cpp \
+    ../src/QtOgreWidgetOSX.cpp \
     ../src/QtSpacescapeWidget.cpp \
     ../src/QtSpacescapeExportFileDialog.cpp \
     ../src/QtSpacescapeAboutDialog.cpp
 HEADERS += ../include/QtSpacescapeMainWindow.h \
-    ../include/QtOgreWidget.h \
+    ../include/QtOgreWidgetOSX.h \
     ../include/QtSpacescapeUI.h \
     ../include/QtSpacescapeWidget.h \
     ../include/QtSpacescapeExportFileDialog.h \

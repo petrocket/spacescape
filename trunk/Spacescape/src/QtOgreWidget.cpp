@@ -30,8 +30,8 @@ THE SOFTWARE.
 #include "QtOgreWidget.h"
 #include <QApplication>
 #if defined(Q_WS_MAC)
-#include <Carbon/Carbon.h>
-#include <Ogre/OgreOSXContext.h>
+#import <Cocoa/Cocoa.h>
+//#include <OgreOSXContext.h>
 #include <AGL/agl.h>
 #elif !defined(Q_WS_WIN)
 #include <QX11Info>
@@ -141,9 +141,9 @@ void QtOgreWidget::createRenderWindow(void) {
 	
 #if defined(Q_WS_MAC)
 	// store context for hack
-	Ogre::OSXContext *context;
-	mRenderWindow->getCustomAttribute("GLCONTEXT", &context);
-	context->setCurrent();
+//	Ogre::OSXContext *context;
+//	mRenderWindow->getCustomAttribute("GLCONTEXT", &context);
+//	context->setCurrent();
 	mAglContext = aglGetCurrentContext();
 	resizeRenderWindow();
 #endif

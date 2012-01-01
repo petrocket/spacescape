@@ -29,13 +29,17 @@ THE SOFTWARE.
 */
 #include "QtSpacescapeWidget.h"
 #include <QMouseEvent>
+#include "OGRE/Ogre.h"
+
+using namespace Ogre;
 
 const float QtSpacescapeWidget::mRADIUS = (float)0.8;
 
 /** Constructor
 */
-QtSpacescapeWidget::QtSpacescapeWidget(QWidget *parent) : QtOgreWidget(parent),
-    mProgressListener(0) {
+QtSpacescapeWidget::QtSpacescapeWidget(QWidget *parent) : QtOgreWidget(parent,0),
+    mProgressListener(0),
+    mTimer(0) {
 	mSceneMgr = NULL;
 	mViewPort = NULL;
 	mMousePressed = false;
@@ -162,14 +166,30 @@ Ogre::SpacescapePlugin* QtSpacescapeWidget::getPlugin()
 /** Handle a paint event (just render again, if needed create render window)
 @param e The event data
 */
-void QtSpacescapeWidget::paintEvent(QPaintEvent *) {
-	if(!mRenderWindow) {
-		createRenderWindow();
-		setupResources();
-		setupScene();
+void QtSpacescapeWidget::paintEvent(QPaintEvent *e) {
+    //QtOgreWidget::paintEvent(e);
+    
+	if(!mRenderWindow && !mTimer) {
+        // probly don't really need this timer
+        mTimer = new QTimer(this);
+        mTimer->setSingleShot(true);
+        connect(mTimer, SIGNAL(timeout()), this, SLOT(initRenderWindow()));
+        mTimer->start(1000);
 	}
 
 	update();
+}
+
+void QtSpacescapeWidget::initRenderWindow() {
+    if(!mRenderWindow) {
+        show();
+		resize(800,600);        
+		createRenderWindow();
+		setupResources();
+		setupScene();
+        
+        update();        
+    }
 }
 
 /** The user moved the mouse, if tracking process it
@@ -349,7 +369,7 @@ void QtSpacescapeWidget::setupResources(void) {
 /** Setup the scene
 */
 void QtSpacescapeWidget::setupScene(void) {
-	mSceneMgr = mOgreRoot->createSceneManager(Ogre::ST_GENERIC);
+	mSceneMgr = Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC);
 	
 	// Create the camera
 	mCamera = mSceneMgr->createCamera("PlayerCam");

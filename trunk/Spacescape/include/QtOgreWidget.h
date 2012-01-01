@@ -30,6 +30,9 @@ THE SOFTWARE.
 #ifndef QtOgreWidget_H
 #define QtOgreWidget_H
 
+#define Q_WS_MAC
+#define Q_WS_MAC32
+
 #include <QWidget>
 #if defined(Q_WS_WIN)
 // disable some warning
@@ -43,7 +46,7 @@ THE SOFTWARE.
 
 #if defined(Q_WS_MAC)
 // mac specific context
-typedef struct __AGLContextRec  *AGLContext;
+//typedef struct __AGLContextRec  *AGLContext;
 #endif
 
 /** QtOgreWidget is a class for embedding an Ogre
@@ -56,11 +59,11 @@ public:
     /** Constructor
     @param parent
     */
-	QtOgreWidget(QWidget* parent);
+	QtOgreWidget(QWidget* parent, Qt::WindowFlags f);
 
     /** Destructor
     */
-	~QtOgreWidget(void);
+	virtual ~QtOgreWidget(void);
 
     /** Update the Ogre render window
     */
@@ -110,7 +113,7 @@ protected:
 
 #if defined(Q_WS_MAC)
     // mac specific context
-	AGLContext mAglContext;
+//	AGLContext mAglContext;
 #endif
 };
 
