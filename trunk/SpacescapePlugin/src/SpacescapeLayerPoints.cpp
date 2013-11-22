@@ -174,7 +174,7 @@ namespace Ogre
         // seed the random number generator
         srand ( mSeed );
 
-        unsigned int numPoints = std::min<unsigned int>(RAND_MAX * RAND_MAX,mNumPoints);
+        unsigned int numPoints = std::min<unsigned int>(RAND_MAX,mNumPoints);
         unsigned int numPointsTested = 0;
         unsigned int maxNumTestPoints = 99999;
 

@@ -221,7 +221,7 @@ namespace Ogre
         srand(mSeed);
 
         // now create the billboards
-        unsigned int numPoints = std::min<unsigned int>(RAND_MAX * RAND_MAX,mNumBillboards);
+        unsigned int numPoints = std::min<unsigned int>(RAND_MAX,mNumBillboards);
         unsigned int numPointsTested = 0;
         unsigned int maxNumTestPoints = 99999;
 
