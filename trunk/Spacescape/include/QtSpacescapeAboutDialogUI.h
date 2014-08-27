@@ -83,7 +83,7 @@ public:
     {
         if (AboutDialog->objectName().isEmpty())
             AboutDialog->setObjectName(QString::fromUtf8("AboutDialog"));
-        AboutDialog->resize(544, 311);
+        AboutDialog->resize(644, 311);
         verticalLayout_4 = new QVBoxLayout(AboutDialog);
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
         horizontalLayout_3 = new QHBoxLayout();
@@ -106,7 +106,7 @@ public:
         frame->setFrameShadow(QFrame::Raised);
         widget = new QWidget(frame);
         widget->setObjectName(QString::fromUtf8("widget"));
-        widget->setGeometry(QRect(0, 50, 68, 15));
+        widget->setGeometry(QRect(10, 50, 168, 15));
         horizontalLayout = new QHBoxLayout(widget);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         horizontalLayout->setContentsMargins(0, 0, 0, 0);
@@ -123,7 +123,7 @@ public:
 
         widget1 = new QWidget(frame);
         widget1->setObjectName(QString::fromUtf8("widget1"));
-        widget1->setGeometry(QRect(0, 0, 96, 40));
+        widget1->setGeometry(QRect(10, 0, 196, 45));
         verticalLayout_3 = new QVBoxLayout(widget1);
         verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
         verticalLayout_3->setContentsMargins(0, 0, 0, 0);
@@ -145,7 +145,7 @@ public:
 
         widget2 = new QWidget(frame);
         widget2->setObjectName(QString::fromUtf8("widget2"));
-        widget2->setGeometry(QRect(0, 70, 120, 15));
+        widget2->setGeometry(QRect(10, 70, 200, 25));
         horizontalLayout_2 = new QHBoxLayout(widget2);
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
         horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
@@ -162,7 +162,7 @@ public:
 
         widget3 = new QWidget(frame);
         widget3->setObjectName(QString::fromUtf8("widget3"));
-        widget3->setGeometry(QRect(0, 110, 200, 34));
+        widget3->setGeometry(QRect(10, 110, 240, 44));
         verticalLayout = new QVBoxLayout(widget3);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         verticalLayout->setContentsMargins(0, 0, 0, 0);
@@ -185,7 +185,7 @@ public:
 
         widget4 = new QWidget(frame);
         widget4->setObjectName(QString::fromUtf8("widget4"));
-        widget4->setGeometry(QRect(0, 170, 200, 34));
+        widget4->setGeometry(QRect(10, 170, 240, 44));
         verticalLayout_2 = new QVBoxLayout(widget4);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
@@ -234,12 +234,12 @@ public:
         AboutDialog->setWindowTitle(QApplication::translate("AboutDialog", "About Spacescape", 0));
         logo->setText(QString());
         versionLabel->setText(QApplication::translate("AboutDialog", "Version", 0));
-        version->setText(QApplication::translate("AboutDialog", "0.3", 0));
+        version->setText(QApplication::translate("AboutDialog", "0.4", 0));
         aboutTitle->setText(QApplication::translate("AboutDialog", "Spacescape", 0));
         author->setText(QApplication::translate("AboutDialog", "by Alex Peterson", 0));
         releaseDateLabel->setText(QApplication::translate("AboutDialog", "Release Date", 0));
-        releaseDate->setText(QApplication::translate("AboutDialog", "10/12/2010", 0));
-        authorUrlLabel->setText(QApplication::translate("AboutDialog", "Developer Website:", 0));
+        releaseDate->setText(QApplication::translate("AboutDialog", "8/26/2014", 0));
+        authorUrlLabel->setText(QApplication::translate("AboutDialog", "Tutorials & Manual:", 0));
         authorUrl->setText(QApplication::translate("AboutDialog", "http://alexcpeterson.com/spacescape", 0));
         blogUrlLabel->setText(QApplication::translate("AboutDialog", "Blog:", 0));
         blogUrl->setText(QApplication::translate("AboutDialog", "http://petrocket.blogspot.com", 0));

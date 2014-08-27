@@ -52,7 +52,7 @@ IF(APPLE)
     SET(COPY_FRAMEWORKS  
         ${OGRE_RenderSystem_GL_LIBRARY_REL} 
         ${OGRE_FRAMEWORK_PATH}
-        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}Debug/Plugin_Spacescape.framework"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}Release/Plugin_Spacescape.framework"
         )
     SET_SOURCE_FILES_PROPERTIES(
         ${COPY_FRAMEWORKS}
