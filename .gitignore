@@ -1,0 +1,6 @@
+Plugin_Spacescape.framework
+Spacescape.app
+.qmake.stash
+Makefile
+app.log
+trunk/Spacescape/external/QtPropertyBrowser5/doc

@@ -30,9 +30,7 @@
 #include "QtOgreWidgetOSX.h"
 #include <QApplication>
 #if defined(Q_WS_MAC)
-//#import <Cocoa/Cocoa.h>
-//#include <OgreOSXContext.h>
-//#include <AGL/agl.h>
+#include "macUtils.h"
 #elif defined(Q_WS_X11)
 #include <QX11Info>
 #endif
@@ -43,7 +41,9 @@ Ogre::Root * QtOgreWidget::mOgreRoot = NULL;
  @param parent
  */
 QtOgreWidget::QtOgreWidget(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f | Qt::MSWindowsOwnDC) {
+#ifndef Q_WS_MAC
 	setAttribute(Qt::WA_PaintOnScreen);
+#endif
 	setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_NativeWindow);
 	
@@ -79,19 +79,29 @@ void QtOgreWidget::configure(void) {
 #if defined(Q_WS_X11)
     mOgreRoot = new Ogre::Root("plugins.cfg", "app.cfg", "app.log");
 #else
-#ifdef _DEBUG
+    #if defined(Q_WS_MAC)
+    Ogre::String resourcePath = Ogre::macBundlePath() + "/Contents/Resources/";
     mOgreRoot = new Ogre::Root(
-                               QString("../plugins_d.cfg").toStdString(), 
-                               QString("../app.cfg").toStdString(), 
-                               QString("../app.log").toStdString()
+                               resourcePath + "plugins.cfg",
+                               resourcePath + "app.cfg",
+                               "app.log"
                                );
-#else
-    mOgreRoot = new Ogre::Root(
-                               QString("../plugins.cfg").toStdString(), 
-                               QString("../app.cfg").toStdString(), 
-                               QString("../app.log").toStdString()
-                               );
-#endif
+    
+    #else
+        #ifdef _DEBUG
+            mOgreRoot = new Ogre::Root(
+                                       QString("../plugins_d.cfg").toStdString(), 
+                                       QString("../app.cfg").toStdString(), 
+                                       QString("../app.log").toStdString()
+                                       );
+        #else
+            mOgreRoot = new Ogre::Root(
+                                       QString("../plugins.cfg").toStdString(), 
+                                       QString("../app.cfg").toStdString(), 
+                                       QString("../app.log").toStdString()
+                                       );
+        #endif
+    #endif
 #endif
 	if (!mOgreRoot->restoreConfig()) {
 		// setup a renderer
@@ -119,7 +129,9 @@ void QtOgreWidget::configure(void) {
 void QtOgreWidget::createRenderWindow(void) {
 	Ogre::NameValuePairList params;
 	
+#ifndef Q_WS_MAC
     setAttribute(Qt::WA_PaintOnScreen);
+#endif
     setAttribute(Qt::WA_NoSystemBackground);
     
 	if (mRenderWindow)
@@ -147,19 +159,12 @@ void QtOgreWidget::createRenderWindow(void) {
     
 #endif
 #if defined(Q_WS_MAC)
-#if defined(QT_MAC_USE_COCOA)
     params["macAPI"] = "cocoa";
     params["macAPICocoaUseNSView"] = "true";
 #endif
-#endif     
     mRenderWindow = Ogre::Root::getSingletonPtr()->createRenderWindow("OgreWindow", width(), height(), false, &params);
 	
 #if defined(Q_WS_MAC)
-	// store context for hack
-    //	Ogre::OSXContext *context;
-    //	mRenderWindow->getCustomAttribute("GLCONTEXT", &context);
-    //	context->setCurrent();
-//	mAglContext = aglGetCurrentContext();
 	resizeRenderWindow();
 #endif
 	
@@ -214,36 +219,7 @@ void QtOgreWidget::resizeRenderWindow(void) {
             Ogre::Camera* pCamera = pViewport->getCamera();
             pCamera->setAspectRatio(static_cast<Ogre::Real>(pViewport->getActualWidth()) / static_cast<Ogre::Real>(pViewport->getActualHeight()));
         }
-    }    
-	/*
-#if !defined(Q_WS_MAC)
-	mRenderWindow->resize(width(), height());
-	mRenderWindow->windowMovedOrResized();
-#else
-	GLint bufferRect[4];
-	HIViewRef mView = HIViewRef(winId());
-	
-	mRenderWindow->windowMovedOrResized();
-	
-	// reposition our drawing region
-	HIRect viewBounds, winBounds;
-	HIViewGetBounds(mView, &viewBounds);
-	HIViewRef root = HIViewGetRoot(HIViewGetWindow(mView));
-	HIViewRef content_root;
-	HIViewFindByID(root, kHIViewWindowContentID, &content_root);
-	
-	HIViewGetBounds(content_root, &winBounds);
-	HIViewConvertRect(&viewBounds, mView, content_root);
-	
-	bufferRect[0] = x();
-	bufferRect[1] = GLint((winBounds.size.height) - (viewBounds.origin.y + viewBounds.size.height));
-	bufferRect[2] = width();
-	bufferRect[3] = height();
-	
-	aglSetInteger(mAglContext, AGL_BUFFER_RECT, bufferRect);
-	aglEnable(mAglContext, AGL_BUFFER_RECT);
-#endif
-     */
+    }
 }
 
 /** Update the Ogre render window

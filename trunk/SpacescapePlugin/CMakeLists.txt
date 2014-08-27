@@ -1,3 +1,7 @@
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 NEW) # remove if CMake >= 2.8.11 required
+endif()
+
 INCLUDE_DIRECTORIES(include/)
 
 if(POCO_INCLUDE_DIR)
@@ -45,7 +49,11 @@ SET(SPCPLG_HDRS
 AUX_SOURCE_DIRECTORY(src/ SPCPLG_SRCS)
 
 
-ADD_LIBRARY(SpacescapePlugin SHARED ${SPCPLG_SRCS} ${SPCPLG_HDRS})
+IF(APPLE)
+    ADD_LIBRARY(SpacescapePlugin SHARED ${SPCPLG_SRCS} ${SPCPLG_HDRS})
+ELSE(APPLE)
+    ADD_LIBRARY(SpacescapePlugin SHARED ${SPCPLG_SRCS} ${SPCPLG_HDRS})
+ENDIF(APPLE)
 
 IF(WIN32)
 	SET_TARGET_PROPERTIES(SpacescapePlugin PROPERTIES OUTPUT_NAME "Plugin_Spacescape" PREFIX "" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/SpacescapePlugin"  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/SpacescapePlugin" COMPILE_DEFINITIONS "OGRE_SPACESCAPEPLUGIN_EXPORTS")
@@ -53,6 +61,9 @@ IF(WIN32)
 
 	ADD_CUSTOM_COMMAND(TARGET SpacescapePlugin POST_BUILD COMMAND copy "\"$(TargetPath)\"" "\"${CMAKE_SOURCE_DIR}\\Spacescape\\app\\win\\$(OutDir)\\\"" COMMENT "Copying Spacescape_Plugin dll to Spacescape app directory")
 ELSEIF(APPLE)
+    SET_TARGET_PROPERTIES(SpacescapePlugin PROPERTIES OUTPUT_NAME "Plugin_Spacescape")
+    SET_TARGET_PROPERTIES(SpacescapePlugin PROPERTIES VERSION ver1)
+    SET_TARGET_PROPERTIES(SpacescapePlugin PROPERTIES FRAMEWORK TRUE)
 	TARGET_LINK_LIBRARIES(SpacescapePlugin "${OGRE_LIBRARIES}")
 
     # Add the path where the Ogre framework was found

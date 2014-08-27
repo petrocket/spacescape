@@ -1,8 +1,13 @@
-INCLUDE(${QT_USE_FILE})
-ADD_SUBDIRECTORY(external/QtPropertyBrowser)
+# Also includes the include dirs for dependencies QtGui & QtCore
+INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDES})
+
+# Needed for Qt 5
+ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
+
+ADD_SUBDIRECTORY(external/QtPropertyBrowser5)
 
 INCLUDE_DIRECTORIES(include/)
-INCLUDE_DIRECTORIES(external/QtPropertyBrowser/src/)
+INCLUDE_DIRECTORIES(external/QtPropertyBrowser5/src/)
 INCLUDE_DIRECTORIES(../SpacescapePlugin/include/)
 
 LINK_DIRECTORIES("${OGRE_LIBRARY_DIR_DBG}" "${OGRE_LIBRARY_DIR_REL}")
@@ -20,65 +25,97 @@ elseif(POCO_LIBRARY_REL)
 endif(POCO_LIBRARY_DBG)
 
 IF(APPLE)
-SET(SPC_SRCS
-	src/Main.cpp
-	src/QtOgreWidgetOSX.cpp
-	src/QtSpacescapeAboutDialog.cpp
-	src/QtSpacescapeExportFileDialog.cpp
-	src/QtSpacescapeMainWindow.cpp
-	src/QtSpacescapeWidget.cpp
-)
-SET(SPC_MOC_HDRS
-	include/QtOgreWidgetOSX.h
-	include/QtSpacescapeAboutDialog.h
-	include/QtSpacescapeAboutDialogUI.h
-	include/QtSpacescapeExportFileDialog.h
-	include/QtSpacescapeMainWindow.h
-	include/QtSpacescapeUI.h
-	include/QtSpacescapeWidget.h
-)
+    SET(SPC_SRCS
+        src/Main.cpp
+        src/QtOgreWidgetOSX.cpp
+        src/QtSpacescapeAboutDialog.cpp
+        src/QtSpacescapeExportFileDialog.cpp
+        src/QtSpacescapeMainWindow.cpp
+        src/QtSpacescapeWidget.cpp
+    )
+    SET(SPC_MOC_HDRS
+        include/QtOgreWidgetOSX.h
+        include/QtSpacescapeAboutDialog.h
+        include/QtSpacescapeAboutDialogUI.h
+        include/QtSpacescapeExportFileDialog.h
+        include/QtSpacescapeMainWindow.h
+        include/QtSpacescapeUI.h
+        include/QtSpacescapeWidget.h
+    )
+
+    # Locate all resourses
+    FILE(GLOB COPY_RESOURCES app/mac/*.cfg)
+
+    # MESSAGE("OGRE FRAMEWORK PATH = ${OGRE_FRAMEWORK_PATH}")
+
+    # Find all frameworks
+    SET(COPY_FRAMEWORKS  
+        ${OGRE_RenderSystem_GL_LIBRARY_REL} 
+        ${OGRE_FRAMEWORK_PATH}
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}Debug/Plugin_Spacescape.framework"
+        )
+    SET_SOURCE_FILES_PROPERTIES(
+        ${COPY_FRAMEWORKS}
+        PROPERTIES
+        MACOSX_PACKAGE_LOCATION Frameworks
+        )
+        
+    # MESSAGE("OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}Debug/")
+
+    FILE(GLOB_RECURSE MEDIA media/*)
+    
+    SET_SOURCE_FILES_PROPERTIES(
+        ${MEDIA}
+        PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources/media/materials/textures
+        )
+
+
 ELSE(APPLE)
-SET(SPC_SRCS
-	src/Main.cpp
-	src/QtOgreWidget.cpp
-	src/QtSpacescapeAboutDialog.cpp
-	src/QtSpacescapeExportFileDialog.cpp
-	src/QtSpacescapeMainWindow.cpp
-	src/QtSpacescapeWidget.cpp
-)
-SET(SPC_MOC_HDRS
-	include/QtOgreWidget.h
-	include/QtSpacescapeAboutDialog.h
-	include/QtSpacescapeAboutDialogUI.h
-	include/QtSpacescapeExportFileDialog.h
-	include/QtSpacescapeMainWindow.h
-	include/QtSpacescapeUI.h
-	include/QtSpacescapeWidget.h
-)
+    SET(SPC_SRCS
+        src/Main.cpp
+        src/QtOgreWidget.cpp
+        src/QtSpacescapeAboutDialog.cpp
+        src/QtSpacescapeExportFileDialog.cpp
+        src/QtSpacescapeMainWindow.cpp
+        src/QtSpacescapeWidget.cpp
+    )
+    SET(SPC_MOC_HDRS
+        include/QtOgreWidget.h
+        include/QtSpacescapeAboutDialog.h
+        include/QtSpacescapeAboutDialogUI.h
+        include/QtSpacescapeExportFileDialog.h
+        include/QtSpacescapeMainWindow.h
+        include/QtSpacescapeUI.h
+        include/QtSpacescapeWidget.h
+    )
 ENDIF(APPLE)
 
 SET(SPC_RESOURCES 
 	scripts/Spacescape.qrc
 )
 
-SET(QT_USE_QTGUI 1)
-SET(QT_USE_QTSCRIPT 1)
-SET(QT_USE_QTXML 1)
+# SET(QT_USE_QTGUI 1)
+# SET(QT_USE_QTSCRIPT 1)
+# SET(QT_USE_QTXML 1)
 
-INCLUDE(${QT_USE_FILE})
+# QT5_WRAP_CPP(SPC_MOC_SRCS ${SPC_MOC_HDRS})
+QT5_ADD_RESOURCES(SPC_RESOURCES_RCC ${SPC_RESOURCES})
 
-QT4_WRAP_CPP(SPC_MOC_SRCS ${SPC_MOC_HDRS})
-QT4_ADD_RESOURCES(SPC_RESOURCES_RCC ${SPC_RESOURCES})
 
-IF(UNIX)
+IF(APPLE)
+  SET(MACOSX_BUNDLE_BUNDLE_NAME Spacescape)
+  ADD_EXECUTABLE(Spacescape MACOSX_BUNDLE ${SPC_MOC_HDRS} ${SPC_SRCS} ${SPC_MOC_SRCS} ${SPC_RESOURCES_RCC} ${COPY_RESOURCES} ${COPY_FRAMEWORKS} ${MEDIA})
+  SOURCE_GROUP(Frameworkes FILES ${COPY_FRAMEWORKS})
+  SOURCE_GROUP("media/materials/textures" FILES ${MEDIA})
+
+ELSEIF(UNIX)
   ADD_EXECUTABLE(Spacescape ${SPC_SRCS} ${SPC_MOC_SRCS} ${SPC_MOC_HDRS} ${SPC_RESOURCES_RCC})
-ELSEIF(APPLE)
-  ADD_EXECUTABLE(Spacescape MACOSX_BUNDLE ${SPC_SRCS} ${SPC_MOC_SRCS} ${SPC_MOC_HDRS} ${SPC_RESOURCES_RCC} )
 ELSEIF(WIN32)
   ADD_EXECUTABLE(Spacescape WIN32 ${SPC_SRCS} ${SPC_MOC_SRCS} ${SPC_MOC_HDRS} ${SPC_RESOURCES_RCC})
 ENDIF()
 
-TARGET_LINK_LIBRARIES(Spacescape SpacescapePlugin "${OGRE_LIBRARIES}" ${QT_LIBRARIES} debug ${QtPropertyBrowser_Library_DBG} optimized ${QtPropertyBrowser_Library_REL})
+TARGET_LINK_LIBRARIES(Spacescape SpacescapePlugin "${OGRE_LIBRARIES}" Qt5::Widgets debug ${QtPropertyBrowser_Library_DBG} optimized ${QtPropertyBrowser_Library_REL})
 
 IF(WIN32)
    set_target_properties(Spacescape PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
@@ -95,6 +132,26 @@ ELSEIF(APPLE)
         LINK_FLAGS "-F${OGRE_FRAMEWORK_PATH}"
       )
     endif()
+    
+    SET_TARGET_PROPERTIES(Spacescape PROPERTIES MACOSX_BUNDLE TRUE)
+
+    add_custom_command(TARGET Spacescape PRE_BUILD
+            COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/Spacescape.app/Contents/Resources COMMENT "Creating Resources directory"
+            )
+
+    # MESSAGE( "COPY_RESOURCES = ${COPY_RESOURCES}")
+
+    # Add resources to application bundle target
+    SET_TARGET_PROPERTIES(Spacescape PROPERTIES RESOURCE "${COPY_RESOURCES}")
+
+    SET_SOURCE_FILES_PROPERTIES(
+        "${COPY_RESOURCES}"
+        PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources
+        )
+        
+    SET_TARGET_PROPERTIES(Spacescape PROPERTIES XCODE_ATTRIBUTE_OGRE_SDK_ROOT "${OGRE_FRAMEWORK_PATH}/../../../../")
+
 ELSE(WIN32)
 	SET_TARGET_PROPERTIES(Spacescape PROPERTIES SUFFIX ".bin")
 endif(WIN32)

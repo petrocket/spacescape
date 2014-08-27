@@ -31,22 +31,22 @@ THE SOFTWARE.
 #define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QFrame>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLabel>
-#include <QtGui/QMainWindow>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
-#include <QtGui/QPushButton>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QSplitter>
-#include <QtGui/QStatusBar>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QWidget>
+#include <QAction>
+#include <QApplication>
+#include <QButtonGroup>
+#include <QFrame>
+#include <QHBoxLayout>
+#include <QHeaderView>
+#include <QLabel>
+#include <QMainWindow>
+#include <QMenu>
+#include <QMenuBar>
+#include <QPushButton>
+#include <QSpacerItem>
+#include <QSplitter>
+#include <QStatusBar>
+#include <QVBoxLayout>
+#include <QWidget>
 #include <QProgressDialog>
 #include <QtTreePropertyBrowser>
 #include "QtSpacescapeWidget.h"
@@ -220,6 +220,7 @@ public:
 "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(22, 22, 22, 255), stop:0.901366 rgba(67, 67, 67, 255), stop:0.960546 rgba(76, 76, 76, 255), stop:1 rgba(88, 88, 88, 255));\n"
 "alternate-background-color: #1a1a1a;\n"
 "border:1px solid #000;\n"
+"border-color:rgb(0,0,0);\n"
 "color: rgb(200, 200, 200);\n"
 "}\n"
 "#helpText {\n"
@@ -410,50 +411,50 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Spacescape - untitled.xml*", 0, QApplication::UnicodeUTF8));
-        action_New->setText(QApplication::translate("MainWindow", "&New", 0, QApplication::UnicodeUTF8));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Spacescape - untitled.xml*", 0));
+        action_New->setText(QApplication::translate("MainWindow", "&New", 0));
 #ifndef QT_NO_STATUSTIP
-        action_New->setStatusTip(QApplication::translate("MainWindow", "Clear the scene and start over.", 0, QApplication::UnicodeUTF8));
+        action_New->setStatusTip(QApplication::translate("MainWindow", "Clear the scene and start over.", 0));
 #endif // QT_NO_STATUSTIP
-        action_Open->setText(QApplication::translate("MainWindow", "&Open", 0, QApplication::UnicodeUTF8));
-        action_Open->setShortcut(QApplication::translate("MainWindow", "Ctrl+O", 0, QApplication::UnicodeUTF8));
+        action_Open->setText(QApplication::translate("MainWindow", "&Open", 0));
+        action_Open->setShortcut(QApplication::translate("MainWindow", "Ctrl+O", 0));
 #ifndef QT_NO_STATUSTIP
-        action_Open->setStatusTip(QApplication::translate("MainWindow", "Open a file", 0, QApplication::UnicodeUTF8));
+        action_Open->setStatusTip(QApplication::translate("MainWindow", "Open a file", 0));
 #endif // QT_NO_STATUSTIP
-        action_Save->setText(QApplication::translate("MainWindow", "&Save", 0, QApplication::UnicodeUTF8));
-        action_Save->setShortcut(QApplication::translate("MainWindow", "Ctrl+S", 0, QApplication::UnicodeUTF8));
-        actionSave_as->setText(QApplication::translate("MainWindow", "S&ave as...", 0, QApplication::UnicodeUTF8));
-        action_Export->setText(QApplication::translate("MainWindow", "&Export Skybox", 0, QApplication::UnicodeUTF8));
+        action_Save->setText(QApplication::translate("MainWindow", "&Save", 0));
+        action_Save->setShortcut(QApplication::translate("MainWindow", "Ctrl+S", 0));
+        actionSave_as->setText(QApplication::translate("MainWindow", "S&ave as...", 0));
+        action_Export->setText(QApplication::translate("MainWindow", "&Export Skybox", 0));
 #ifndef QT_NO_STATUSTIP
-        action_Export->setStatusTip(QApplication::translate("MainWindow", "Export scene to six images for a skybox", 0, QApplication::UnicodeUTF8));
+        action_Export->setStatusTip(QApplication::translate("MainWindow", "Export scene to six images for a skybox", 0));
 #endif
-        actionAbout->setText(QApplication::translate("MainWindow", "About Spacescape", 0, QApplication::UnicodeUTF8));
-        actionE_xit->setText(QApplication::translate("MainWindow", "E&xit", 0, QApplication::UnicodeUTF8));
-        layerProperties->setProperty("resizeMode", QVariant(QApplication::translate("MainWindow", "ResizeToContents", 0, QApplication::UnicodeUTF8)));
-        newLayer->setText(QApplication::translate("MainWindow", "New Layer", 0, QApplication::UnicodeUTF8));
+        actionAbout->setText(QApplication::translate("MainWindow", "About Spacescape", 0));
+        actionE_xit->setText(QApplication::translate("MainWindow", "E&xit", 0));
+        layerProperties->setProperty("resizeMode", QVariant(QApplication::translate("MainWindow", "ResizeToContents", 0)));
+        newLayer->setText(QApplication::translate("MainWindow", "New Layer", 0));
 #ifndef QT_NO_STATUSTIP
-        newLayer->setStatusTip(QApplication::translate("MainWindow", "Create a new layer", 0, QApplication::UnicodeUTF8));
+        newLayer->setStatusTip(QApplication::translate("MainWindow", "Create a new layer", 0));
 #endif
-        copyLayer->setText(QApplication::translate("MainWindow", "Copy Layer", 0, QApplication::UnicodeUTF8));
+        copyLayer->setText(QApplication::translate("MainWindow", "Copy Layer", 0));
 #ifndef QT_NO_STATUSTIP
-        copyLayer->setStatusTip(QApplication::translate("MainWindow", "Copy the selected layer", 0, QApplication::UnicodeUTF8));
+        copyLayer->setStatusTip(QApplication::translate("MainWindow", "Copy the selected layer", 0));
 #endif        
-        moveLayerDown->setText(QApplication::translate("MainWindow", "Move Down", 0, QApplication::UnicodeUTF8));
+        moveLayerDown->setText(QApplication::translate("MainWindow", "Move Down", 0));
 #ifndef QT_NO_STATUSTIP
-        moveLayerDown->setStatusTip(QApplication::translate("MainWindow", "Move the selected layer down", 0, QApplication::UnicodeUTF8));
+        moveLayerDown->setStatusTip(QApplication::translate("MainWindow", "Move the selected layer down", 0));
 #endif
-        moveLayerUp->setText(QApplication::translate("MainWindow", "Move Up", 0, QApplication::UnicodeUTF8));
+        moveLayerUp->setText(QApplication::translate("MainWindow", "Move Up", 0));
 #ifndef QT_NO_STATUSTIP
-        moveLayerUp->setStatusTip(QApplication::translate("MainWindow", "Move the selected layer up", 0, QApplication::UnicodeUTF8));
+        moveLayerUp->setStatusTip(QApplication::translate("MainWindow", "Move the selected layer up", 0));
 #endif
 
-        deleteLayer->setText(QApplication::translate("MainWindow", "Delete Layer", 0, QApplication::UnicodeUTF8));
+        deleteLayer->setText(QApplication::translate("MainWindow", "Delete Layer", 0));
 #ifndef QT_NO_STATUSTIP
-        deleteLayer->setStatusTip(QApplication::translate("MainWindow", "Delete the selected layer", 0, QApplication::UnicodeUTF8));
+        deleteLayer->setStatusTip(QApplication::translate("MainWindow", "Delete the selected layer", 0));
 #endif
-        helpText->setText(QApplication::translate("MainWindow", "", 0, QApplication::UnicodeUTF8));
-        menu_File->setTitle(QApplication::translate("MainWindow", "&File", 0, QApplication::UnicodeUTF8));
-        menuHelp->setTitle(QApplication::translate("MainWindow", "Help", 0, QApplication::UnicodeUTF8));
+        helpText->setText(QApplication::translate("MainWindow", "", 0));
+        menu_File->setTitle(QApplication::translate("MainWindow", "&File", 0));
+        menuHelp->setTitle(QApplication::translate("MainWindow", "Help", 0));
     } // retranslateUi
 
 };

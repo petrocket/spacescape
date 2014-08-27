@@ -56,8 +56,7 @@ namespace Ogre
         mMaskThreshold(0.0),
         mNumPoints(1000),
         mPointSize(1),
-        mSourceBlendFactor(SBF_ONE),
-        mMaterial(0)
+        mSourceBlendFactor(SBF_ONE)
     {
     }
 

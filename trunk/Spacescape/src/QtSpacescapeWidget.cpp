@@ -31,6 +31,10 @@ THE SOFTWARE.
 #include <QMouseEvent>
 #include "OGRE/Ogre.h"
 
+#ifdef Q_WS_MAC
+#include "macUtils.h"
+#endif
+
 using namespace Ogre;
 
 const float QtSpacescapeWidget::mRADIUS = (float)0.8;
@@ -345,9 +349,15 @@ void QtSpacescapeWidget::setLayerVisible(unsigned int layerID, bool visible)
 /** Set up Ogre resources
 */
 void QtSpacescapeWidget::setupResources(void) {
+#ifdef Q_WS_MAC
+    Ogre::String resourcePath = Ogre::macBundlePath() + "/Contents/Resources/";
+#else
+    Ogre::String resourcePath = "../";
+#endif
+    
 	// Load resource paths from config file
 	Ogre::ConfigFile config;
-        config.load("../resources.cfg");
+        config.load(resourcePath + "resources.cfg");
 	
 	// Go through all sections & settings in the file
 	Ogre::ConfigFile::SectionIterator it = config.getSectionIterator();
@@ -361,6 +371,13 @@ void QtSpacescapeWidget::setupResources(void) {
 		for (i = settings->begin(); i != settings->end(); ++i) {
 			typeName = i->first;
 			archName = i->second;
+#ifdef Q_WS_MAC
+            // OS X does not set the working directory relative to the app,
+            // In order to make things portable on OS X we need to provide
+            // the loading with it's own bundle path location
+            if (!Ogre::StringUtil::startsWith(archName, "/", false)) // only adjust relative dirs
+                archName = Ogre::String(resourcePath + archName);
+#endif
 			Ogre::ResourceGroupManager::getSingleton().addResourceLocation(archName, typeName, secName);
 		}
     }

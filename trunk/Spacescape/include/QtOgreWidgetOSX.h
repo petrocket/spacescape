@@ -30,7 +30,7 @@
 #ifndef QtOgreWidget_H
 #define QtOgreWidget_H
 
-#define Q_WS_MAC
+//#define Q_WS_MAC
 //#define Q_WS_MAC32
 
 #include <QWidget>
@@ -42,11 +42,6 @@
 #pragma warning( pop )
 #else
 #include <OGRE/Ogre.h>
-#endif
-
-#if defined(Q_WS_MAC)
-// mac specific context
-//typedef struct __AGLContextRec  *AGLContext;
 #endif
 
 /** QtOgreWidget is a class for embedding an Ogre
@@ -110,11 +105,6 @@ protected:
     
     // Ogre root
 	static Ogre::Root *mOgreRoot;
-    
-#if defined(Q_WS_MAC)
-    // mac specific context
-//	AGLContext mAglContext;
-#endif
 };
 
 #endif

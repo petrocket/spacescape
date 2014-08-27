@@ -1,21 +1,32 @@
 # Ogre include path
-INCLUDEPATH += ../../../../ogre/OgreMain/include/
+macx{
+    INCLUDEPATH += ../../../../ogre/1.8.x/src/OgreMain/include/
+} else {
+    INCLUDEPATH += ../../../../ogre/OgreMain/include/
+}
 
 # Spacescape includes
-INCLUDEPATH += ../include/;../include/QtPropertyBrowser/;../../SpacescapePlugin/include/
+INCLUDEPATH += ../include/
+INCLUDEPATH += ../external/QtPropertyBrowser/
+INCLUDEPATH += ../../SpacescapePlugin/include/
 
 # Spacescape resources (images)
 RESOURCES += Spacescape.qrc
 
 TARGET = Spacescape
 TEMPLATE = app
-QT += core gui
+QT += core gui widgets
 
 message("CONFIG : " $$CONFIG)
 
 CONFIG(release, debug|release) {
     message("--- Release Setting ---")
-    DESTDIR = ../app/win/release
+    win32 {
+        DESTDIR = ../app/win/release
+    }
+    macx {
+        DESTDIR = ../app/mac/release
+    }
     LIBS += ../lib/OgreMain.lib
     LIBS += ../lib/Plugin_Spacescape.lib
     LIBS += ../lib/QtSolutions_PropertyBrowser-2.5.lib    

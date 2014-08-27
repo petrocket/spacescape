@@ -35,8 +35,8 @@ THE SOFTWARE.
 #include "OgreTextureManager.h"
 #include "OgreHardwarePixelBuffer.h"
 #include "OgreBlendMode.h"
-#include "OgreOverlayManager.h"
-#include "OgreOverlayContainer.h"
+//#include "OgreOverlayManager.h"
+//#include "OgreOverlayContainer.h"
 
 namespace Ogre
 {

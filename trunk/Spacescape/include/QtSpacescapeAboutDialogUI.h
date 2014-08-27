@@ -30,19 +30,21 @@ THE SOFTWARE.
 #ifndef UI_DIALOG_H
 #define UI_DIALOG_H
 
+#include <QtWidgets>
+
 #include <QtCore/QVariant>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QDialog>
-#include <QtGui/QFrame>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QWidget>
+#include <QAction>
+#include <QApplication>
+#include <QButtonGroup>
+#include <QDialog>
+#include <QFrame>
+#include <QHBoxLayout>
+#include <QHeaderView>
+#include <QLabel>
+#include <QPushButton>
+#include <QSpacerItem>
+#include <QVBoxLayout>
+#include <QWidget>
 
 QT_BEGIN_NAMESPACE
 
@@ -229,19 +231,19 @@ public:
 
     void retranslateUi(QDialog *AboutDialog)
     {
-        AboutDialog->setWindowTitle(QApplication::translate("AboutDialog", "About Spacescape", 0, QApplication::UnicodeUTF8));
+        AboutDialog->setWindowTitle(QApplication::translate("AboutDialog", "About Spacescape", 0));
         logo->setText(QString());
-        versionLabel->setText(QApplication::translate("AboutDialog", "Version", 0, QApplication::UnicodeUTF8));
-        version->setText(QApplication::translate("AboutDialog", "0.3", 0, QApplication::UnicodeUTF8));
-        aboutTitle->setText(QApplication::translate("AboutDialog", "Spacescape", 0, QApplication::UnicodeUTF8));
-        author->setText(QApplication::translate("AboutDialog", "by Alex Peterson", 0, QApplication::UnicodeUTF8));
-        releaseDateLabel->setText(QApplication::translate("AboutDialog", "Release Date", 0, QApplication::UnicodeUTF8));
-        releaseDate->setText(QApplication::translate("AboutDialog", "10/12/2010", 0, QApplication::UnicodeUTF8));
-        authorUrlLabel->setText(QApplication::translate("AboutDialog", "Developer Website:", 0, QApplication::UnicodeUTF8));
-        authorUrl->setText(QApplication::translate("AboutDialog", "http://alexcpeterson.com/spacescape", 0, QApplication::UnicodeUTF8));
-        blogUrlLabel->setText(QApplication::translate("AboutDialog", "Blog:", 0, QApplication::UnicodeUTF8));
-        blogUrl->setText(QApplication::translate("AboutDialog", "http://petrocket.blogspot.com", 0, QApplication::UnicodeUTF8));
-        aboutCloseBtn->setText(QApplication::translate("AboutDialog", "Close", 0, QApplication::UnicodeUTF8));
+        versionLabel->setText(QApplication::translate("AboutDialog", "Version", 0));
+        version->setText(QApplication::translate("AboutDialog", "0.3", 0));
+        aboutTitle->setText(QApplication::translate("AboutDialog", "Spacescape", 0));
+        author->setText(QApplication::translate("AboutDialog", "by Alex Peterson", 0));
+        releaseDateLabel->setText(QApplication::translate("AboutDialog", "Release Date", 0));
+        releaseDate->setText(QApplication::translate("AboutDialog", "10/12/2010", 0));
+        authorUrlLabel->setText(QApplication::translate("AboutDialog", "Developer Website:", 0));
+        authorUrl->setText(QApplication::translate("AboutDialog", "http://alexcpeterson.com/spacescape", 0));
+        blogUrlLabel->setText(QApplication::translate("AboutDialog", "Blog:", 0));
+        blogUrl->setText(QApplication::translate("AboutDialog", "http://petrocket.blogspot.com", 0));
+        aboutCloseBtn->setText(QApplication::translate("AboutDialog", "Close", 0));
     } // retranslateUi
 
 };

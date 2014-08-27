@@ -168,7 +168,7 @@ void QtSpacescapeMainWindow::changeEvent(QEvent *e)
 */
 QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& key, const Ogre::String& value)
 {
-    QStringList noiseTypes, layerTypes, blendTypes, textureSizes;
+    QStringList noiseTypes, layerTypes, blendTypes, textureSizes, billboardTextures;
     noiseTypes << "fbm" << "ridged";
     layerTypes << "points" << "billboards" << "noise";
     blendTypes << "one" << "zero" << "dest_colour" << "src_colour" 
@@ -176,6 +176,7 @@ QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& ke
         << "dest_alpha" << "src_alpha" << "one_minus_dest_alpha" 
         << "one_minus_src_alpha";
     textureSizes << "256" << "512" << "1024" << "2048" << "4096";
+    billboardTextures << "default.png" << "flare-blue-purple1.png" << "flare-blue-purple2.png" << "flare-blue-purple3.png" << "flare-blue-spikey1.png" << "flare-green1.png" << "flare-inverted-blue-purple3.png" << "flare-red-yellow1.png" << "flare-red1.png" << "flare-white-small1.png" << "sun.png";
 
     int propertyType = getPropertyType(key);
     QtVariantProperty* property;
@@ -206,6 +207,11 @@ QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& ke
         else if(key == "previewTextureSize") {
             enumList = &textureSizes;    
         }
+#ifdef Q_WS_MAC
+        else if(key == "texture") {
+            enumList = &billboardTextures;
+        }
+#endif
 
         property->setAttribute(QLatin1String("enumNames"), *enumList);
 
@@ -440,6 +446,9 @@ int QtSpacescapeMainWindow::getPropertyType(const Ogre::String& name)
         name == "sourceBlendFactor" ||
         name == "noiseType" ||
         name == "previewTextureSize" ||
+#ifdef Q_WS_MAC
+        name == "texture" ||
+#endif
         name == "maskNoiseType") {
             return QtVariantPropertyManager::enumTypeId();
     }
@@ -787,7 +796,7 @@ void QtSpacescapeMainWindow::onOpen()
             mFilename = filename;
 
             QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
-            setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0, QApplication::UnicodeUTF8));
+            setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0));
 
             // file opened successfully so clear property list and start over
             refreshProperties();
@@ -832,7 +841,7 @@ void QtSpacescapeMainWindow::onSave()
             // save this file!
             if(ui->ogreWindow->save(mFilename)) {
                 QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
-                setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0, QApplication::UnicodeUTF8));
+                setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0));
 
                 ui->statusBar->showMessage("Saved " + mFilename,3000);
             }
@@ -869,7 +878,7 @@ void QtSpacescapeMainWindow::onSaveAs()
             // save this file!
             if(ui->ogreWindow->save(mFilename)) {
                 QString title = "Spacescape - " + fi.completeBaseName() + "." + fi.completeSuffix();
-                setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0, QApplication::UnicodeUTF8));
+                setWindowTitle(QApplication::translate("MainWindow", title.toStdString().c_str(), 0));
             }
         }
     }
@@ -961,11 +970,18 @@ void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QVariant &
 
         if(property->propertyName().indexOf("color") != -1 ||
             property->propertyName().indexOf("Color") != -1) {
-            params[propertyStr] = getColor(qVariantValue<QColor>(value));
+            params[propertyStr] = getColor(value.value<QColor>());
         }
         else if(propertyStr == "noiseType" || propertyStr == "maskNoiseType") {
             params[propertyStr] = value == "0" ? "fbm" : "ridged";
         }
+#ifdef Q_WS_MAC
+        else if(propertyStr == "texture") {
+            QStringList billboardTextures;
+            billboardTextures << "default.png" << "flare-blue-purple1.png" << "flare-blue-purple2.png" << "flare-blue-purple3.png" << "flare-blue-spikey1.png" << "flare-green1.png" << "flare-inverted-blue-purple3.png" << "flare-red-yellow1.png" << "flare-red1.png" << "flare-white-small1.png" << "sun.png";
+            params[propertyStr] = Ogre::String(billboardTextures[value.toUInt()].toStdString());
+        }
+#endif
         else if(propertyStr == "type") {
             QStringList layerTypes;
             layerTypes << "points" << "billboards" << "noise";

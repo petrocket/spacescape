@@ -34,6 +34,8 @@ THE SOFTWARE.
 #include <QLabel>
 #include <QCheckBox>
 
+#include "QtOgreWidgetOSX.h"
+
 struct QFileDialogArgs
 {
     QFileDialogArgs() : parent(0), mode(QFileDialog::AnyFile) {}
@@ -84,8 +86,12 @@ QString QtSpacescapeExportFileDialog::getExportFileName(QWidget *parent,
     args.selection = "";
     args.filter = filter;
     args.mode = AnyFile;
+#ifdef Q_WS_MAC
+    args.options = DontUseNativeDialog;
+#else
     args.options = options;
-
+#endif
+    
     // create a qt dialog
     QtSpacescapeExportFileDialog dialog(args);
 
@@ -111,10 +117,12 @@ QString QtSpacescapeExportFileDialog::getExportFileName(QWidget *parent,
     if (selectedFilter)
         dialog.selectNameFilter(*selectedFilter);
     if (dialog.exec() == QDialog::Accepted) {
+
         if (selectedFilter)
-            *selectedFilter = dialog.selectedFilter();
+            *selectedFilter = dialog.selectedNameFilter();
 
         *imageSize = q->currentText();
+
         delete q;
         delete sizeLabel;
         return dialog.selectedFiles().value(0);

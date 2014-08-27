@@ -44,12 +44,20 @@ macro(create_search_paths PREFIX)
     set(${PREFIX}_BIN_SEARCH_PATH ${${PREFIX}_BIN_SEARCH_PATH}
       ${dir}/bin)
   endforeach(dir)
+  if(ANDROID)
+	set(${PREFIX}_LIB_SEARCH_PATH ${${PREFIX}_LIB_SEARCH_PATH} ${OGRE_DEPENDENCIES_DIR}/lib/${ANDROID_ABI})
+  endif()
   set(${PREFIX}_FRAMEWORK_SEARCH_PATH ${${PREFIX}_PREFIX_PATH})
 endmacro(create_search_paths)
 
 # clear cache variables if a certain variable changed
 macro(clear_if_changed TESTVAR)
   # test against internal check variable
+  # HACK: Apparently, adding a variable to the cache cleans up the list
+  # a bit. We need to also remove any empty strings from the list, but
+  # at the same time ensure that we are actually dealing with a list.
+  list(APPEND ${TESTVAR} "")
+  list(REMOVE_ITEM ${TESTVAR} "")
   if (NOT "${${TESTVAR}}" STREQUAL "${${TESTVAR}_INT_CHECK}")
     message(STATUS "${TESTVAR} changed.")
     foreach(var ${ARGN})
@@ -119,29 +127,37 @@ endmacro(findpkg_finish)
 
 
 # Slightly customised framework finder
-MACRO(findpkg_framework fwk)
-  IF(APPLE)
-    SET(${fwk}_FRAMEWORK_PATH
+macro(findpkg_framework fwk)
+  if(APPLE)
+    set(${fwk}_FRAMEWORK_PATH
       ${${fwk}_FRAMEWORK_SEARCH_PATH}
       ${CMAKE_FRAMEWORK_PATH}
       ~/Library/Frameworks
       /Library/Frameworks
       /System/Library/Frameworks
       /Network/Library/Frameworks
-      /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk/System/Library/Frameworks/
-      ${CMAKE_CURRENT_SOURCE_DIR}/../lib/Release
-      ${CMAKE_CURRENT_SOURCE_DIR}/../lib/Debug
+      ${CMAKE_CURRENT_SOURCE_DIR}/lib/macosx/Release
+      ${CMAKE_CURRENT_SOURCE_DIR}/lib/macosx/Debug
     )
-    FOREACH(dir ${${fwk}_FRAMEWORK_PATH})
-      SET(fwkpath ${dir}/${fwk}.framework)
-      IF(EXISTS ${fwkpath})
-        SET(${fwk}_FRAMEWORK_INCLUDES ${${fwk}_FRAMEWORK_INCLUDES}
+    # These could be arrays of paths, add each individually to the search paths
+    foreach(i ${OGRE_PREFIX_PATH})
+      set(${fwk}_FRAMEWORK_PATH ${${fwk}_FRAMEWORK_PATH} ${i}/lib/macosx/Release ${i}/lib/macosx/Debug)
+    endforeach(i)
+
+    foreach(i ${OGRE_PREFIX_BUILD})
+      set(${fwk}_FRAMEWORK_PATH ${${fwk}_FRAMEWORK_PATH} ${i}/lib/macosx/Release ${i}/lib/macosx/Debug)
+    endforeach(i)
+
+    foreach(dir ${${fwk}_FRAMEWORK_PATH})
+      set(fwkpath ${dir}/${fwk}.framework)
+      if(EXISTS ${fwkpath})
+        set(${fwk}_FRAMEWORK_INCLUDES ${${fwk}_FRAMEWORK_INCLUDES}
           ${fwkpath}/Headers ${fwkpath}/PrivateHeaders)
-        SET(${fwk}_FRAMEWORK_PATH ${dir})
+        set(${fwk}_FRAMEWORK_PATH ${dir})
         if (NOT ${fwk}_LIBRARY_FWK)
-          SET(${fwk}_LIBRARY_FWK "-framework ${fwk}")
+          set(${fwk}_LIBRARY_FWK "-framework ${fwk}")
         endif ()
-      ENDIF(EXISTS ${fwkpath})
-    ENDFOREACH(dir)
-  ENDIF(APPLE)
-ENDMACRO(findpkg_framework)
+      endif(EXISTS ${fwkpath})
+    endforeach(dir)
+  endif(APPLE)
+endmacro(findpkg_framework)
