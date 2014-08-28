@@ -29,6 +29,7 @@
  */
 #include "QtOgreWidgetOSX.h"
 #include <QApplication>
+#include <QWidget>
 #if defined(Q_WS_MAC)
 #include "macUtils.h"
 #elif defined(Q_WS_X11)
@@ -197,7 +198,7 @@ void QtOgreWidget::paintEvent(QPaintEvent *) {
 /** Handle a resize event (pass it along to the render window)
  @param e The event data
  */
-void QtOgreWidget::resizeEvent(QResizeEvent *) {
+void QtOgreWidget::resizeEvent(QResizeEvent *e) {
 	if (mRenderWindow)
 		resizeRenderWindow();
 }

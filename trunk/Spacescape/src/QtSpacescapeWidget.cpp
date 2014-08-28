@@ -311,8 +311,12 @@ bool QtSpacescapeWidget::open(const QString& filename)
 @param e The event data
 */
 void QtSpacescapeWidget::resizeEvent(QResizeEvent *e) {
+    if(e->size() == e->oldSize()) {
+        return;
+    }
+
 	QtOgreWidget::resizeEvent(e);
-	
+    
 	if (mRenderWindow) {
 		// Alter the camera aspect ratio to match the viewport
 		mCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
