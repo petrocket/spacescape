@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include <QMainWindow>
 #include <QtProperty>
 #include <QtVariantPropertyManager>
+#include <QTimer>
 #if defined(Q_WS_WIN)
 #pragma warning( push ) 
 #pragma warning( disable : 4100 )
@@ -96,6 +97,10 @@ public Q_SLOTS:
     */
     void onDeleteLayerClicked();
 
+    /** The enable hdr action was clicked
+     */
+    void onEnableHDR();
+    
     /** The export action was clicked
     */
     void onExport();
@@ -127,6 +132,10 @@ public Q_SLOTS:
     /** The save as action was clicked
     */
     void onSaveAs();
+    
+    /** The show debug box action was clicked
+     */
+    void onShowDebugBox();
 
     /** A layer property was changed in the UI. Update the layer and 
     make any necessary UI changes.
@@ -134,8 +143,18 @@ public Q_SLOTS:
     @param value The new value.
     */
     void valueChanged(QtProperty *property, const QVariant &value);
+    void valueChanged(QtProperty *property, const QString &value);
 
+#ifdef EXR_SUPPORT
+    void paintEvent(QPaintEvent *event);
+
+#endif
+    
 private:
+    
+#ifdef EXR_SUPPORT
+    bool mDebugLayerLoaded;
+#endif
     /** Utility function for creating a property from a key/value pair
     @param key The key
     @param value The value

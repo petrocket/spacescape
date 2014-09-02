@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "QtOgreWidget.h"
 #include <QApplication>
 #if defined(Q_WS_MAC)
-#import <Cocoa/Cocoa.h>
+//#import <Cocoa/Cocoa.h>
 //#include <OgreOSXContext.h>
 #include <AGL/agl.h>
 #elif !defined(Q_WS_WIN)

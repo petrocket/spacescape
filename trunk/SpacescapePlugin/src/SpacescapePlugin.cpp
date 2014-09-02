@@ -40,12 +40,14 @@ THE SOFTWARE.
 #include "OgreSceneNode.h"
 #include <iostream>
 #include "ticpp.h"
+//#include "half.h"
 
 namespace Ogre 
 {
 	const String sPluginName = "Spacescape";
 
     SpacescapePlugin::SpacescapePlugin() :
+        mDebugBox(0),
         mSceneNode(0),
         mUniqueId(0)
 	{
@@ -113,6 +115,11 @@ namespace Ogre
         // attach the layer to the scene so it can be displayed
         mSceneNode->createChildSceneNode(layerName)->attachObject(mLayers[layerId]->getMovableObject());
 
+        //#ifdef DEBUG
+        // setDebugBoxVisible(true);
+        //#endif
+        
+        
         return layerId;
     }
 
@@ -133,6 +140,148 @@ namespace Ogre
         mProgressListeners.push_back(listener);
     }
 
+    void SpacescapePlugin::buildDebugBox()
+    {
+        if(!mDebugBox) {
+            Real dist = 1.1;
+            mDebugBox = OGRE_NEW ManualObject("SpacescapeDebugBox");
+            mDebugBox->begin("BaseWhiteNoLighting", RenderOperation::OT_LINE_STRIP);
+
+            // back wall
+            mDebugBox->position(-1,-1,-dist);
+            mDebugBox->colour(ColourValue(1,0,0));
+            
+            mDebugBox->position(1,-1,-dist);
+            mDebugBox->colour(ColourValue(1,0,0));
+            
+            mDebugBox->position(1,1,-dist);
+            mDebugBox->colour(ColourValue(1,0,0));
+            
+            mDebugBox->position(-1,1,-dist);
+            mDebugBox->colour(ColourValue(1,0,0));
+            
+            mDebugBox->position(-1,-1,-dist);
+            mDebugBox->colour(ColourValue(1,0,0));
+
+            // invisible
+            mDebugBox->position(-1,-1,-dist);
+            mDebugBox->colour(ColourValue(0,0,0,0));
+            
+            mDebugBox->position(-1,-1,dist);
+            mDebugBox->colour(ColourValue(0,0,0,0));
+
+            // front wall
+            mDebugBox->position(-1,-1,dist);
+            mDebugBox->colour(ColourValue(0,1,0));
+            
+            mDebugBox->position(1,-1,dist);
+            mDebugBox->colour(ColourValue(0,1,0));
+            
+            mDebugBox->position(1,1,dist);
+            mDebugBox->colour(ColourValue(0,1,0));
+            
+            mDebugBox->position(-1,1,dist);
+            mDebugBox->colour(ColourValue(0,1,0));
+            
+            mDebugBox->position(-1,-1,dist);
+            mDebugBox->colour(ColourValue(0,1,0));
+            
+            // invisible
+            mDebugBox->position(-1,-1,dist);
+            mDebugBox->colour(ColourValue(0,0,0,0));
+            
+            mDebugBox->position(-1,dist,-1);
+            mDebugBox->colour(ColourValue(0,0,0,0));
+            
+            // top wall
+            mDebugBox->position(-1,dist,-1);
+            mDebugBox->colour(ColourValue(0,0,1));
+            
+            mDebugBox->position(1,dist,-1);
+            mDebugBox->colour(ColourValue(0,0,1));
+            
+            mDebugBox->position(1,dist,1);
+            mDebugBox->colour(ColourValue(0,0,1));
+            
+            mDebugBox->position(-1,dist,1);
+            mDebugBox->colour(ColourValue(0,0,1));
+            
+            mDebugBox->position(-1,dist,-1);
+            mDebugBox->colour(ColourValue(0,0,1));
+            
+            // invisible
+            mDebugBox->position(-1,dist,-1);
+            mDebugBox->colour(ColourValue(0,0,0,0));
+            
+            mDebugBox->position(-dist,-1,-1);
+            mDebugBox->colour(ColourValue(0,0,0,0));
+            
+            // left wall
+            mDebugBox->position(-dist,-1,-1);
+            mDebugBox->colour(ColourValue(0,1,1));
+            
+            mDebugBox->position(-dist,1,-1);
+            mDebugBox->colour(ColourValue(0,1,1));
+            
+            mDebugBox->position(-dist,1,1);
+            mDebugBox->colour(ColourValue(0,1,1));
+            
+            mDebugBox->position(-dist,-1,1);
+            mDebugBox->colour(ColourValue(0,1,1));
+            
+            mDebugBox->position(-dist,-1,-1);
+            mDebugBox->colour(ColourValue(0,1,1));
+            
+            // invisible
+            mDebugBox->position(-dist,-1,-1);
+            mDebugBox->colour(ColourValue(0,0,0,0));
+            
+            mDebugBox->position(dist,-1,-1);
+            mDebugBox->colour(ColourValue(0,0,0,0));
+            
+            // right wall
+            mDebugBox->position(dist,-1,-1);
+            mDebugBox->colour(ColourValue(1,1,0));
+            
+            mDebugBox->position(dist,1,-1);
+            mDebugBox->colour(ColourValue(1,1,0));
+            
+            mDebugBox->position(dist,1,1);
+            mDebugBox->colour(ColourValue(1,1,0));
+            
+            mDebugBox->position(dist,-1,1);
+            mDebugBox->colour(ColourValue(1,1,0));
+            
+            mDebugBox->position(dist,-1,-1);
+            mDebugBox->colour(ColourValue(1,1,0));
+            
+            // invisible
+            mDebugBox->position(dist,-1,-1);
+            mDebugBox->colour(ColourValue(0,0,0,0));
+            
+            mDebugBox->position(-1,-dist,-1);
+            mDebugBox->colour(ColourValue(0,0,0,0));
+            
+            // bottom wall
+            mDebugBox->position(-1,-dist,-1);
+            mDebugBox->colour(ColourValue(1,0,1));
+            
+            mDebugBox->position(1,-dist,-1);
+            mDebugBox->colour(ColourValue(1,0,1));
+            
+            mDebugBox->position(1,-dist,1);
+            mDebugBox->colour(ColourValue(1,0,1));
+            
+            mDebugBox->position(-1,-dist,1);
+            mDebugBox->colour(ColourValue(1,0,1));
+            
+            mDebugBox->position(-1,-dist,-1);
+            mDebugBox->colour(ColourValue(1,0,1));
+            
+            mDebugBox->end();
+        }
+    }
+    
 	/** Check if this hardware rendering device is capable of running spacescape
 	@param errors Return param
 	@return true if supported
@@ -659,6 +808,29 @@ namespace Ogre
         return true;
     }
 
+    void SpacescapePlugin::setDebugBoxVisible(bool visible)
+    {
+        if(!mSceneNode || mDebugBox) {
+            mDebugBox->setVisible(visible);
+            return;
+        }
+
+        SceneNode* n = NULL;
+        String nodeName = "SpacescapeDebugBoxNode";
+        try {
+            n = (SceneNode*)mSceneNode->getChild(nodeName);
+        }
+        catch(Ogre::Exception e) {
+            n = mSceneNode->createChildSceneNode(nodeName);
+        }
+        
+        buildDebugBox();
+        
+        if(n && mDebugBox) {
+            n->attachObject(mDebugBox);
+        }
+    }
+    
     /** Show or hide a layer
     @param layerId the layer to hide/show
     @param visible true to show, false to hide
@@ -814,6 +986,12 @@ namespace Ogre
             }
         }
 
+#ifdef EXR_SUPPORT
+        Ogre::PixelFormat pixelFormat = PF_FLOAT32_RGB;
+//        Ogre::PixelFormat pixelFormat = PF_BYTE_RGB;
+#else
+        Ogre::PixelFormat pixelFormat = PF_BYTE_RGB;
+#endif
         if(createTexture) {
             // create the rtt texture
             rtt = TextureManager::getSingleton().createManual(
@@ -823,9 +1001,13 @@ namespace Ogre
                 size, size,
                 1,
                 numMips,
-                PF_BYTE_RGB, // FIX THIS? OK?
+                pixelFormat, // FIX THIS? OK?
                 TU_RENDERTARGET
             );
+            Ogre::PixelFormat resultFormat = rtt->getFormat();
+            Ogre::LogManager::getSingleton().getDefaultLog()->stream() <<
+            "RTT Format " << StringConverter::toString(resultFormat);
+            
         }
 
         // tell all the layers to display high res versions
@@ -854,6 +1036,42 @@ namespace Ogre
     {
         unsigned int progressAmount = 0;
 
+//#define DEBUG_GRADIENT
+#ifdef DEBUG_GRADIENT
+        Image* img = OGRE_NEW Image();
+        
+        Ogre::LogManager::getSingleton().getDefaultLog()->stream() <<
+        "Saving image gradient...";
+        
+        size_t numBytes = img->calculateSize(0, // no mip maps
+                                             1, // 1 face
+                                             1024, // width
+                                             1024, // height
+                                             1, // depth
+                                             PF_FLOAT32_RGB // pixel format
+                                             );
+        uchar* data = OGRE_ALLOC_T(uchar,numBytes,MEMCATEGORY_GENERAL);
+        float* head = (float *)data;
+        
+        float maxFloat = 2.f;
+        float delta = maxFloat / 1024.f;
+        for(int y = 0; y < 1024; y++) {
+            for(int x= 0; x < 1024; x++) {
+                head[y * (1024 * 3) + x * 3 + 0] = (float)x * delta;
+                head[y * (1024 * 3) + x * 3 + 1] = (float)x * delta;
+                head[y * (1024 * 3) + x * 3 + 2] = (float)x * delta;
+            }
+        }
+        
+        img->loadDynamicImage(data,1024,1024,1,PF_FLOAT32_RGB,false,1,0);
+        img->save("gradient.exr");
+        
+        OGRE_FREE(data,MEMCATEGORY_GENERAL);
+        OGRE_DELETE img;
+        
+        return;
+#endif
+        
         Ogre::LogManager::getSingleton().getDefaultLog()->stream() << 
             "Writing to file " << filename << " size: " << StringConverter::toString(size);
 
@@ -896,6 +1114,11 @@ namespace Ogre
                 basename = filename.substr(0,filename.length() - 4);
             }
             
+#ifdef EXR_SUPPORT
+            Ogre::PixelFormat pixelFormat = ext == ".exr" ? PF_FLOAT32_RGB : PF_BYTE_RGB;
+#else
+            Ogre::PixelFormat pixelFormat = PF_BYTE_RGB;
+#endif
             // write out six textures
             for(int i = 0; i < 6; ++i) {
                 Image* img = OGRE_NEW Image();
@@ -907,11 +1130,11 @@ namespace Ogre
                 updateProgress(progressAmount,"Exporting " + suffixes[i]);
 
                 // allocate room for this image and its mip maps
-                size_t numBytes = img->calculateSize(numMips,1,size,size,1,PF_BYTE_RGB);
+                size_t numBytes = img->calculateSize(numMips,1,size,size,1,pixelFormat);
                 uchar* data = OGRE_ALLOC_T(uchar,numBytes,MEMCATEGORY_GENERAL);
 
                 // load all the data into the image
-                img->loadDynamicImage(data,size,size,1,PF_BYTE_RGB,false,1,numMips);
+                img->loadDynamicImage(data,size,size,1,pixelFormat,false,1,numMips);
                 for(int j = 0; j <= numMips; ++j) {
                     rtt->getBuffer(i,j)->getRenderTarget()->copyContentsToMemory(
                         img->getPixelBox(0,j),

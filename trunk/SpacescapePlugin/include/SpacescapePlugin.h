@@ -168,6 +168,8 @@ namespace Ogre
         @param visible true to show, false to hide
         */
         void setLayerVisible(unsigned int layerId, bool visible);
+        
+        void setDebugBoxVisible(bool visible);
 
 		/// @copydoc Plugin::shutdown
 		void shutdown();
@@ -216,6 +218,8 @@ namespace Ogre
         bool _rtt(TexturePtr& texture, int numMipMaps);
  
     private:
+        void buildDebugBox();
+        
         /** Utility function to send progress events to all listeners
         @param percentComplete Percent complete
         @param msg Task status message
@@ -238,6 +242,8 @@ namespace Ogre
         // scene node all layers are attached to
         SceneNode* mSceneNode;
 
+        ManualObject* mDebugBox;
+        
         // a unique id used for getting unique material/texture names
         unsigned int mUniqueId;
 	};

@@ -155,6 +155,8 @@ the Spacescape Ogre plugin
 */
 Ogre::SpacescapePlugin* QtSpacescapeWidget::getPlugin()
 {
+    if(!mRenderWindow) return NULL;
+    
     //std::vector<Ogre::Plugin*> pl = Ogre::Root::getSingleton().getInstalledPlugins();
 	Ogre::Root::PluginInstanceList pl = Ogre::Root::getSingleton().getInstalledPlugins();
 	Ogre::Root::PluginInstanceList::iterator ii = pl.begin();
@@ -175,10 +177,7 @@ void QtSpacescapeWidget::paintEvent(QPaintEvent *e) {
     
 	if(!mRenderWindow && !mTimer) {
         // probly don't really need this timer
-        mTimer = new QTimer(this);
-        mTimer->setSingleShot(true);
-        connect(mTimer, SIGNAL(timeout()), this, SLOT(initRenderWindow()));
-        mTimer->start(1000);
+        QTimer::singleShot(0, this, SLOT(initRenderWindow()));
 	}
 
 	update();
@@ -187,7 +186,7 @@ void QtSpacescapeWidget::paintEvent(QPaintEvent *e) {
 void QtSpacescapeWidget::initRenderWindow() {
     if(!mRenderWindow) {
         show();
-		resize(800,600);        
+		//resize(800,600);
 		createRenderWindow();
 		setupResources();
 		setupScene();
@@ -307,6 +306,14 @@ bool QtSpacescapeWidget::open(const QString& filename)
     return false;
 }
 
+/** Return true if plugin is ready
+ @return true on success
+ */
+bool QtSpacescapeWidget::pluginReady()
+{
+    return getPlugin() != NULL;
+}
+
 /** Handle a resize event (pass it along to the render window)
 @param e The event data
 */
@@ -336,6 +343,14 @@ bool QtSpacescapeWidget::save(const QString& filename)
     }
 
     return false;
+}
+
+void QtSpacescapeWidget::setDebugBoxVisible(bool visible)
+{
+    Ogre::SpacescapePlugin* plugin = getPlugin();
+    if(plugin) {
+        plugin->setDebugBoxVisible(visible);
+    }
 }
 
 /** Change the visibility of a SpacescapeLayer
@@ -415,6 +430,11 @@ void QtSpacescapeWidget::setupScene(void) {
     mCameraNode->attachObject(mCamera);
 
     startTimer(20);
+    
+#ifdef EXR_SUPPORT
+//    Ogre::NameValuePairList params;
+//    addLayer(1, params);
+#endif
 }
 
 /** Handle a timer event - calls update()

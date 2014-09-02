@@ -129,7 +129,7 @@ namespace Ogre
         @param mode - blend mode 
         */
         String getBlendMode(SceneBlendFactor mode);
-
+       
         /*
          * Helper functions to compute gradients-dot-residualvectors (1D to 4D)
          * Note that these generate gradients of more than unit length. To make
@@ -166,11 +166,18 @@ namespace Ogre
         @param scale Initial scale amount applied to unit sphere noise coords
         @param offset Used for ridged noise
         */
-        void renderNoiseToTexture( TexturePtr& texture, unsigned int seed, 
+#ifdef EXR_SUPPORT
+        void renderNoiseToTexture( TexturePtr& texture, unsigned int seed,
+                                  const String& noiseType, ColourValue innerColor,
+                                  ColourValue outerColor, unsigned int octaves, Real lacunarity,
+                                  Real gain, Real power, Real threshold, Real dither, Real scale, Real offset,
+                                  Real hdrPower = 1.0, Real hdrMultiplier = 1.0);
+#else
+        void renderNoiseToTexture( TexturePtr& texture, unsigned int seed,
             const String& noiseType, ColourValue innerColor, 
             ColourValue outerColor, unsigned int octaves, Real lacunarity, 
             Real gain, Real power, Real threshold, Real dither, Real scale, Real offset);
-
+#endif
         /** Ridge function for Ridged FBM noise
         @param noiseVal
         @param offset
@@ -230,6 +237,53 @@ namespace Ogre
                 p.z = -vTmp.y;
             }
         }
+        
+        /** Get star rgb colour value in range 0..1 given the BV color index
+         @param bv color index
+         @return the rgb colour
+         */
+        static inline ColourValue getColourValueFromBV(double bv) {
+            double r = 0,g = 0,b = 0;
+            double t = bv;
+            
+            if (t<-0.4) t=-0.4;
+            if (t> 2.0) t= 2.0;
+            
+            if ((bv>=-0.40)&&(bv<0.00)) {
+                t=(bv+0.40)/(0.00+0.40); r=0.61+(0.11*t)+(0.1*t*t);
+            }
+            else if ((bv>= 0.00)&&(bv<0.40)) {
+                t=(bv-0.00)/(0.40-0.00); r=0.83+(0.17*t);
+            }
+            else if ((bv>= 0.40)&&(bv<2.10)) {
+                t=(bv-0.40)/(2.10-0.40); r=1.00;
+            }
+            
+            if ((bv>=-0.40)&&(bv<0.00)) {
+                t=(bv+0.40)/(0.00+0.40); g=0.70+(0.07*t)+(0.1*t*t);
+            }
+            else if ((bv>= 0.00)&&(bv<0.40)) {
+                t=(bv-0.00)/(0.40-0.00); g=0.87+(0.11*t);
+            }
+            else if ((bv>= 0.40)&&(bv<1.60)) {
+                t=(bv-0.40)/(1.60-0.40); g=0.98-(0.16*t);
+            }
+            else if ((bv>= 1.60)&&(bv<2.00)) {
+                t=(bv-1.60)/(2.00-1.60); g=0.82-(0.5*t*t);
+            }
+            
+            if ((bv>=-0.40)&&(bv<0.40)) {
+                t=(bv+0.40)/(0.40+0.40); b=1.00;
+            }
+            else if ((bv>= 0.40)&&(bv<1.50)) {
+                t=(bv-0.40)/(1.50-0.40); b=1.00-(0.47*t)+(0.1*t*t);
+            }
+            else if ((bv>= 1.50)&&(bv<1.94)) {
+                t=(bv-1.50)/(1.94-1.50); b=0.63-(0.6*t*t);
+            }
+            
+            return ColourValue(r,g,b);
+        }
 
         /** Perlin simplex noise (3d)
         @param x
@@ -267,6 +321,7 @@ namespace Ogre
 
 		// the pixel format to use for FBO
 		PixelFormat mFBOPixelFormat;
+		PixelFormat mMaskFBOPixelFormat;
 
         // plugin owner
         SpacescapePlugin* mPlugin;

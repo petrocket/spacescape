@@ -66,14 +66,28 @@ namespace Ogre
         mNoiseMaterial = OGRE_NEW_T(SpacescapeNoiseMaterial,MEMCATEGORY_GENERAL);
 
 		// get the right FBO pixel format to use
+#ifdef EXR_SUPPORT
+//		PixelFormat validPixelFormats[] = {PF_BYTE_RGBA, PF_BYTE_BGRA, PF_BYTE_RGBA};
+        // this looks really wierd
+		PixelFormat validPixelFormats[] = {PF_FLOAT32_RGB, PF_BYTE_BGRA, PF_BYTE_RGBA};
+        int numFormats = 3;
+#else
 		PixelFormat validPixelFormats[] = {PF_BYTE_BGRA, PF_BYTE_RGBA};
-		for(int i = 0; i < 2; ++i) {
+        int numFormats = 2;
+#endif
+		for(int i = 0; i < numFormats; ++i) {
 			if(TextureManager::getSingletonPtr()->isEquivalentFormatSupported(
 				TEX_TYPE_3D, validPixelFormats[i],TU_RENDERTARGET)) {
 				mFBOPixelFormat = validPixelFormats[i];
 				break;
 			}
 		}
+        
+#ifdef EXR_SUPPORT
+        mMaskFBOPixelFormat = PF_BYTE_RGBA;
+#else
+        mMaskFBOPixelFormat = mFBOPixelFormat;
+#endif
     }
 
     /* Destructor
@@ -141,6 +155,8 @@ namespace Ogre
         manualObj->end();
     }
 
+
+    
     /** Utility noise function for fbm perlin noise
     @param v The 3d position
     @param octaves Number of octaves
@@ -223,7 +239,7 @@ namespace Ogre
         else
             return "one";
     }
-
+    
     /*
      * Helper functions to compute gradients-dot-residualvectors (1D to 4D)
      * Note that these generate gradients of more than unit length. To make
@@ -331,7 +347,11 @@ namespace Ogre
         Real power, Real threshold,
         Real dither,
         Real scale,
-        Real offset)
+        Real offset
+#ifdef EXR_SUPPORT
+        ,Real hdrPower, Real hdrMultiplier
+#endif
+        )
     {
         // update the rtt material
         MaterialPtr material = mNoiseMaterial->getMaterial();
@@ -365,7 +385,9 @@ namespace Ogre
         params->setNamedConstant( "powerAmt",   power );
         params->setNamedConstant( "shelfAmt",   threshold );
         params->setNamedConstant( "noiseScale", scale );
-
+        params->setNamedConstant( "hdrPowerAmt", hdrPower );
+        params->setNamedConstant( "hdrMultiplier", hdrMultiplier );
+        
         if(validNoiseType == "ridged") {
             params->setNamedConstant( "offset",   offset );
         }
@@ -500,7 +522,7 @@ namespace Ogre
 
     /** 3D simplex noise
     // SimplexNoise1234
-    // Copyright © 2003-2005, Stefan Gustavson
+    // Copyright ï¿½ 2003-2005, Stefan Gustavson
     //
     // Contact: stegu@itn.liu.se
     //

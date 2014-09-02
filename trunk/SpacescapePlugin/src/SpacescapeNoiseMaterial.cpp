@@ -61,6 +61,8 @@ namespace Ogre
             uniform float powerAmt;\n\
             uniform float shelfAmt;\n\
             uniform float noiseScale;\n\
+            uniform float hdrPowerAmt;\n\
+            uniform float hdrMultiplier;\n\
 \n\
             varying vec3 vertexPos;\n\
             vec3 fade(vec3 t)  \n\
@@ -147,8 +149,11 @@ namespace Ogre
                 // apply optional power function\n\
                 noiseSum = pow(noiseSum,1.0/powerAmt);\n\
 \n\
-                gl_FragColor.xyz = mix(outerColor, innerColor, noiseSum);\n\
-                gl_FragColor.w = noiseSum;\n\
+                noiseSum = pow(noiseSum,hdrPowerAmt);\n\
+                gl_FragColor.xyz = mix(outerColor, innerColor, noiseSum) * hdrMultiplier;\n\
+                gl_FragColor.w = noiseSum * hdrMultiplier;\n\
+                //gl_FragColor.xyz = mix(outerColor, innerColor, noiseSum);\n\
+                //gl_FragColor.w = noiseSum;\n\
             }";
     static const String spacescape_noise_glsl_ridged_fp = "uniform sampler2D permTexture;\n\
             uniform sampler1D gradTexture;\n\
@@ -162,6 +167,8 @@ namespace Ogre
             uniform float shelfAmt;\n\
             uniform float powerAmt;\n\
             uniform float noiseScale;\n\
+            uniform float hdrPowerAmt;\n\
+            uniform float hdrMultiplier;\n\
 \n\
             varying vec3 vertexPos;\n\
             vec3 fade(vec3 t)  \n\
@@ -260,8 +267,11 @@ namespace Ogre
                 // apply optional power function\n\
                 noiseSum = pow(noiseSum,1.0/powerAmt);\n\
                 \n\
-                gl_FragColor.xyz = mix(outerColor, innerColor, noiseSum);\n\
-                gl_FragColor.w = noiseSum;\n\
+                noiseSum = pow(noiseSum,hdrPowerAmt);\n\
+                gl_FragColor.xyz = mix(outerColor, innerColor, noiseSum) * hdrMultiplier;\n\
+                gl_FragColor.w = noiseSum * hdrMultiplier;\n\
+                //gl_FragColor.xyz = mix(outerColor, innerColor, noiseSum);\n\
+                //gl_FragColor.w = noiseSum;\n\
             }";
 
     /** Constructor
@@ -361,12 +371,14 @@ namespace Ogre
 					  		        "glsl", 
 			                        GPT_FRAGMENT_PROGRAM);
 	            gpuProgram->setSource(spacescape_noise_glsl_fbm_fp);
-		        gpuProgram->load();
-
+                
                 // set default fragment program params
                 params = gpuProgram->getDefaultParameters();
                 params->setNamedConstant("permTexture",(int)0);
                 params->setNamedConstant("gradTexture",(int)1);
+
+		        gpuProgram->load();
+
 
                 // set the fragment program
                 pass->setFragmentProgram("spacescape_noise_glsl_fbm_fp");
@@ -398,6 +410,10 @@ namespace Ogre
             params->setNamedConstant("outerColor",ColourValue(0.0,0.0,0.0));
             params->setNamedConstant("powerAmt",(float)1.0);
             params->setNamedConstant("shelfAmt",(float)0.0);
+#ifdef EXR_SUPPORT
+            params->setNamedConstant( "hdrPowerAmt", (float)1.0 );
+            params->setNamedConstant( "hdrMultiplier", (float)1.0);
+#endif
 
             // create ridged technique
             material->createTechnique();
@@ -461,6 +477,10 @@ namespace Ogre
             params->setNamedConstant("powerAmt",(float)1.0);
             params->setNamedConstant("shelfAmt",(float)0.0);
             params->setNamedConstant("offset",(float)1.0);
+#ifdef EXR_SUPPORT
+            params->setNamedConstant( "hdrPowerAmt", (float)1.0 );
+            params->setNamedConstant( "hdrMultiplier", (float)1.0);
+#endif
 
             material->load();
         }

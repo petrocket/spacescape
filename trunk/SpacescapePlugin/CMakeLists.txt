@@ -16,35 +16,9 @@ elseif(POCO_LIBRARY_REL)
 	LINK_DIRECTORIES(${POCO_LIBRARY_DIR})
 endif(POCO_LIBRARY_DBG)
 
-SET(SPCPLG_SRCS
-	src/SpacescapeDll.cpp
-	src/SpacescapeLayerBillboards.cpp
-	src/SpacescapeLayer.cpp
-	src/SpacescapeLayerNoise.cpp
-	src/SpacescapeLayerPoints.cpp
-	src/SpacescapeNoiseMaterial.cpp
-	src/SpacescapePlugin.cpp
-	src/ticpp.cpp
-	src/tinystr.cpp
-	src/tinyxml.cpp
-	src/tinyxmlerror.cpp
-	src/tinyxmlparser.cpp
-)
+FILE(GLOB_RECURSE SPCPLG_SRCS src/*.cpp)
 
-SET(SPCPLG_HDRS
-	include/SpacescapePrerequisites.h
-	include/SpacescapeProgressListener.h
-	include/SpacescapeLayerBillboards.h
-	include/SpacescapeLayer.h
-	include/SpacescapeLayerNoise.h
-	include/SpacescapeLayerPoints.h
-	include/SpacescapeNoiseMaterial.h
-	include/SpacescapePlugin.h
-	include/ticpp.h
-	include/ticpprc.h
-	include/tinystr.h
-	include/tinyxml.h
-)
+FILE(GLOB_RECURSE SPCPLG_HDRS include/*.h)
 
 AUX_SOURCE_DIRECTORY(src/ SPCPLG_SRCS)
 

@@ -25,6 +25,7 @@ elseif(POCO_LIBRARY_REL)
 endif(POCO_LIBRARY_DBG)
 
 IF(APPLE)
+    # don't glob, we don't want all .h files - some are windows specific
     SET(SPC_SRCS
         src/Main.cpp
         src/QtOgreWidgetOSX.cpp
@@ -32,6 +33,7 @@ IF(APPLE)
         src/QtSpacescapeExportFileDialog.cpp
         src/QtSpacescapeMainWindow.cpp
         src/QtSpacescapeWidget.cpp
+        src/QtFilePathProperty.cpp
     )
     SET(SPC_MOC_HDRS
         include/QtOgreWidgetOSX.h
@@ -41,7 +43,12 @@ IF(APPLE)
         include/QtSpacescapeMainWindow.h
         include/QtSpacescapeUI.h
         include/QtSpacescapeWidget.h
+        include/QtFilePathProperty.h
     )
+
+    # FILE(GLOB_RECURSE SPC_SRCS src/*.cpp)
+
+    # FILE(GLOB_RECURSE SPC_MOC_HDRS include/*.h)
 
     # Locate all resourses
     FILE(GLOB COPY_RESOURCES app/mac/*.cfg)
@@ -95,18 +102,13 @@ SET(SPC_RESOURCES
 	scripts/Spacescape.qrc
 )
 
-# SET(QT_USE_QTGUI 1)
-# SET(QT_USE_QTSCRIPT 1)
-# SET(QT_USE_QTXML 1)
-
-# QT5_WRAP_CPP(SPC_MOC_SRCS ${SPC_MOC_HDRS})
 QT5_ADD_RESOURCES(SPC_RESOURCES_RCC ${SPC_RESOURCES})
 
 
 IF(APPLE)
   SET(MACOSX_BUNDLE_BUNDLE_NAME Spacescape)
   ADD_EXECUTABLE(Spacescape MACOSX_BUNDLE ${SPC_MOC_HDRS} ${SPC_SRCS} ${SPC_MOC_SRCS} ${SPC_RESOURCES_RCC} ${COPY_RESOURCES} ${COPY_FRAMEWORKS} ${MEDIA})
-  SOURCE_GROUP(Frameworkes FILES ${COPY_FRAMEWORKS})
+  SOURCE_GROUP(Frameworks FILES ${COPY_FRAMEWORKS})
   SOURCE_GROUP("media/materials/textures" FILES ${MEDIA})
 
 ELSEIF(UNIX)

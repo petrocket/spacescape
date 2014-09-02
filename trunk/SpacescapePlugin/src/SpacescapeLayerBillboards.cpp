@@ -34,16 +34,47 @@ THE SOFTWARE.
 #include "OgreHardwarePixelBuffer.h"
 #include "OgreTextureManager.h"
 
+#ifdef EXR_SUPPORT
+#include "OgreHighLevelGpuProgramManager.h"
+#endif
+
 namespace Ogre
 {
+#ifdef EXR_SUPPORT
+    static const String spacescape_billboards_glsl_vp = "attribute vec2 uv0;\n\
+    uniform mat4 worldViewProj;\n\
+    varying vec3 hdrColor;\n\
+    varying vec2 UV;\n\
+    void main()\n\
+    {\n\
+        gl_Position = worldViewProj * gl_Vertex;\n\
+        hdrColor = gl_Normal.xyz;\n\
+        UV = uv0;\n\
+    }";
+    
+    static const String spacescape_billboards_glsl_fp = "uniform sampler2D tex;\n\
+    varying vec3 hdrColor;\n\
+    varying vec2 UV;\n\
+    void main()\n\
+    {\n\
+        gl_FragColor = vec4(hdrColor.r,hdrColor.g,hdrColor.b,1.0) * texture2D(tex,UV);\n\
+    }";
+
+#endif
+    
     /** Constructor
     */
     SpacescapeLayerBillboards::SpacescapeLayerBillboards(const String& name, SpacescapePlugin* plugin) :
         SpacescapeLayer(name, plugin),
         mBillboardSet(0),
         mBuilt(false),
-        mDestBlendFactor(SBF_ONE),
+//        mDestBlendFactor(SBF_ONE),
+        mDestBlendFactor(SBF_ONE_MINUS_SOURCE_COLOUR),
         mFarColor(ColourValue(1.0,1.0,1.0)),
+#ifdef EXR_SUPPORT
+        mHDRPower(1.0),
+        mHDRMultiplier(1.0),
+#endif
         mMaskEnabled(false),
         mMaskGain(0.5),
         mMaskLacunarity(2.0),
@@ -53,14 +84,20 @@ namespace Ogre
         mMaskScale(1.0),
         mMaskSeed(1),
         mMaskThreshold(0.0),
-        mMaxSize(0.01),
-        mMinSize(0.05),
+        mMaxSize(0.2),
+        mMinSize(0.2),
         mNearColor(ColourValue(1.0,1.0,1.0)),
         mNumBillboards(100),
-        mSourceBlendFactor(SBF_ONE)
+        mSourceBlendFactor(SBF_ONE),
+        mStarDataFilename("")
     {
         mMaterial.setNull();
+#ifdef EXR_SUPPORT
+        mTextureName = "hdr-flare-white2.exr";
+#else
         mTextureName = "default.png";
+#endif
+        //mStarDataFilename = "/Users/alex/Documents/workspace/spacescape/spacescape-git/stars-all.csv";
     }
 
     /** Destructor
@@ -80,44 +117,25 @@ namespace Ogre
     */
     void SpacescapeLayerBillboards::build(void) 
     {
-        // get the default scene manager
-        if(!Ogre::Root::getSingleton().getSceneManagerIterator().hasMoreElements()) {
-            Ogre::LogManager::getSingleton().getDefaultLog()->stream() << 
-                "No scene manager found in SpacescapePlugin::addLayer().  You can't add a layer before creating a scene manager.";
-        }
-        SceneManager* sceneMgr = Root::getSingleton().getSceneManagerIterator().peekNextValue();
-
-        // create the billboardset if it doesn't exist
-        if(!sceneMgr->hasBillboardSet("SpacescapeLayerBillboardset" + StringConverter::toString(mUniqueID))) {
-            sceneMgr->createBillboardSet("SpacescapeLayerBillboardset" + StringConverter::toString(mUniqueID),mNumBillboards);
-        }
-
-        mBillboardSet = sceneMgr->getBillboardSet("SpacescapeLayerBillboardset" + StringConverter::toString(mUniqueID));
-
-        // clear out all existing billboards
-        if(mBillboardSet) {
-            mBillboardSet->clear();
-        }
-
-        // initialize the billboard set
-        mBillboardSet->setPoolSize(mNumBillboards);
-        mBillboardSet->setMaterialName(mMaterial->getName());
-        mBillboardSet->setDefaultDimensions(mMinSize,mMinSize);
-        mBillboardSet->setCastShadows(false);
-        mBillboardSet->setUseAccurateFacing(true);
+        createBillboardSet();
 
         // seed random number generator
         srand(mSeed);
 
         // now create the billboards
         Vector3 v;
+        ColourValue c;
         for(unsigned int i = 0; i < mNumBillboards; ++i) {
            // nice distribution of random points on sphere
             Real u = -1.0 + 2.0 * rand() / ((double) RAND_MAX);
             Real a = Ogre::Math::TWO_PI * rand() / ((double) RAND_MAX);
             Real s = sqrt(1 - u*u);
 
-            Billboard* b = mBillboardSet->createBillboard(
+//            v.x = s * cos(a);
+//            v.y = s * sin(a);
+//            v.z = u;
+//            v.normalise();
+            SpacescapeBillboard* b = mBillboardSet->createBillboard(
                 s * cos(a),
                 s * sin(a),
                 u
@@ -126,13 +144,22 @@ namespace Ogre
             // random distance
             double dist = rand() / ((double) RAND_MAX);
 
+#ifdef EXR_SUPPORT
+            dist = powf(dist, mHDRPower);
+#endif
             // size is based on distance and min/max allowed sizes
             // closer distances are larger
             Real size = mMinSize + (mMaxSize - mMinSize) * (1.0 - dist);
             b->setDimensions(size, size);
 
             // color is based on distance (linear interpolation here)
-            b->setColour(mNearColor + (dist * (mFarColor - mNearColor)));
+            c = mNearColor + (dist * (mFarColor - mNearColor));
+            b->setColour(c);
+            
+#ifdef EXR_SUPPORT
+            c *= mHDRMultiplier;
+            b->mHDRColour = c;
+#endif
         }
 
         mBuilt = true;
@@ -142,31 +169,7 @@ namespace Ogre
     */
     void SpacescapeLayerBillboards::buildMasked(void) 
     {
-        // get the default scene manager
-        if(!Ogre::Root::getSingleton().getSceneManagerIterator().hasMoreElements()) {
-            Ogre::LogManager::getSingleton().getDefaultLog()->stream() << 
-                "No scene manager found in SpacescapePlugin::addLayer().  You can't add a layer before creating a scene manager.";
-        }
-        SceneManager* sceneMgr = Root::getSingleton().getSceneManagerIterator().peekNextValue();
-
-        // create the billboardset if it doesn't exist
-        if(!sceneMgr->hasBillboardSet("SpacescapeLayerBillboardset" + StringConverter::toString(mUniqueID))) {
-            sceneMgr->createBillboardSet("SpacescapeLayerBillboardset" + StringConverter::toString(mUniqueID),mNumBillboards);
-        }
-
-        mBillboardSet = sceneMgr->getBillboardSet("SpacescapeLayerBillboardset" + StringConverter::toString(mUniqueID));
-
-        // clear out all existing billboards
-        if(mBillboardSet) {
-            mBillboardSet->clear();
-        }
-
-        // initialize the billboard set
-        mBillboardSet->setPoolSize(mNumBillboards);
-        mBillboardSet->setMaterialName(mMaterial->getName());
-        mBillboardSet->setDefaultDimensions(mMinSize,mMinSize);
-        mBillboardSet->setCastShadows(false);
-        mBillboardSet->setUseAccurateFacing(true);
+        createBillboardSet();
 
         // remove the old noise texture if it exists (new one might be diff size due to layer switch ups)
         TexturePtr t = TextureManager::getSingleton().getByName("SpacescapeBillboardMask");
@@ -185,7 +188,7 @@ namespace Ogre
             maskSize, maskSize, 
             1,
             0, // no mip maps
-            mFBOPixelFormat,
+            mMaskFBOPixelFormat,
             TU_RENDERTARGET
         );
 
@@ -226,7 +229,8 @@ namespace Ogre
         unsigned int maxNumTestPoints = 99999;
 
         Real n;
-        Real scale = 2.0 / (Real)maskSize;
+        //Real scale = 2.0 / (Real)maskSize;
+        ColourValue c;
         Real noiseScale = 1.0 / 255.0;
         while(numPoints) {
             // pick random co-ords on the top face
@@ -271,20 +275,29 @@ namespace Ogre
             p.z = -p.z;
 
             // use this position
-            Billboard* b = mBillboardSet->createBillboard(p.normalisedCopy());
+            SpacescapeBillboard* b = mBillboardSet->createBillboard(p.normalisedCopy());
             numPoints--;
             numPointsTested = 0;
 
             // random distance
             float dist = rand() / ((double) RAND_MAX);
 
+#ifdef EXR_SUPPORT
+            dist = powf(dist, mHDRPower);
+#endif
             // size is based on distance and min/max allowed sizes
             // closer distances are larger
             Real size = mMinSize + (mMaxSize - mMinSize) * (1.0 - dist);
             b->setDimensions(size, size);
-
+            
             // color is based on distance (linear interpolation here)
-            b->setColour(mNearColor + (dist * (mFarColor - mNearColor)));
+            c = mNearColor + (dist * (mFarColor - mNearColor));
+            b->setColour(c);
+            
+#ifdef EXR_SUPPORT
+            c *= mHDRMultiplier;
+            b->mHDRColour = c;
+#endif
         }
 
         for(int i = 0 ; i < 6; ++i) {
@@ -295,6 +308,177 @@ namespace Ogre
         TextureManager::getSingleton().remove(t->getHandle());
 
         mBuilt = true;
+    }
+
+    /** Utility function for building based on predefined positions/colours
+     */
+    void SpacescapeLayerBillboards::buildFromFile(const String &filename)
+    {
+        createBillboardSet();
+        
+        // load/parse the file - we don't handle quotes!!
+        std::fstream dataFile(filename, std::ios_base::in);
+        std::string line;
+        int xOffset = -1;
+        int yOffset = -1;
+        int zOffset = -1;
+        int bvOffset = -1;
+        int magOffset = -1;
+        int nameOffset = -1;
+        int distanceOffset = -1;
+        int isHeader = true;
+        
+        double maxDist = 20000.0; // in parsecs?
+        
+        // remember magnitude is reversed! -1.5 is brightest and 6.5 is dimmest
+        double magMin = -1.5;
+        double magMax = 6.5;
+        double magRatio = 1.0 / (magMax - magMin);
+        while(getline(dataFile, line)) {
+            std::stringstream ss(line);
+            std::string item;
+            if(isHeader) {
+                int offset = 0;
+                while(std::getline(ss, item, ',')) {
+                    if(item == "x" || item == "X") {
+                        xOffset = offset;
+                    }
+                    else if(item == "y" || item == "Y") {
+                        yOffset = offset;
+                    }
+                    else if(item == "z" || item == "Z") {
+                        zOffset = offset;
+                    }
+                    else if(item == "colorIndex" || item == "ColorIndex" || item == "bv" || item == "BV") {
+                        bvOffset = offset;
+                    }
+                    else if(item == "AbsMag" || item == "absmag") {
+                        magOffset = offset;
+                    }
+                    else if(item == "distance" || item == "Distance") {
+                        distanceOffset = offset;
+                    }
+                    else if(item == "ProperName" || item == "name") {
+                        nameOffset = offset;
+                    }
+                    offset++;
+                }
+            }
+            else {
+                if(xOffset == -1 || yOffset == -1 || zOffset == -1 || nameOffset == -1) {
+                    Ogre::LogManager::getSingleton().getDefaultLog()->stream() <<
+                    "CSV file first line must have x,y,z,spectrum,absmag,distance,name";
+                    break;
+                }
+                
+                std::vector<std::string> elems;
+                while(std::getline(ss,item,',')) {
+                    elems.push_back(item);
+                }
+                
+                if(elems.size() < 6) {
+                    continue;
+                }
+                
+
+                // scale distance from 0..maxDist to 0..1
+                Real dist = Ogre::StringConverter::parseReal(elems[distanceOffset]);
+                
+                // skip objects like our sun that are too close
+                if(dist < 0.1) continue;
+
+                // magnitude is inverse! wierdo astronomers
+                Real mag = Ogre::StringConverter::parseReal(elems[magOffset]);
+                
+                Real brightness = mag - 5*log10(10.0/dist);
+                // skip objects that are too faint
+
+                if(brightness > magMax) continue;
+                
+                // position gets normalised
+                Vector3 pos = Ogre::StringConverter::parseVector3(elems[xOffset] + " " + elems[yOffset] + " " + elems[zOffset]);
+                pos.normalise();
+                SpacescapeBillboard* b = mBillboardSet->createBillboard(pos);
+                
+                
+                dist = MIN(dist,maxDist);
+                dist *= 1.0/maxDist;
+                dist = MAX(0,dist);
+
+                // size is based on distance and min/max allowed sizes
+                // closer distances are larger
+                Real size = mMinSize + (mMaxSize - mMinSize) * (1.0 - dist);
+                b->setDimensions(size, size);
+                
+                ColourValue c = getColourValueFromBV(Ogre::StringConverter::parseReal(elems[bvOffset]));
+                
+                b->setColour(c);
+                
+                mag = (magMax - magMin) - brightness - magMin;
+#ifdef EXR_SUPPORT
+                if(mHDRPower != 1.0) {
+                    mag *= magRatio;
+                    mag = pow(mag,mHDRPower);
+                    mag *= (magMax - magMin);
+                }
+#endif
+                
+               
+                c *= mag;
+#ifdef EXR_SUPPORT
+                c *= mHDRMultiplier;
+//                c *=
+                b->mHDRColour = c;
+#endif
+//                Ogre::LogManager::getSingleton().getDefaultLog()->stream() <<
+//                "Billboard: mag: " << Ogre::StringConverter::toString(mag) << "(" << elems[magOffset] << ")";
+//                Ogre::LogManager::getSingleton().getDefaultLog()->stream() <<
+//                "Billboard: " << elems[xOffset] << " " << elems[yOffset] << " " << elems[zOffset] << " distance: " << Ogre::StringConverter::toString(dist) << "(" << elems[distanceOffset] << ")" << " color: " << Ogre::StringConverter::toString(c) << "(" << elems[bvOffset] << ") mag: " << elems[magOffset];
+            }
+            isHeader = false;
+        }
+        dataFile.close();
+        
+        mBuilt = true;
+    }
+    
+    /** Utility function for preparing the billboard set
+     */
+    void SpacescapeLayerBillboards::createBillboardSet()
+    {
+        // get the default scene manager
+        if(!Ogre::Root::getSingleton().getSceneManagerIterator().hasMoreElements()) {
+            Ogre::LogManager::getSingleton().getDefaultLog()->stream() <<
+            "No scene manager found in SpacescapePlugin::addLayer().  You can't add a layer before creating a scene manager.";
+        }
+        SceneManager* sceneMgr = Root::getSingleton().getSceneManagerIterator().peekNextValue();
+        
+        // create the billboardset if it doesn't exist
+        String name = "SpacescapeLayerBillboardset" + StringConverter::toString(mUniqueID);
+        if(!sceneMgr->hasMovableObject(name, SpacescapeBillboardSetFactory::FACTORY_TYPE_NAME)) {
+            if(!Ogre::Root::getSingleton().hasMovableObjectFactory(SpacescapeBillboardSetFactory::FACTORY_TYPE_NAME)) {
+                Ogre::Root::getSingleton().addMovableObjectFactory(OGRE_NEW SpacescapeBillboardSetFactory());
+            }
+            NameValuePairList params;
+            params["poolSize"] = StringConverter::toString(mNumBillboards);
+            mBillboardSet = static_cast<SpacescapeBillboardSet*>(sceneMgr->createMovableObject(name, SpacescapeBillboardSetFactory::FACTORY_TYPE_NAME, &params));
+        }
+        else {
+            mBillboardSet = static_cast<SpacescapeBillboardSet*>(sceneMgr->getMovableObject(name, SpacescapeBillboardSetFactory::FACTORY_TYPE_NAME));
+            
+        }
+        
+        // clear out all existing billboards
+        if(mBillboardSet) {
+            mBillboardSet->clear();
+        }
+        
+        // initialize the billboard set
+        mBillboardSet->setPoolSize(mNumBillboards);
+        mBillboardSet->setMaterialName(mMaterial->getName());
+        mBillboardSet->setDefaultDimensions(mMinSize,mMinSize);
+        mBillboardSet->setCastShadows(false);
+        mBillboardSet->setUseAccurateFacing(true);
     }
 
     /** Initialize this layer based on the given params
@@ -394,6 +578,20 @@ namespace Ogre
                 shouldUpdate |= mTextureName != ii->second;
                 mTextureName = ii->second;
             }
+#ifdef EXR_SUPPORT
+            else if(ii->first == "hdrPower") {
+                shouldUpdate |= mHDRPower != StringConverter::parseReal(ii->second);
+                mHDRPower = StringConverter::parseReal(ii->second);
+            }
+            else if(ii->first == "hdrMultiplier") {
+                shouldUpdate |= mHDRMultiplier != StringConverter::parseReal(ii->second);
+                mHDRMultiplier = StringConverter::parseReal(ii->second);
+            }
+#endif
+            else if(ii->first == "dataFile") {
+                shouldUpdate |= mStarDataFilename != ii->second;
+                mStarDataFilename = ii->second;
+            }
         }
 
         // update our saved params
@@ -404,7 +602,10 @@ namespace Ogre
             // update material fragment program parameters
             updateMaterial();
 
-            if(mMaskEnabled) {
+            if(mStarDataFilename != "") {
+                buildFromFile(mStarDataFilename);
+            }
+            else if(mMaskEnabled) {
                 buildMasked();
             }
             else {
@@ -430,8 +631,47 @@ namespace Ogre
 
             // create a single texture unit state for our billboard texture
             mMaterial->getTechnique(0)->getPass(0)->createTextureUnitState();
+            
+#ifdef EXR_SUPPORT
+            GpuProgramParametersSharedPtr params;
+            HighLevelGpuProgramPtr gpuProgram;
+            Pass* pass = mMaterial->getTechnique(0)->getPass(0);
+            
+            // load the vertex program
+            gpuProgram = HighLevelGpuProgramManager::getSingleton().
+            createProgram("spacescape_billboards_glsl_vp",
+                          ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                          "glsl",
+                          GPT_VERTEX_PROGRAM);
+            gpuProgram->setSource(spacescape_billboards_glsl_vp);
+            gpuProgram->load();
+            
+            // set the vertex program
+            pass->setVertexProgram("spacescape_billboards_glsl_vp");
+            
+            // set vertex program params
+            params = pass->getVertexProgramParameters();
+            params->setNamedAutoConstant("worldViewProj",GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
+            
+            // load the fragment program
+            gpuProgram = HighLevelGpuProgramManager::getSingleton().
+            createProgram("spacescape_billboards_glsl_fp",
+                          ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                          "glsl",
+                          GPT_FRAGMENT_PROGRAM);
+            gpuProgram->setSource(spacescape_billboards_glsl_fp);
+            
+            params = gpuProgram->getDefaultParameters();
+            params->setNamedConstant("tex",(int)0);
+            
+            gpuProgram->load();
+            
+            
+            // set the fragment program
+            pass->setFragmentProgram("spacescape_billboards_glsl_fp");
+#endif
         }
-
+        
         // set blending
         mMaterial->getTechnique(0)->getPass(0)->setSceneBlending(mSourceBlendFactor,mDestBlendFactor);
 
@@ -439,15 +679,42 @@ namespace Ogre
         if(!mTextureName.empty() && TextureManager::getSingleton().getByName(mTextureName).isNull()) {
             try {
                 // try to load
+#ifdef EXR_SUPPORT
+                TextureManager::getSingleton().load(mTextureName,
+                                                    ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,TEX_TYPE_2D,
+                                                    0,
+                                                    1.0,
+                                                    false,
+                                                    PF_FLOAT32_RGBA,
+                                                    false);
+//                virtual TexturePtr load(
+//                                        const String& name, const String& group,
+//                                        TextureType texType = TEX_TYPE_2D, int numMipmaps = MIP_DEFAULT,
+//                                        Real gamma = 1.0f, bool isAlpha = false,
+//                                        PixelFormat desiredFormat = PF_UNKNOWN, 
+//                                        bool hwGammaCorrection = false);
+#else
                 TextureManager::getSingleton().load(mTextureName,ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+#endif
             }
             catch(...) {
                 // couldn't find the file
             }
         }
 
-        if(!TextureManager::getSingleton().getByName(mTextureName).isNull()) {
+        if(!mTextureName.empty() && !TextureManager::getSingleton().getByName(mTextureName).isNull()) {
+//#ifdef EXR_SUPPORT
+//            TexturePtr tex = TextureManager::getSingleton().getByName(mTextureName);
+//            Ogre::LogManager::getSingleton().getDefaultLog()->stream() << "tex format is " <<
+//            Ogre::StringConverter::toString(tex->getFormat());
+//
+//            mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(TFO_ANISOTROPIC);
+//            mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTexture(tex);
+//#else
+//            Ogre::LogManager::getSingleton().getDefaultLog()->stream() << "billboard texture is " <<
+//            mTextureName;
             mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureName(mTextureName);
+//#endif
         }
 
         // make sure material is loaded
@@ -463,6 +730,7 @@ namespace Ogre
 
         // update shared params
         mParams["destBlendFactor"] = getBlendMode(mDestBlendFactor);
+        mParams["dataFile"] = mStarDataFilename;
         mParams["farColor"] = StringConverter::toString(mFarColor);
         mParams["minSize"] = StringConverter::toString(mMinSize);
         mParams["maskEnabled"] = StringConverter::toString(mMaskEnabled);
@@ -480,5 +748,9 @@ namespace Ogre
         mParams["numBillboards"] = StringConverter::toString(mNumBillboards);
         mParams["sourceBlendFactor"] = getBlendMode(mSourceBlendFactor);
         mParams["texture"] = mTextureName;
+#ifdef EXR_SUPPORT
+        mParams["hdrPower"] = StringConverter::toString(mHDRPower);
+        mParams["hdrMultiplier"] = StringConverter::toString(mHDRMultiplier);
+#endif
     }
 }

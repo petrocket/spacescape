@@ -123,6 +123,7 @@ void QtOgreWidget::configure(void) {
 		mOgreRoot->saveConfig();
 	}
 	mOgreRoot->initialise(false);
+
 }
 
 /** Create the Ogre render window

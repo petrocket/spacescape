@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "SpacescapePrerequisites.h"
 #include "SpacescapeLayer.h"
 #include "OgreBillboardSet.h"
+#include "SpacescapeBillboardSet.h"
 
 namespace Ogre
 {
@@ -87,6 +88,11 @@ namespace Ogre
         void updateParams(NameValuePairList params);
 
     private:
+        
+        /** Utility function for preparing the billboard set
+         */
+        void createBillboardSet();
+        
         /** Utility function for building based on class params
         */
         void build(void);
@@ -95,12 +101,16 @@ namespace Ogre
         */
         void buildMasked(void) ;
 
+        /** Utility function for building based on predefined positions/colours
+         */
+        void buildFromFile(const String &filename);
+        
         /** Update the material with new params - will create if needed
         */
         void updateMaterial(void);
 
         // billboard set to use
-        BillboardSet* mBillboardSet;
+        SpacescapeBillboardSet* mBillboardSet;
 
         // built flag
         bool mBuilt;
@@ -111,6 +121,15 @@ namespace Ogre
         // far color
         Ogre::ColourValue mFarColor; 
 
+#ifdef EXR_SUPPORT
+        // in non-hdr mode color fades linearly based on distance
+        // but in hdr mode we may want other options
+        Real mHDRPower;
+        
+        // option multiplier to use in HDR mode
+        Real mHDRMultiplier;
+#endif
+        
         // flag to enable/disable the noise mask
         bool mMaskEnabled;
 
@@ -125,7 +144,7 @@ namespace Ogre
 
         // mask noise type - either "fbm" or "ridged"
         String mMaskNoiseType;
-
+        
         // octaves for noise
         unsigned int mMaskOctaves;
 
@@ -158,6 +177,9 @@ namespace Ogre
 
         // source blend factor
         SceneBlendFactor mSourceBlendFactor;
+        
+        // optional file to use for positions/colours
+        String mStarDataFilename;
 
         // name of our sprite texture
         String mTextureName;

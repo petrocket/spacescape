@@ -34,15 +34,41 @@ THE SOFTWARE.
 #include "OgreHardwarePixelBuffer.h"
 #include "OgreTextureManager.h"
 
+#ifdef EXR_SUPPORT
+#include "OgreHighLevelGpuProgramManager.h"
+#endif
+
 namespace Ogre
 {
+#ifdef EXR_SUPPORT
+    static const String spacescape_points_glsl_vp = "uniform mat4 worldViewProj;\n\
+//        varying vec3 vertexPos;\n\
+        varying vec3 hdrColor;\n\
+        void main()\n\
+        {\n\
+            gl_Position = worldViewProj * gl_Vertex;\n\
+            hdrColor = gl_Normal.xyz;\n\
+//            vertexPos = normalize(gl_Vertex.xyz);\n\
+        }";
+    static const String spacescape_points_glsl_fp = "varying vec3 hdrColor;\n\
+        void main()\n\
+        {\n\
+            gl_FragColor.rgb = hdrColor;\n\
+            gl_FragColor.a = 1.0;\n\
+        }";
+#endif
+    
     /** Constructor
     */
-    SpacescapeLayerPoints::SpacescapeLayerPoints(const String& name, SpacescapePlugin* plugin) : 
+    SpacescapeLayerPoints::SpacescapeLayerPoints(const String& name, SpacescapePlugin* plugin) :
         SpacescapeLayer(name, plugin),
         mBuilt(false),
         mDestBlendFactor(SBF_ONE),
         mFarColor(0.0,0.0,0.0),
+#ifdef EXR_SUPPORT
+        mHDRPower(1.0),
+        mHDRMultiplier(1.0),
+#endif
         mMaskNoiseType("fbm"),
         mNearColor(1.0,1.0,1.0),
         mMaskEnabled(false),
@@ -84,6 +110,7 @@ namespace Ogre
         srand ( mSeed );
 
         Vector3 v;
+        ColourValue c;
         for(unsigned int i = 0; i < mNumPoints; ++i) {
             // nicer distribution
             Real u = -1.0 + 2.0 * rand() / ((double) RAND_MAX);
@@ -99,8 +126,17 @@ namespace Ogre
             // random distance
             float dist = rand() / ((double) RAND_MAX);
 
+#ifdef EXR_SUPPORT
+            dist = powf(dist, mHDRPower);
+#endif
             // color is based on distance (linear interpolation here)
-            colour(mNearColor + (dist * (mFarColor - mNearColor)));
+            c = mNearColor + (dist * (mFarColor - mNearColor));
+            colour(c);
+            
+#ifdef EXR_SUPPORT
+            c *= mHDRMultiplier;
+            normal(c.r,c.g,c.b);
+#endif
         }
 
         end();
@@ -130,7 +166,7 @@ namespace Ogre
             maskSize, maskSize, 
             1,
             0, // no mip maps
-            mFBOPixelFormat,
+            mMaskFBOPixelFormat,
             TU_RENDERTARGET
         );
 
@@ -180,6 +216,7 @@ namespace Ogre
         Real n;
         Real scale = 2.0 / (Real)maskSize;
         Real noiseScale = 1.0 / 255.0;
+        ColourValue c;
         while(numPoints) {
             // pick random co-ords on the top face
             Real rU = rand() / ((double) RAND_MAX);
@@ -230,9 +267,18 @@ namespace Ogre
 
             // random distance
             float dist = rand() / ((double) RAND_MAX);
-
+            
+#ifdef EXR_SUPPORT
+            dist = powf(dist, mHDRPower);
+#endif
             // color is based on distance (linear interpolation here)
-            colour(mNearColor + (dist * (mFarColor - mNearColor)));
+            c = mNearColor + (dist * (mFarColor - mNearColor));
+            colour(c);
+            
+#ifdef EXR_SUPPORT
+            c *= mHDRMultiplier;
+            normal(c.r,c.g,c.b);
+#endif
         }
 
         for(int i = 0 ; i < 6; ++i) {
@@ -259,6 +305,41 @@ namespace Ogre
             mMaterial->getTechnique(0)->getPass(0)->setPointSpritesEnabled(true);
             mMaterial->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
             mMaterial->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+            
+#ifdef EXR_SUPPORT
+            GpuProgramParametersSharedPtr params;
+            HighLevelGpuProgramPtr gpuProgram;
+            Pass* pass = mMaterial->getTechnique(0)->getPass(0);
+            
+            // load the vertex program
+            gpuProgram = HighLevelGpuProgramManager::getSingleton().
+            createProgram("spacescape_points_glsl_vp",
+                          ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                          "glsl",
+                          GPT_VERTEX_PROGRAM);
+            gpuProgram->setSource(spacescape_points_glsl_vp);
+            gpuProgram->load();
+            
+            // set the vertex program
+            pass->setVertexProgram("spacescape_points_glsl_vp");
+            
+            // set vertex program params
+            params = pass->getVertexProgramParameters();
+            params->setNamedAutoConstant("worldViewProj",GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
+            
+            // load the fragment program
+            gpuProgram = HighLevelGpuProgramManager::getSingleton().
+            createProgram("spacescape_points_glsl_fp",
+                          ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                          "glsl",
+                          GPT_FRAGMENT_PROGRAM);
+            gpuProgram->setSource(spacescape_points_glsl_fp);
+            gpuProgram->load();
+
+            
+            // set the fragment program
+            pass->setFragmentProgram("spacescape_points_glsl_fp");
+#endif
         }
 
         // update the point size if necessary
@@ -266,6 +347,7 @@ namespace Ogre
 
         // set blending
         mMaterial->getTechnique(0)->getPass(0)->setSceneBlending(mSourceBlendFactor,mDestBlendFactor);
+
 
         // make sure the material is loaded
         mMaterial->load();
@@ -358,6 +440,16 @@ namespace Ogre
                 shouldUpdate |= mSourceBlendFactor != getBlendMode(ii->second);
                 mSourceBlendFactor = getBlendMode(ii->second);
             }
+#ifdef EXR_SUPPORT
+            else if(ii->first == "hdrPower") {
+                shouldUpdate |= mHDRPower != StringConverter::parseReal(ii->second);
+                mHDRPower = StringConverter::parseReal(ii->second);
+            }
+            else if(ii->first == "hdrMultiplier") {
+                shouldUpdate |= mHDRMultiplier != StringConverter::parseReal(ii->second);
+                mHDRMultiplier = StringConverter::parseReal(ii->second);
+            }
+#endif
         }
 
         // update our string params - also checks for changes that would cause an update
@@ -398,5 +490,9 @@ namespace Ogre
         mParams["numPoints"] = StringConverter::toString(mNumPoints);
         mParams["pointSize"] = StringConverter::toString(mPointSize);
         mParams["sourceBlendFactor"] = getBlendMode(mSourceBlendFactor);
+#ifdef EXR_SUPPORT
+        mParams["hdrPower"] = StringConverter::toString(mHDRPower);
+        mParams["hdrMultiplier"] = StringConverter::toString(mHDRMultiplier);
+#endif
     }
 }

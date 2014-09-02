@@ -37,6 +37,7 @@ THE SOFTWARE.
 #include "QtSpacescapeExportFileDialog.h"
 #include "QtSpacescapeAboutDialog.h"
 #include <QSettings>
+#include "QtFilePathProperty.h"
 
 #include "OGRE/Ogre.h"
 
@@ -105,6 +106,14 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     mPropertyTitles["gain"] = QString("Gain");
     mPropertyTitles["innerColor"] = QString("Inner Color");
     mPropertyTitles["lacunarity"] = QString("Lacunarity");
+#ifdef EXR_SUPPORT
+    // in non-hdr mode color fades linearly based on distance
+    // but in hdr mode we may want other options
+    mPropertyTitles["hdrPower"] = QString("HDR Power");
+    
+    // option multiplier to use in HDR mode
+    mPropertyTitles["hdrMultiplier"] = QString("HDR Multiplier");
+#endif
     mPropertyTitles["maskEnabled"] = QString("Mask Enabled");
     mPropertyTitles["maskGain"] = QString("Mask Gain");
     mPropertyTitles["maskInnerColor"] = QString("Mask Inner Color");
@@ -123,6 +132,7 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     mPropertyTitles["nearColor"] = QString("Near Color");
     mPropertyTitles["noiseType"] = QString("Noise Type");
     mPropertyTitles["numBillboards"] = QString("Number of Billboards");
+    mPropertyTitles["dataFile"] = QString("Data File");
     mPropertyTitles["numPoints"] = QString("Number of Points");
     mPropertyTitles["octaves"] = QString("Octaves");
     mPropertyTitles["offset"] = QString("Noise Offset");
@@ -137,6 +147,10 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     mPropertyTitles["shelfAmount"] = QString("Threshold");
     mPropertyTitles["sourceBlendFactor"] = QString("Source Blend Factor");
     mPropertyTitles["visible"] = QString("Layer Visible");
+    
+#ifdef EXR_SUPPORT
+    mDebugLayerLoaded = false;
+#endif
 }
 
 /** Destructor
@@ -145,6 +159,23 @@ QtSpacescapeMainWindow::~QtSpacescapeMainWindow()
 {
     delete ui;
 }
+
+#ifdef EXR_SUPPORT
+void QtSpacescapeMainWindow::paintEvent(QPaintEvent *event)
+{
+    QMainWindow::paintEvent(event);
+    if(!mDebugLayerLoaded &&
+       ui->ogreWindow->pluginReady()) {
+         Ogre::NameValuePairList params;
+         ui->ogreWindow->addLayer(1,params);
+         
+         // insert the new layer
+         insertLayerProperties(ui->ogreWindow->getLayers().back());
+        mDebugLayerLoaded = true;
+    }
+}
+#endif
+
 
 /** A change event was received
 @param e The event parameters
@@ -176,8 +207,11 @@ QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& ke
         << "dest_alpha" << "src_alpha" << "one_minus_dest_alpha" 
         << "one_minus_src_alpha";
     textureSizes << "256" << "512" << "1024" << "2048" << "4096";
+#ifdef EXR_SUPPORT
+    billboardTextures << "hdr-flare-blue.exr" << "hdr-flare-red.exr" << "hdr-flare-yellow.exr" << "hdr-flare-purple.exr" << "hdr-flare-white.exr"  << "hdr-flare-white2.exr";
+    billboardTextures << "hdr-flare-blue-2spires.exr" << "hdr-flare-blue-4spires.exr" << "hdr-flare-blue1.exr" << "hdr-flare-bluepurple-4spire.exr" << "hdr-flare-bluepurple-multispire.exr" << "hdr-flare-pink1.exr" << "hdr-flare-red-2spires.exr" << "hdr-flare-redpurple-multispire.exr";
+#endif
     billboardTextures << "default.png" << "flare-blue-purple1.png" << "flare-blue-purple2.png" << "flare-blue-purple3.png" << "flare-blue-spikey1.png" << "flare-green1.png" << "flare-inverted-blue-purple3.png" << "flare-red-yellow1.png" << "flare-red1.png" << "flare-white-small1.png" << "sun.png";
-
     int propertyType = getPropertyType(key);
     QtVariantProperty* property;
 
@@ -351,6 +385,17 @@ QLatin1String QtSpacescapeMainWindow::getPropertyStatusTip(const Ogre::String& p
     else if(prop == "lacunarity" || prop == "maskLacunarity") {
         return QLatin1String("A multiplier that determines how quickly the frequency increases for each successive octave.");
     }
+#ifdef EXR_SUPPORT
+    else if(prop == "hdrPower") {
+        return QLatin1String("How distance affects the transition between near and far colours.");
+    }
+    else if(prop == "hdrMultiplier") {
+        return QLatin1String("Multiply the final by this value.");
+    }
+#endif
+    else if(prop == "dataFile") {
+        return QLatin1String("A CSV file with x,y,z,distance (in parsecs), mag (magnitude), BV fields.");
+    }
     else if(prop == "octaves" || prop == "maskOctaves") {
         return QLatin1String("Number of noise functions in a series of noise functions that are added together.");
     }
@@ -452,7 +497,11 @@ int QtSpacescapeMainWindow::getPropertyType(const Ogre::String& name)
         name == "maskNoiseType") {
             return QtVariantPropertyManager::enumTypeId();
     }
-    else if(name == "name" || name == "texture") {
+    else if(name == "name" ||
+            name == "texture") {
+        return QVariant::String;
+    }
+    else if(name == "dataFile") {
         return QVariant::String;
     }
     else if(name == "innerColor" ||
@@ -537,19 +586,34 @@ QtProperty* QtSpacescapeMainWindow::insertLayerProperties(Ogre::SpacescapeLayer*
             continue;
         }
 
-        // create the sub property
-        QtVariantProperty* subProperty = createProperty(pl->first, pl->second);
-        if(!subProperty) {
-            continue;
+        if(pl->first == "dataFile") {
+            QtFilePathManager *mgr = new QtFilePathManager;
+            QtProperty *pathProperty = mgr->addProperty("Data File");
+            mgr->setValue(pathProperty, "");
+            mgr->setFilter(pathProperty, "Source files (*.csv)");
+            QtFileEditFactory *fact = new QtFileEditFactory;
+            ui->layerProperties->setFactoryForManager(mgr, fact);
+            layerProperties->addSubProperty(pathProperty);
+            
+            // add a signal for when properties are changed
+            connect(mgr, SIGNAL(valueChanged(QtProperty *, const QString &)),
+                    this, SLOT(valueChanged(QtProperty *, const QString &)));
         }
+        else {
+            // create the sub property
+            QtVariantProperty* subProperty = createProperty(pl->first, pl->second);
+            if(!subProperty) {
+                continue;
+            }
 
-        // add this sub property parameter
-        layerProperties->addSubProperty(subProperty);
+            // add this sub property parameter
+            layerProperties->addSubProperty(subProperty);
 
-        // special auto hide for color types
-        if(getPropertyType(pl->first) == QVariant::Color) {
-            QList<QtBrowserItem *> bi = ui->layerProperties->items(subProperty);
-            ui->layerProperties->setExpanded(bi.first(),false);
+            // special auto hide for color types
+            if(getPropertyType(pl->first) == QVariant::Color) {
+                QList<QtBrowserItem *> bi = ui->layerProperties->items(subProperty);
+                ui->layerProperties->setExpanded(bi.first(),false);
+            }
         }
     }
 
@@ -602,6 +666,25 @@ void QtSpacescapeMainWindow::onDeleteLayerClicked()
     }
 }
 
+/** The enable hdr action was clicked
+ */
+void QtSpacescapeMainWindow::onEnableHDR()
+{
+    static bool hdrEnabled = false;
+    hdrEnabled = !hdrEnabled;
+
+    // @TODO
+//    ui->ogreWindow->setDebugBoxVisible(debugVisible);
+    
+    if(hdrEnabled) {
+        ui->actionEnableHDR->setText(QApplication::translate("MainWindow", "Disable HDR", 0));
+    }
+    else {
+        ui->actionEnableHDR->setText(QApplication::translate("MainWindow", "Enable HDR", 0));
+    }
+}
+
+
 /** The export action was clicked
 */
 void QtSpacescapeMainWindow::onExport()
@@ -612,7 +695,11 @@ void QtSpacescapeMainWindow::onExport()
         this,
         "Export Skybox",
         mLastExportDir,
+#ifdef EXR_SUPPORT
+        QLatin1String("6 EXR files(*.exr);;6 PNG files(*.png);;6 JPG files(*.jpg)"),
+#else
         QLatin1String("6 PNG files(*.png);;6 JPG files(*.jpg)"),
+#endif
         &selectedFilter,
         0,
         &imageSize
@@ -625,7 +712,14 @@ void QtSpacescapeMainWindow::onExport()
         // make sure we have an extension on the filename
         QFileInfo fi(filename);
         if(fi.completeSuffix().isNull() || fi.completeSuffix().isEmpty()) {
+#ifdef EXR_SUPPORT
+            if(selectedFilter == "6 EXR files(*.exr)") {
+                filename += ".exr";
+            }
+            else if(selectedFilter == "6 JPG files(*.jpg)") {
+#else
             if(selectedFilter == "6 JPG files(*.jpg)") {
+#endif
                 filename += ".jpg";
             }
             else {
@@ -883,7 +977,23 @@ void QtSpacescapeMainWindow::onSaveAs()
         }
     }
 }
+    
+/** The show debug box was clicked
+ */
+void QtSpacescapeMainWindow::onShowDebugBox()
+{
+    static bool debugVisible = false;
+    debugVisible = !debugVisible;
+    ui->ogreWindow->setDebugBoxVisible(debugVisible);
+    if(debugVisible) {
+        ui->actionShowDebugBox->setText(QApplication::translate("MainWindow", "Hide Debug Box", 0));
+    }
+    else {
+        ui->actionShowDebugBox->setText(QApplication::translate("MainWindow", "Show Debug Box", 0));
+    }
+}
 
+    
 /** Utility function for refreshing the entire layer property tree
 */
 void QtSpacescapeMainWindow::refreshProperties()
@@ -978,6 +1088,10 @@ void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QVariant &
 #ifdef Q_WS_MAC
         else if(propertyStr == "texture") {
             QStringList billboardTextures;
+#ifdef EXR_SUPPORT
+            billboardTextures << "hdr-flare-blue.exr" << "hdr-flare-red.exr" << "hdr-flare-yellow.exr" << "hdr-flare-purple.exr" << "hdr-flare-white.exr" << "hdr-flare-white2.exr";
+            billboardTextures << "hdr-flare-blue-2spires.exr" << "hdr-flare-blue-4spires.exr" << "hdr-flare-blue1.exr" << "hdr-flare-bluepurple-4spire.exr" << "hdr-flare-bluepurple-multispire.exr" << "hdr-flare-pink1.exr" << "hdr-flare-red-2spires.exr" << "hdr-flare-redpurple-multispire.exr";
+#endif
             billboardTextures << "default.png" << "flare-blue-purple1.png" << "flare-blue-purple2.png" << "flare-blue-purple3.png" << "flare-blue-spikey1.png" << "flare-green1.png" << "flare-inverted-blue-purple3.png" << "flare-red-yellow1.png" << "flare-red1.png" << "flare-white-small1.png" << "sun.png";
             params[propertyStr] = Ogre::String(billboardTextures[value.toUInt()].toStdString());
         }
@@ -1038,3 +1152,47 @@ void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QVariant &
         }
     }
 }
+    
+void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QString &value)
+{
+    // don't update if we're refreshing
+    if(mRefreshing) return;
+    
+    QList<QtProperty *> l = ui->layerProperties->properties();
+    
+    int topLevelIndex = 0;
+    int layerId = -1;
+    
+    // find the layer that contains this property
+    for(; topLevelIndex < l.size(); topLevelIndex++) {
+        if(l[topLevelIndex] == property) {
+            layerId = l.size() - 1 - topLevelIndex;
+            break;
+        }
+        
+        bool found = false;
+        
+        QList<QtProperty *> sl = l[topLevelIndex]->subProperties();
+        if(!sl.empty()) {
+            for(int id = 0; id < sl.size(); id++) {
+                if(sl[id] == property) {
+                    layerId = l.size() - 1 - topLevelIndex;
+                    found = true;
+                    break;
+                }
+            }
+        }
+        
+        if(found) break;
+    }
+    
+    // did we find a valid layer id?
+    std::vector<Ogre::SpacescapeLayer *> layers = ui->ogreWindow->getLayers();
+    if(layerId > -1 && layerId < (int)l.size() && layerId < (int)layers.size()) {
+        Ogre::NameValuePairList params;
+        Ogre::String propertyStr = getProperty(property->propertyName());
+        params[propertyStr] = Ogre::String(value.toStdString());
+        ui->ogreWindow->updateLayer(layerId,params);
+    }
+}
+

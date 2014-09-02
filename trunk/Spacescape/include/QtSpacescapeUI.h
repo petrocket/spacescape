@@ -50,6 +50,7 @@ THE SOFTWARE.
 #include <QProgressDialog>
 #include <QtTreePropertyBrowser>
 #include "QtSpacescapeWidget.h"
+//#include "QtFilePathProperty.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -63,6 +64,8 @@ public:
     QAction *action_Export;
     QAction *actionAbout;
     QAction *actionE_xit;
+    QAction *actionShowDebugBox;
+    QAction *actionEnableHDR;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout_2;
     QSplitter *splitter_2;
@@ -84,6 +87,7 @@ public:
     QMenuBar *menuBar;
     QMenu *menu_File;
     QMenu *menuHelp;
+    QMenu *menuSettings;
     QStatusBar *statusBar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -241,6 +245,10 @@ public:
         actionAbout->setObjectName(QString::fromUtf8("actionAbout"));
         actionE_xit = new QAction(MainWindow);
         actionE_xit->setObjectName(QString::fromUtf8("actionE_xit"));
+        actionShowDebugBox = new QAction(MainWindow);
+        actionShowDebugBox->setObjectName(QString::fromUtf8("actionShowDebugBox"));
+        actionEnableHDR = new QAction(MainWindow);
+        actionEnableHDR->setObjectName(QString::fromUtf8("actionEnableHDR"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         horizontalLayout_2 = new QHBoxLayout(centralWidget);
@@ -373,6 +381,9 @@ public:
         menu_File->setObjectName(QString::fromUtf8("menu_File"));
         menuHelp = new QMenu(menuBar);
         menuHelp->setObjectName(QString::fromUtf8("menuHelp"));
+        menuSettings = menuBar->addMenu(QString::fromUtf8("Settings"));
+        menuSettings->setObjectName(QString::fromUtf8("menuSettings"));
+
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QString::fromUtf8("statusBar"));
@@ -380,6 +391,8 @@ public:
 
         menuBar->addAction(menu_File->menuAction());
         menuBar->addAction(menuHelp->menuAction());
+        
+        menuBar->addAction(menuSettings->menuAction());
         menu_File->addAction(action_New);
         menu_File->addAction(action_Open);
         menu_File->addSeparator();
@@ -388,7 +401,13 @@ public:
         menu_File->addAction(action_Export);
         menu_File->addSeparator();
         menu_File->addAction(actionE_xit);
+        
         menuHelp->addAction(actionAbout);
+        
+        menuSettings->addAction(actionShowDebugBox);
+        menuSettings->addAction(actionEnableHDR);
+        
+        menuBar->setNativeMenuBar(true);
 
         mProgressDialog = new QProgressDialog(MainWindow);
         mProgressDialog->setMinimum(0);
@@ -405,6 +424,9 @@ public:
         QObject::connect(moveLayerDown, SIGNAL(clicked()), MainWindow, SLOT(onMoveLayerDown()));
         QObject::connect(moveLayerUp, SIGNAL(clicked()), MainWindow, SLOT(onMoveLayerUp()));
         QObject::connect(deleteLayer, SIGNAL(clicked()), MainWindow, SLOT(onDeleteLayerClicked()));
+        
+        QObject::connect(actionShowDebugBox, SIGNAL(triggered()), MainWindow, SLOT(onShowDebugBox()));
+        QObject::connect(actionEnableHDR, SIGNAL(triggered()), MainWindow, SLOT(onEnableHDR()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -430,6 +452,8 @@ public:
 #endif
         actionAbout->setText(QApplication::translate("MainWindow", "About Spacescape", 0));
         actionE_xit->setText(QApplication::translate("MainWindow", "E&xit", 0));
+        actionShowDebugBox->setText(QApplication::translate("MainWindow", "Show Debug Box", 0));
+        actionEnableHDR->setText(QApplication::translate("MainWindow", "Enable HDR", 0));
         layerProperties->setProperty("resizeMode", QVariant(QApplication::translate("MainWindow", "ResizeToContents", 0)));
         newLayer->setText(QApplication::translate("MainWindow", "New Layer", 0));
 #ifndef QT_NO_STATUSTIP

@@ -30,11 +30,11 @@ THE SOFTWARE.
 #ifndef QtSpacescapeWidget_H
 #define QtSpacescapeWidget_H
 
-//#if defined(Q_WS_MAC)
+#if defined(Q_WS_MAC)
 #include "QtOgreWidgetOSX.h"
-//#else
-//#include "QtOgreWidget.h"
-//#endif
+#else
+#include "QtOgreWidget.h"
+#endif
 #include "SpacescapePlugin.h"
 #include "SpacescapeLayer.h"
 
@@ -109,6 +109,11 @@ public:
     */
     bool open(const QString& filename);
 
+    /** Return true if plugin is ready
+     @return true on success
+     */
+    bool pluginReady();
+    
     /** Save a Spacescape .xml file
     @param filename The name of the file to save (with path)
     @return true on success
@@ -126,6 +131,8 @@ public:
     */
     void setProgressListener(Ogre::SpacescapeProgressListener* listener) { mProgressListener = listener; }
 
+    void setDebugBoxVisible(bool visible);
+    
     /** Update the params or a SpacescapeLayer
     @param layerID The layer ID of the layer to move
     @param params The new params
