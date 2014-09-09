@@ -41,7 +41,8 @@
 #include <Ogre.h>
 #pragma warning( pop )
 #else
-#include <OGRE/Ogre.h>
+//#include <OGRE/Ogre.h>
+#include <Ogre.h>
 #endif
 
 /** QtOgreWidget is a class for embedding an Ogre

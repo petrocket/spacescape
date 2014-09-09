@@ -82,9 +82,10 @@ public:
     @param filename Name of the file (with path)
     @param imageSize The size of the image in pixels
     @param cubeMap Whether to write a single cubemap or not
+	@param orientation Orientation changes based on skybox type
     @return true on success
     */
-    bool exportSkybox(const QString& filename, unsigned int imageSize = 1024, bool cubeMap = false);
+	bool exportSkybox(const QString& filename, unsigned int imageSizee = 1024, bool cubeMap = false, int orientation = 0);
 
     /** Get current SpacescapeLayers list
     @return current SpacescapeLayers list

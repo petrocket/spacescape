@@ -86,6 +86,7 @@ ELSE(APPLE)
         src/QtSpacescapeExportFileDialog.cpp
         src/QtSpacescapeMainWindow.cpp
         src/QtSpacescapeWidget.cpp
+        src/QtFilePathProperty.cpp
     )
     SET(SPC_MOC_HDRS
         include/QtOgreWidget.h
@@ -95,6 +96,7 @@ ELSE(APPLE)
         include/QtSpacescapeMainWindow.h
         include/QtSpacescapeUI.h
         include/QtSpacescapeWidget.h
+        include/QtFilePathProperty.h
     )
 ENDIF(APPLE)
 
@@ -117,7 +119,8 @@ ELSEIF(WIN32)
   ADD_EXECUTABLE(Spacescape WIN32 ${SPC_SRCS} ${SPC_MOC_SRCS} ${SPC_MOC_HDRS} ${SPC_RESOURCES_RCC})
 ENDIF()
 
-TARGET_LINK_LIBRARIES(Spacescape SpacescapePlugin "${OGRE_LIBRARIES}" Qt5::Widgets debug ${QtPropertyBrowser_Library_DBG} optimized ${QtPropertyBrowser_Library_REL})
+TARGET_LINK_LIBRARIES(Spacescape SpacescapePlugin "${OGRE_LIBRARIES}" Qt5::Widgets)
+TARGET_LINK_LIBRARIES(Spacescape debug ${QtPropertyBrowser_Library_DBG} optimized ${QtPropertyBrowser_Library_REL})
 
 IF(WIN32)
    set_target_properties(Spacescape PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")

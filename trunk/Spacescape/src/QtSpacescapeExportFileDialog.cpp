@@ -86,11 +86,11 @@ QString QtSpacescapeExportFileDialog::getExportFileName(QWidget *parent,
     args.selection = "";
     args.filter = filter;
     args.mode = AnyFile;
-#ifdef Q_WS_MAC
+//#ifdef Q_WS_MAC
     args.options = DontUseNativeDialog;
-#else
-    args.options = options;
-#endif
+//#else
+//    args.options = options;
+//#endif
     
     // create a qt dialog
     QtSpacescapeExportFileDialog dialog(args);

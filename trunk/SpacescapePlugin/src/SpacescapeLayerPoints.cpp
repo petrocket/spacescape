@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include <OgrePass.h>
 #include "OgreHardwarePixelBuffer.h"
 #include "OgreTextureManager.h"
+#include "OgreHighLevelGpuProgram.h"
 
 #ifdef EXR_SUPPORT
 #include "OgreHighLevelGpuProgramManager.h"

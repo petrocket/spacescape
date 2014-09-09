@@ -9,6 +9,8 @@
 #ifndef __Spacescape__QtFilePathManager__
 #define __Spacescape__QtFilePathManager__
 
+#define QT_QTPROPERTYBROWSER_IMPORT
+
 #include <qtpropertybrowser.h>
 #include <QWidget>
 #include <qlineedit.h>
@@ -17,7 +19,7 @@ QT_BEGIN_NAMESPACE
 
 class QtFileEdit : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
      QtFileEdit(QWidget *parent = 0);
     

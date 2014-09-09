@@ -33,6 +33,9 @@ THE SOFTWARE.
 #include "OgreMaterialManager.h"
 #include "OgreHardwarePixelBuffer.h"
 #include "OgreTextureManager.h"
+#include "OgreLogManager.h"
+#include "OgreTechnique.h"
+#include "OgreHighLevelGpuProgram.h"
 
 #ifdef EXR_SUPPORT
 #include "OgreHighLevelGpuProgramManager.h"
@@ -52,12 +55,13 @@ namespace Ogre
         UV = uv0;\n\
     }";
     
-    static const String spacescape_billboards_glsl_fp = "uniform sampler2D tex;\n\
-    varying vec3 hdrColor;\n\
-    varying vec2 UV;\n\
-    void main()\n\
-    {\n\
-        gl_FragColor = vec4(hdrColor.r,hdrColor.g,hdrColor.b,1.0) * texture2D(tex,UV);\n\
+	static const String spacescape_billboards_glsl_fp = "uniform sampler2D tex;\n\
+														    varying vec3 hdrColor;\n\
+															    varying vec2 UV;\n\
+																    void main()\n\
+																	    {\n\
+		vec4 d = texture2D(tex,UV); \n\
+        gl_FragColor = vec4(hdrColor.r * d.r,hdrColor.g * d.g,hdrColor.b * d.b,d.a);\n\
     }";
 
 #endif
@@ -68,8 +72,8 @@ namespace Ogre
         SpacescapeLayer(name, plugin),
         mBillboardSet(0),
         mBuilt(false),
-//        mDestBlendFactor(SBF_ONE),
-        mDestBlendFactor(SBF_ONE_MINUS_SOURCE_COLOUR),
+        mDestBlendFactor(SBF_ONE),
+//        mDestBlendFactor(SBF_ONE_MINUS_SOURCE_COLOUR),
         mFarColor(ColourValue(1.0,1.0,1.0)),
 #ifdef EXR_SUPPORT
         mHDRPower(1.0),
@@ -401,9 +405,9 @@ namespace Ogre
                 SpacescapeBillboard* b = mBillboardSet->createBillboard(pos);
                 
                 
-                dist = MIN(dist,maxDist);
+                dist = std::min<Real>(dist,maxDist);
                 dist *= 1.0/maxDist;
-                dist = MAX(0,dist);
+                dist = std::max<Real>(0,dist);
 
                 // size is based on distance and min/max allowed sizes
                 // closer distances are larger

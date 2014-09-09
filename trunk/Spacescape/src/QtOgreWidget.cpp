@@ -42,7 +42,8 @@ Ogre::Root * QtOgreWidget::mOgreRoot = NULL;
 /** Constructor
 @param parent
 */
-QtOgreWidget::QtOgreWidget(QWidget *parent) : QWidget(parent) {
+QtOgreWidget::QtOgreWidget(QWidget* parent, Qt::WindowFlags f) : QWidget(parent) {
+//QtOgreWidget::QtOgreWidget(QWidget *parent) : QWidget(parent) {
 	setAttribute(Qt::WA_PaintOnScreen);
 	setAttribute(Qt::WA_NoBackground);
 	

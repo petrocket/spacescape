@@ -37,7 +37,7 @@ namespace Ui {
 }
 
 class QtSpacescapeAboutDialog : public QDialog {
-    Q_OBJECT
+	Q_OBJECT
 public:
     QtSpacescapeAboutDialog(QWidget *parent = 0);
     ~QtSpacescapeAboutDialog();

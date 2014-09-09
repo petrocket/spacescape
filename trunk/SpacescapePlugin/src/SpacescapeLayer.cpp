@@ -337,121 +337,179 @@ namespace Ogre
     @param scale Initial scale amount applied to unit sphere noise coords
     @param offset Used for ridged noise
     */
-    void SpacescapeLayer::renderNoiseToTexture(TexturePtr& texture, 
-        unsigned int seed, 
-        const String& noiseType,
-        ColourValue innerColor,
-        ColourValue outerColor,
-        unsigned int octaves, 
-        Real lacunarity, Real gain, 
-        Real power, Real threshold,
-        Real dither,
-        Real scale,
-        Real offset
+	void SpacescapeLayer::renderNoiseToTexture(TexturePtr& texture,
+		unsigned int seed,
+		const String& noiseType,
+		ColourValue innerColor,
+		ColourValue outerColor,
+		unsigned int octaves,
+		Real lacunarity, Real gain,
+		Real power, Real threshold,
+		Real dither,
+		Real scale,
+		Real offset
 #ifdef EXR_SUPPORT
-        ,Real hdrPower, Real hdrMultiplier
+		, Real hdrPower, Real hdrMultiplier
 #endif
-        )
-    {
-        // update the rtt material
-        MaterialPtr material = mNoiseMaterial->getMaterial();
+		)
+	{
+		// update the rtt material
+		MaterialPtr material = mNoiseMaterial->getMaterial();
 
-        // only accept two types of noise for now
-        String validNoiseType = noiseType != "ridged" ? "fbm" : "ridged";
+		// only accept two types of noise for now
+		String validNoiseType = noiseType != "ridged" ? "fbm" : "ridged";
 
-        // shuffle the techniques around because we can't control 
-        // the selected technique without overriding the renderable
-        // class (ManualObjectSection)
-        while(material->getTechnique(0)->getName() != validNoiseType) {
-            // move the technique at index 0 to back of the line
-            Technique* t = material->createTechnique();
-            *t = *(material->getTechnique(0));
-            material->removeTechnique(0);
-        }
+		// shuffle the techniques around because we can't control 
+		// the selected technique without overriding the renderable
+		// class (ManualObjectSection)
+		while (material->getTechnique(0)->getName() != validNoiseType) {
+			// move the technique at index 0 to back of the line
+			Technique* t = material->createTechnique();
+			*t = *(material->getTechnique(0));
+			material->removeTechnique(0);
+		}
 
-        // set blending to not draw anything but this sphere (opaque)
-        Pass* pass = material->getTechnique(0)->getPass(0);
-        pass->setSceneBlending(SBF_ONE,SBF_ZERO);
+		// set blending to not draw anything but this sphere (opaque)
+		Pass* pass = material->getTechnique(0)->getPass(0);
+		pass->setSceneBlending(SBF_ONE, SBF_ZERO);
 
-        // set properties for our material
-        GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
+		// set properties for our material
+		GpuProgramParametersSharedPtr params = pass->getFragmentProgramParameters();
 
-        params->setNamedConstant( "ditherAmt",  dither );
-        params->setNamedConstant( "gain",       gain );
-        params->setNamedConstant( "innerColor", innerColor );
-        params->setNamedConstant( "lacunarity", lacunarity );
-        params->setNamedConstant( "octaves",    (int)octaves );
-        params->setNamedConstant( "outerColor", outerColor );
-        params->setNamedConstant( "powerAmt",   power );
-        params->setNamedConstant( "shelfAmt",   threshold );
-        params->setNamedConstant( "noiseScale", scale );
-        params->setNamedConstant( "hdrPowerAmt", hdrPower );
-        params->setNamedConstant( "hdrMultiplier", hdrMultiplier );
-        
-        if(validNoiseType == "ridged") {
-            params->setNamedConstant( "offset",   offset );
-        }
+		params->setNamedConstant("ditherAmt", dither);
+		params->setNamedConstant("gain", gain);
+		params->setNamedConstant("innerColor", innerColor);
+		params->setNamedConstant("lacunarity", lacunarity);
+		params->setNamedConstant("octaves", (int)octaves);
+		params->setNamedConstant("outerColor", outerColor);
+		params->setNamedConstant("powerAmt", power);
+		params->setNamedConstant("shelfAmt", threshold);
+		params->setNamedConstant("noiseScale", scale);
+		params->setNamedConstant("hdrPowerAmt", hdrPower);
+		params->setNamedConstant("hdrMultiplier", hdrMultiplier);
 
-        // initialize permutations table
-        initNoise(seed);
+		if (validNoiseType == "ridged") {
+			params->setNamedConstant("offset", offset);
+		}
 
-        // now write the perm and gradient values to a texture
-        uchar* permTexture = OGRE_ALLOC_T( uchar, 256 * 256 * 4, MEMCATEGORY_GENERAL);
+		// initialize permutations table
+		initNoise(seed);
 
-        // we add the Z part in the shader
-        for(int Y = 0; Y<256; Y++) {
-            for(int X = 0; X<256; X++) {
-                int offset = (Y*256+X)*4;
+		// now write the perm and gradient values to a texture
+		TexturePtr permTexturePtr = pass->getTextureUnitState(0)->_getTexturePtr();
+		HardwarePixelBufferSharedPtr pb = permTexturePtr->getBuffer();
 
-                uchar A = mPermutations[X]; // A = mPermutations[X]+Y (add y later below)
-                permTexture[offset + 0]   = mPermutations[A + Y]; // AA = mPermutations[A]+Z (add z in shader)
-                permTexture[offset+ 1] = mPermutations[A+Y+1]; // AB = mPermutations[A+1]+Z
-                uchar B = mPermutations[X+1]; // we add the y later
-                permTexture[offset+2] = mPermutations[B + Y]; // BA = mPermutations[B]+Z (add z in shader)
-                permTexture[offset+3] = mPermutations[B+Y+1]; // BB = mPermutations[B+1]+Z (add z in shader)             
-            }
-        }
+		if (permTexturePtr->getFormat() == PF_FLOAT32_RGBA) {
+			float* permTexture = OGRE_ALLOC_T(float, 256 * 256 * 4, MEMCATEGORY_GENERAL);
 
-        TexturePtr permTexturePtr = pass->getTextureUnitState(0)->_getTexturePtr();
-        HardwarePixelBufferSharedPtr pb = permTexturePtr->getBuffer();
-        if(!pb->isLocked()) {
-            // blit from memory to the texture surface
-            pb->blitFromMemory(PixelBox(256,256,1,PF_BYTE_RGBA,permTexture));
-        }
+			// we add the Z part in the shader
+			for (int Y = 0; Y < 256; Y++) {
+				for (int X = 0; X < 256; X++) {
+					int offset = (Y * 256 + X) * 4;
+
+					int A = mPermutations[X]; // A = mPermutations[X]+Y (add y later below)
+					permTexture[offset + 0] = (float)mPermutations[A + Y]; // AA = mPermutations[A]+Z (add z in shader)
+					permTexture[offset + 1] = (float)mPermutations[A + Y + 1]; // AB = mPermutations[A+1]+Z
+					int B = mPermutations[X + 1]; // we add the y later
+					permTexture[offset + 2] = (float)mPermutations[B + Y]; // BA = mPermutations[B]+Z (add z in shader)
+					permTexture[offset + 3] = (float)mPermutations[B + Y + 1]; // BB = mPermutations[B+1]+Z (add z in shader)             
+				}
+			}
+
+			// blit from memory to the texture surface
+			if (!pb->isLocked()) {
+				pb->blitFromMemory(PixelBox(256, 256, 1, permTexturePtr->getFormat(), permTexture));
+			}
+
+			// free memory
+			OGRE_FREE(permTexture, MEMCATEGORY_GENERAL);
+		}
+		else {
+			uchar* permTexture = OGRE_ALLOC_T(uchar, 256 * 256 * 4, MEMCATEGORY_GENERAL);
+
+			// we add the Z part in the shader
+			for (int Y = 0; Y < 256; Y++) {
+				for (int X = 0; X < 256; X++) {
+					int offset = (Y * 256 + X) * 4;
+
+					uchar A = mPermutations[X]; // A = mPermutations[X]+Y (add y later below)
+					permTexture[offset + 0] = mPermutations[A + Y]; // AA = mPermutations[A]+Z (add z in shader)
+					permTexture[offset + 1] = mPermutations[A + Y + 1]; // AB = mPermutations[A+1]+Z
+					uchar B = mPermutations[X + 1]; // we add the y later
+					permTexture[offset + 2] = mPermutations[B + Y]; // BA = mPermutations[B]+Z (add z in shader)
+					permTexture[offset + 3] = mPermutations[B + Y + 1]; // BB = mPermutations[B+1]+Z (add z in shader)             
+				}
+			}
+
+			// blit from memory to the texture surface
+			if (!pb->isLocked()) {
+				pb->blitFromMemory(PixelBox(256,256,1,PF_BYTE_RGBA,permTexture));
+			}
+			// free memory
+			OGRE_FREE(permTexture, MEMCATEGORY_GENERAL);
+		}
 
         pass->getTextureUnitState(0)->setTextureName(permTexturePtr->getName());
 
-        // free memory
-        OGRE_DELETE_T(permTexture,uchar,MEMCATEGORY_GENERAL);
 
-        // create the gradient texture
-        uchar* gradTexture = OGRE_ALLOC_T( uchar, 256 * 3, MEMCATEGORY_GENERAL);
-        for(int i = 0; i < 256; i++) {
-            int offset = i * 3;
-            int index = mPermutations[i] & 15;
-            Vector3 v = Vector3(grad3[index][0],grad3[index][1],grad3[index][2]);
-            v.normalise();
-            v *= 0.5;
-            v += 0.5;
+		TexturePtr gradTexturePtr = pass->getTextureUnitState(1)->_getTexturePtr();
 
-            gradTexture[offset + 0] = floor(v.x * 255.0);
-            gradTexture[offset + 1] = floor(v.y * 255.0);
-            gradTexture[offset + 2] = floor(v.z * 255.0);
-        }
+		if (gradTexturePtr->getFormat() == PF_FLOAT32_RGB) {
+			// create the gradient texture
+			float* gradTexture = OGRE_ALLOC_T(float, 256 * 3, MEMCATEGORY_GENERAL);
 
-        TexturePtr gradTexturePtr = pass->getTextureUnitState(1)->_getTexturePtr();
-        pb = gradTexturePtr->getBuffer();
-        if(!pb->isLocked()) {
-            // blit from memory to the texture surface
-            pb->blitFromMemory(PixelBox(256,1,1,PF_BYTE_RGB,gradTexture));
-        }
+			for (int i = 0; i < 256; i++) {
+				int offset = i * 3;
+				int index = mPermutations[i] & 15;
+				Vector3 v = Vector3(grad3[index][0], grad3[index][1], grad3[index][2]);
+				v.normalise();
+				v *= 0.5;
+				v += 0.5;
+
+				gradTexture[offset + 0] = v.x;
+				gradTexture[offset + 1] = v.y;
+				gradTexture[offset + 2] = v.z;
+			}
+
+
+			pb = gradTexturePtr->getBuffer();
+			if (!pb->isLocked()) {
+				// blit from memory to the texture surface
+				pb->blitFromMemory(PixelBox(256, 1, 1, gradTexturePtr->getFormat(), gradTexture));
+			}
+			// free memory
+			OGRE_FREE(gradTexture, MEMCATEGORY_GENERAL);
+		}
+		else {
+			// create the gradient texture
+			uchar* gradTexture = OGRE_ALLOC_T(uchar, 256 * 3, MEMCATEGORY_GENERAL);
+
+			for (int i = 0; i < 256; i++) {
+				int offset = i * 3;
+				int index = mPermutations[i] & 15;
+				Vector3 v = Vector3(grad3[index][0], grad3[index][1], grad3[index][2]);
+				v.normalise();
+				v *= 0.5;
+				v += 0.5;
+
+				gradTexture[offset + 0] = floor(v.x * 255.0);
+				gradTexture[offset + 1] = floor(v.y * 255.0);
+				gradTexture[offset + 2] = floor(v.z * 255.0);
+			}
+
+
+			pb = gradTexturePtr->getBuffer();
+			if (!pb->isLocked()) {
+				// blit from memory to the texture surface
+				pb->blitFromMemory(PixelBox(256, 1, 1, PF_BYTE_RGB, gradTexture));
+			}
+			// free memory
+			OGRE_FREE(gradTexture, MEMCATEGORY_GENERAL);
+		}
 
         pass->getTextureUnitState(1)->setTextureName(gradTexturePtr->getName());
 
         material->load();
-
-        // free memory
-        OGRE_FREE(gradTexture,MEMCATEGORY_GENERAL);
 
         // create the rtt sphere section
         if(!mRTTManualObject) {

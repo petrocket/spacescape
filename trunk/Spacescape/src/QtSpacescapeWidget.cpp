@@ -29,7 +29,8 @@ THE SOFTWARE.
 */
 #include "QtSpacescapeWidget.h"
 #include <QMouseEvent>
-#include "OGRE/Ogre.h"
+//#include "OGRE/Ogre.h"
+#include <Ogre.h>
 
 #ifdef Q_WS_MAC
 #include "macUtils.h"
@@ -119,14 +120,15 @@ bool QtSpacescapeWidget::deleteLayer(unsigned int layerID)
 @param cubeMap Whether to write a single cubemap or not
 @return true on success
 */
-bool QtSpacescapeWidget::exportSkybox(const QString& filename, unsigned int imageSize, bool cubeMap)
+bool QtSpacescapeWidget::exportSkybox(const QString& filename, unsigned int imageSize, bool cubeMap, int orientation)
 {
     Ogre::SpacescapePlugin* plugin = getPlugin();
     if(plugin) {
         plugin->writeToFile(
             Ogre::String(filename.toStdString()),
             imageSize,
-            cubeMap ? Ogre::TEX_TYPE_CUBE_MAP : Ogre::TEX_TYPE_2D
+            cubeMap ? Ogre::TEX_TYPE_CUBE_MAP : Ogre::TEX_TYPE_2D,
+			(SpacescapePlugin::SpacescapeRTTOrientation)orientation
         );
         return true;
     }

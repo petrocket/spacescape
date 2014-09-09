@@ -41,6 +41,10 @@ THE SOFTWARE.
 #include <iostream>
 #include "ticpp.h"
 //#include "half.h"
+#include "OgreLogManager.h"
+#include "OgreCamera.h"
+#include "OgreViewPort.h"
+#include "OgreTechnique.h"
 
 namespace Ogre 
 {
@@ -140,10 +144,13 @@ namespace Ogre
         mProgressListeners.push_back(listener);
     }
 
-    void SpacescapePlugin::buildDebugBox()
+    void SpacescapePlugin::buildDebugBox(SceneNode *sceneNode)
     {
+		if (!sceneNode) return;
+
         if(!mDebugBox) {
             Real dist = 1.1;
+			/*
             mDebugBox = OGRE_NEW ManualObject("SpacescapeDebugBox");
             mDebugBox->begin("BaseWhiteNoLighting", RenderOperation::OT_LINE_STRIP);
 
@@ -279,6 +286,133 @@ namespace Ogre
             mDebugBox->colour(ColourValue(1,0,1));
             
             mDebugBox->end();
+
+			sceneNode->attachObject(mDebugBox);
+			*/
+
+			mDebugBox = OGRE_NEW ManualObject("SpacescapeDebugBox");
+			mDebugBox->setRenderQueueGroup(RENDER_QUEUE_OVERLAY);
+			Real distance = 1.1;
+			MaterialManager& matMgr = MaterialManager::getSingleton();
+			// Set up the box (6 planes)
+			for (uint16 i = 0; i < 6; ++i)
+			{
+				Plane plane;
+				Vector3 middle;
+				Vector3 up, right;
+
+				/*
+				enum BoxPlane
+				{
+					BP_FRONT = 0,
+					BP_BACK = 1,
+					BP_LEFT = 2,
+					BP_RIGHT = 3,
+					BP_UP = 4,
+					BP_DOWN = 5
+				};
+				*/
+
+				String texName;
+				switch (i)
+				{
+				case 0:
+					middle = Vector3(0, 0, -distance);
+					up = Vector3::UNIT_Y * distance;
+					right = Vector3::UNIT_X * distance;
+					texName = "debug_front.png";
+					break;
+				case 1:
+					middle = Vector3(0, 0, distance);
+					up = Vector3::UNIT_Y * distance;
+					right = Vector3::NEGATIVE_UNIT_X * distance;
+					texName = "debug_back.png";
+					break;
+				case 2:
+					middle = Vector3(-distance, 0, 0);
+					up = Vector3::UNIT_Y * distance;
+					right = Vector3::NEGATIVE_UNIT_Z * distance;
+					texName = "debug_left.png";
+					break;
+				case 3:
+					middle = Vector3(distance, 0, 0);
+					up = Vector3::UNIT_Y * distance;
+					right = Vector3::UNIT_Z * distance;
+					texName = "debug_right.png";
+					break;
+				case 4:
+					middle = Vector3(0, distance, 0);
+					up = Vector3::UNIT_Z * distance;
+					right = Vector3::UNIT_X * distance;
+					texName = "debug_top.png";
+					break;
+				case 5:
+					middle = Vector3(0, -distance, 0);
+					up = Vector3::NEGATIVE_UNIT_Z * distance;
+					right = Vector3::UNIT_X * distance;
+					texName = "debug_bottom.png";
+					break;
+				}
+
+				/*
+				// Modify by orientation
+				middle = orientation * middle;
+				up = orientation * up;
+				right = orientation * right;
+				*/
+				
+				// If we're using 6 separate images, have to create 6 materials, one for each frame
+				// Used to use combined material but now we're using queue we can't split to change frame
+				// This doesn't use much memory because textures aren't duplicated
+				String matName = "DebugBoxPlane" + StringConverter::toString(i);
+				MaterialPtr boxMat = matMgr.create(matName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+				boxMat->load();
+				boxMat->setReceiveShadows(false);
+				boxMat->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SceneBlendType::SBT_TRANSPARENT_ALPHA);
+				boxMat->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+				boxMat->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
+				boxMat->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+				
+				// Make sure the material doesn't update the depth buffer
+				boxMat->setDepthWriteEnabled(false);
+
+				TexturePtr tex = TextureManager::getSingleton().load(texName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+				tex->load();
+				TextureUnitState *t = boxMat->getTechnique(0)->getPass(0)->createTextureUnitState(texName);
+				t->setTextureAddressingMode(TextureUnitState::TAM_CLAMP);
+
+
+				// section per material
+				mDebugBox->begin(matName, RenderOperation::OT_TRIANGLE_LIST, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+				// top left
+				mDebugBox->position(middle + up - right);
+				mDebugBox->textureCoord(0, 0);
+				// bottom left
+				mDebugBox->position(middle - up - right);
+				mDebugBox->textureCoord(0, 1);
+				// bottom right
+				mDebugBox->position(middle - up + right);
+				mDebugBox->textureCoord(1, 1);
+				// top right
+				mDebugBox->position(middle + up + right);
+				mDebugBox->textureCoord(1, 0);
+
+				mDebugBox->quad(0, 1, 2, 3);
+
+				mDebugBox->end();
+
+			} // for each plane
+
+			sceneNode->attachObject(mDebugBox);
+
+			/*
+			MaterialPtr mat = MaterialManager::getSingletonPtr()->createOrRetrieve("DebugBox", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+			mat->setReceiveShadows(false);
+			mat->getTechnique(0)->getPass(0)->setCullingMode(CULL_ANTICLOCKWISE);
+			mat->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+			mat->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
+			mat->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+			*/
         }
     }
     
@@ -653,7 +787,7 @@ namespace Ogre
     @param texture The texture to rtt to - must be cubic
     @param numMipMaps Number of mip maps to create - use -1 for auto and 0 for none
     */
-    bool SpacescapePlugin::_rtt(TexturePtr& texture, int numMipMaps)
+	bool SpacescapePlugin::_rtt(TexturePtr& texture, int numMipMaps, SpacescapeRTTOrientation orientation)
     {
         if(!mSceneNode) {
             return false;
@@ -684,32 +818,43 @@ namespace Ogre
         
         // be sure to not go negative
         numMips = std::max<int>(0,numMips);
-
-        // point the camera in six different directions and rtt
+		// point the camera in six different directions and rtt
         Vector3 forward,up,right;
         for(int i = 0; i < 6; i++) {
-		    switch(i)
-		    {
-		    case 0:
-                // right
-                forward = Vector3::NEGATIVE_UNIT_X;
-			    up = Vector3::UNIT_Y ;
-			    right = Vector3::UNIT_Z;
-			    break;
-		    case 1:
-                // left??
-                forward = Vector3::UNIT_X;
+			Quaternion alterOrientation = Quaternion::IDENTITY;
+
+			switch (i)
+			{
+			case 0:
+				if (orientation == SRO_UNREAL_ORIENTATION) {
+					alterOrientation = Quaternion(Radian(Degree(-90)), Vector3::UNIT_Z);
+				}
+
+				// right
+				forward = Vector3::NEGATIVE_UNIT_X;
+				up = Vector3::UNIT_Y;
+				right = Vector3::UNIT_Z;
+				break;
+			case 1:
+				// left
+				if (orientation == SRO_UNREAL_ORIENTATION) {
+					alterOrientation = Quaternion(Radian(Degree(90)), Vector3::UNIT_Z);
+				}
+				forward = Vector3::UNIT_X;
 			    up = Vector3::UNIT_Y ;
 			    right = Vector3::NEGATIVE_UNIT_Z;
 			    break;
 		    case 2:
                 // top
+				if (orientation == SRO_UNREAL_ORIENTATION) {
+					alterOrientation = Quaternion(Radian(Degree(180)), Vector3::UNIT_Z);
+				}
                 forward = Vector3::NEGATIVE_UNIT_Y ;
 			    up = Vector3::UNIT_Z ;
 			    right = Vector3::UNIT_X;
 			    break;
 		    case 3:
-                // down?
+                // down
                 forward = Vector3::UNIT_Y ;
 			    up = Vector3::NEGATIVE_UNIT_Z ;
 			    right = Vector3::UNIT_X;
@@ -730,7 +875,7 @@ namespace Ogre
 
             Quaternion q;
             q.FromAxes(right,up,forward);
-            rttCam->setOrientation(q);
+			rttCam->setOrientation(q * alterOrientation);
 
             for(int j = 0; j <= numMips; ++j) {
                 // get render target for mipmap
@@ -810,8 +955,13 @@ namespace Ogre
 
     void SpacescapePlugin::setDebugBoxVisible(bool visible)
     {
-        if(!mSceneNode || mDebugBox) {
-            mDebugBox->setVisible(visible);
+		if (!mSceneNode) {
+			SceneManager* sceneMgr = Root::getSingleton().getSceneManagerIterator().peekNextValue();
+			mSceneNode = sceneMgr->getRootSceneNode()->createChildSceneNode("SpacescapeNode");
+		}
+
+        if(mDebugBox) {
+			mDebugBox->setVisible(visible);
             return;
         }
 
@@ -824,11 +974,7 @@ namespace Ogre
             n = mSceneNode->createChildSceneNode(nodeName);
         }
         
-        buildDebugBox();
-        
-        if(n && mDebugBox) {
-            n->attachObject(mDebugBox);
-        }
+        buildDebugBox(n);
     }
     
     /** Show or hide a layer
@@ -961,7 +1107,7 @@ namespace Ogre
     @param size The size / resolution of the skybox image
     @return whether the update succeeded or not
     */
-    bool SpacescapePlugin::updateRTT(unsigned int size)
+	bool SpacescapePlugin::updateRTT(unsigned int size, SpacescapeRTTOrientation orientation)
     {
         if(!mSceneNode || mLayers.empty()) {
             return false;
@@ -1016,7 +1162,7 @@ namespace Ogre
         }
 
         // render to texture
-        bool result = _rtt(rtt, numMips);
+        bool result = _rtt(rtt, numMips, orientation);
 
         // tell all the layers to go back to low res displays
         for(unsigned int i = 0; i < mLayers.size(); i++) {
@@ -1032,7 +1178,7 @@ namespace Ogre
     separate images, while TEX_TYPE_3D files will be written as a single
     file (currently only supports .dds 3d file types)
     */
-    void SpacescapePlugin::writeToFile(const String& filename, unsigned int size, TextureType type)
+	void SpacescapePlugin::writeToFile(const String& filename, unsigned int size, TextureType type, SpacescapeRTTOrientation orientation)
     {
         unsigned int progressAmount = 0;
 
@@ -1082,7 +1228,7 @@ namespace Ogre
             "Updating RTT";
 
         // first update the rtt texture
-        updateRTT(size);
+        updateRTT(size, orientation);
 
         // update progress
         progressAmount+= 40;
@@ -1115,9 +1261,9 @@ namespace Ogre
             }
             
 #ifdef EXR_SUPPORT
-            Ogre::PixelFormat pixelFormat = ext == ".exr" ? PF_FLOAT32_RGB : PF_BYTE_RGB;
+			Ogre::PixelFormat pixelFormat = ext == ".exr" ? PF_FLOAT32_RGB : PF_BYTE_RGB;
 #else
-            Ogre::PixelFormat pixelFormat = PF_BYTE_RGB;
+			Ogre::PixelFormat pixelFormat = PF_BYTE_RGB;
 #endif
             // write out six textures
             for(int i = 0; i < 6; ++i) {
@@ -1157,13 +1303,19 @@ namespace Ogre
         else {
             // assume cubic/3d .dds texture
             Image* img = OGRE_NEW Image();
-            size_t numBytes = img->calculateSize(numMips,6,size,size,1,PF_BYTE_RGB);
+
+#ifdef EXR_SUPPORT
+			Ogre::PixelFormat pixelFormat = PF_FLOAT32_RGBA;
+#else
+			Ogre::PixelFormat pixelFormat = PF_BYTE_RGB;
+#endif
+			size_t numBytes = img->calculateSize(numMips, 6, size, size, 1, pixelFormat);
 
             // allocate room for this image and its mip maps
             uchar* data = OGRE_ALLOC_T(uchar,numBytes,MEMCATEGORY_GENERAL);
 
             // load all the data into the image
-            img->loadDynamicImage(data,size,size,1,PF_BYTE_RGB,false,6,numMips);
+			img->loadDynamicImage(data, size, size, 1, pixelFormat, false, 6, numMips);
 
             // combine the six textures into one image with 6 faces
             for(int i = 0; i < 6; ++i) {

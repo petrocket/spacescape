@@ -33,7 +33,7 @@ IF(WIN32)
 	SET_TARGET_PROPERTIES(SpacescapePlugin PROPERTIES OUTPUT_NAME "Plugin_Spacescape" PREFIX "" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/SpacescapePlugin"  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/SpacescapePlugin" COMPILE_DEFINITIONS "OGRE_SPACESCAPEPLUGIN_EXPORTS")
 	target_link_libraries(SpacescapePlugin debug ${OGRE_LIBRARY_DBG} optimized ${OGRE_LIBRARY_REL})
 
-	ADD_CUSTOM_COMMAND(TARGET SpacescapePlugin POST_BUILD COMMAND copy "\"$(TargetPath)\"" "\"${CMAKE_SOURCE_DIR}\\Spacescape\\app\\win\\$(OutDir)\\\"" COMMENT "Copying Spacescape_Plugin dll to Spacescape app directory")
+	# ADD_CUSTOM_COMMAND(TARGET SpacescapePlugin POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "\"$(TargetPath)\"" "\"${CMAKE_SOURCE_DIR}\\Spacescape\\app\\win\\$(Configuration)\\\"" COMMENT "Copying Spacescape_Plugin dll to Spacescape app directory")
 ELSEIF(APPLE)
     SET_TARGET_PROPERTIES(SpacescapePlugin PROPERTIES OUTPUT_NAME "Plugin_Spacescape")
     SET_TARGET_PROPERTIES(SpacescapePlugin PROPERTIES VERSION ver1)

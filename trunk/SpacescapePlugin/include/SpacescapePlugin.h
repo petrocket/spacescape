@@ -59,6 +59,12 @@ namespace Ogre
             SLT_NOISE
         };
 
+		enum SpacescapeRTTOrientation
+		{
+			SRO_DEFAULT_ORIENTATION = 0,
+			SRO_UNREAL_ORIENTATION
+		};
+
         typedef std::vector<SpacescapeLayer*> SpacescapeLayerList;
 
         /** Add a layer with the given params
@@ -194,8 +200,9 @@ namespace Ogre
         @param type The filetype.  TEX_TYPE_2D will be written as 6 
         separate images, while TEX_TYPE_3D files will be written as a single
         file (currently only supports .dds 3d file types)
+		@param orientation Orientation mode for non-Ogre skybox orientations
         */
-        void writeToFile(const String& filename, unsigned int size = 1024, TextureType type = TEX_TYPE_2D);
+        void writeToFile(const String& filename, unsigned int size = 1024, TextureType type = TEX_TYPE_2D, SpacescapeRTTOrientation orientation = SRO_DEFAULT_ORIENTATION);
 
         /** Write the skybox to a material
         @param materialName The name of the material to write the skybox to
@@ -214,11 +221,12 @@ namespace Ogre
         to render to texture
         @param texture The texture to rtt to - must be cubic
         @param numMipMaps Number of mip maps to create - use -1 for auto and 0 for none
+		@param orientation Orientation mode for non-Ogre skybox orientations
         */
-        bool _rtt(TexturePtr& texture, int numMipMaps);
+        bool _rtt(TexturePtr& texture, int numMipMaps, SpacescapeRTTOrientation orientation = SRO_DEFAULT_ORIENTATION);
  
     private:
-        void buildDebugBox();
+        void buildDebugBox(SceneNode *sceneNode);
         
         /** Utility function to send progress events to all listeners
         @param percentComplete Percent complete
@@ -229,9 +237,10 @@ namespace Ogre
         /** Utility function to update the render to texture surface & mipmaps
         for all 6 faces of the skybox with the current settings
         @param size The size / resolution of the skybox image
+		@param orientation Orientation mode for non-Ogre skybox orientations
         @return whether the update succeeded or not
         */
-        bool updateRTT(unsigned int size);
+		bool updateRTT(unsigned int size, SpacescapeRTTOrientation orientation = SRO_DEFAULT_ORIENTATION);
 
         // layers list
         SpacescapeLayerList mLayers;

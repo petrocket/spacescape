@@ -30,9 +30,9 @@ THE SOFTWARE.
 #ifndef QtOgreWidget_H
 #define QtOgreWidget_H
 
-#define Q_WS_MAC
-#define Q_WS_MAC32
-
+//#define Q_WS_MAC
+//#define Q_WS_MAC32
+#define Q_WS_WIN
 #include <QWidget>
 #if defined(Q_WS_WIN)
 // disable some warning

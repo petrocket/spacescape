@@ -554,6 +554,7 @@ namespace Ogre
                 mFBOPixelFormat,
                 TU_RENDERTARGET
             );
+			//t->setFSAA(4);
 
             // assign the texture to the cube face
             mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setCubicTextureName(t->getName(),true);
@@ -578,6 +579,9 @@ namespace Ogre
             mDitherAmount,
             mScale,
             mOffset
+#ifdef EXR_SUPPORT
+			,mHDRPower,mHDRMultiplier
+#endif
         );
 
         // build the skybox with our cubic texture

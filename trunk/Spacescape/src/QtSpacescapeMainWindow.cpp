@@ -39,7 +39,8 @@ THE SOFTWARE.
 #include <QSettings>
 #include "QtFilePathProperty.h"
 
-#include "OGRE/Ogre.h"
+//#include "OGRE/Ogre.h"
+#include <Ogre.h>
 
 /** Constructor
 @param parent
@@ -166,11 +167,13 @@ void QtSpacescapeMainWindow::paintEvent(QPaintEvent *event)
     QMainWindow::paintEvent(event);
     if(!mDebugLayerLoaded &&
        ui->ogreWindow->pluginReady()) {
+#ifdef _DEBUG
          Ogre::NameValuePairList params;
          ui->ogreWindow->addLayer(1,params);
          
          // insert the new layer
          insertLayerProperties(ui->ogreWindow->getLayers().back());
+#endif
         mDebugLayerLoaded = true;
     }
 }
@@ -691,12 +694,12 @@ void QtSpacescapeMainWindow::onExport()
 {
     QString imageSize;
     QString selectedFilter;
-    QString filename = QtSpacescapeExportFileDialog::getExportFileName(
-        this,
-        "Export Skybox",
-        mLastExportDir,
+	QString filename = QtSpacescapeExportFileDialog::getExportFileName(
+		this,
+		"Export Skybox",
+		mLastExportDir,
 #ifdef EXR_SUPPORT
-        QLatin1String("6 EXR files(*.exr);;6 PNG files(*.png);;6 JPG files(*.jpg)"),
+		QLatin1String("Single DDS Cube Map UNREAL(*.dds);;Single DDS Cube Map(*.dds);;6 EXR files(*.exr);;6 PNG files(*.png);;6 JPG files(*.jpg)"),
 #else
         QLatin1String("6 PNG files(*.png);;6 JPG files(*.jpg)"),
 #endif
@@ -708,6 +711,7 @@ void QtSpacescapeMainWindow::onExport()
     // disable ogre window till done exporting to prevent crashes
     ui->ogreWindow->setDisabled(true);
 
+	bool unreal = false;
     if(!filename.isNull() && !filename.isEmpty()) {
         // make sure we have an extension on the filename
         QFileInfo fi(filename);
@@ -716,12 +720,19 @@ void QtSpacescapeMainWindow::onExport()
             if(selectedFilter == "6 EXR files(*.exr)") {
                 filename += ".exr";
             }
-            else if(selectedFilter == "6 JPG files(*.jpg)") {
+			else if (selectedFilter == "Single DDS Cube Map UNREAL(*.dds)") {
+				filename += ".dds";
+				unreal = true;
+			}
+			else if (selectedFilter == "6 JPG files(*.jpg)") {
 #else
             if(selectedFilter == "6 JPG files(*.jpg)") {
 #endif
                 filename += ".jpg";
             }
+			else if (selectedFilter == "Single DDS Cube Map(*.dds)") {
+				filename += ".dds";
+			}
             else {
                 filename += ".png";
             }
@@ -733,11 +744,10 @@ void QtSpacescapeMainWindow::onExport()
 		QSettings settings;
 		settings.setValue("LastExportDir",mLastExportDir);
 
-
         ui->statusBar->showMessage("Exporting skybox " + filename);
 
         // ogre can't export dds files doh!
-        ui->ogreWindow->exportSkybox(filename,imageSize.toUInt(),selectedFilter == "Single DDS Cube Map(*.dds)");
+		ui->ogreWindow->exportSkybox(filename, imageSize.toUInt(), selectedFilter == "Single DDS Cube Map(*.dds)" || selectedFilter == "Single DDS Cube Map UNREAL(*.dds)", unreal ? 1 : 0);
 
         ui->statusBar->showMessage("Exported skybox " + filename,3000);
     }

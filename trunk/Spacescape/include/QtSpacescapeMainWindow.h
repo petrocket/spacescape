@@ -30,6 +30,8 @@ THE SOFTWARE.
 #ifndef __QTSPACESCAPEMAINWINDOW_H__
 #define __QTSPACESCAPEMAINWINDOW_H__
 
+#define QT_QTPROPERTYBROWSER_IMPORT
+
 #include <QMainWindow>
 #include <QtProperty>
 #include <QtVariantPropertyManager>
@@ -52,7 +54,7 @@ namespace Ui {
 /** QtSpacescapeMainWindow is the main UI window for Spacescape.
 */
 class QtSpacescapeMainWindow : public QMainWindow, Ogre::SpacescapeProgressListener {
-    Q_OBJECT
+	Q_OBJECT
 public:
     /** Constructor
     @param parent
