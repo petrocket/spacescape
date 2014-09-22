@@ -55,7 +55,8 @@ public:
                                    const QString &filter = QString(),
                                    QString *selectedFilter = 0,
                                    Options options = 0,
-                                   QString *imageSize = 0);
+                                   QString *imageSize = 0,
+                                   QString *orientation = 0);
     QComboBox* mExportSize;
     QCheckBox* mExportCubeMap;
 };

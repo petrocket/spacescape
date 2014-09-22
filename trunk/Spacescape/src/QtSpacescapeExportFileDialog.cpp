@@ -72,7 +72,8 @@ QString QtSpacescapeExportFileDialog::getExportFileName(QWidget *parent,
                                    const QString &filter,
                                    QString *selectedFilter,
                                    Options options,
-                                   QString *imageSize)
+                                   QString *imageSize,
+                                   QString *orientation)
 {
     QString path;
 
@@ -82,15 +83,11 @@ QString QtSpacescapeExportFileDialog::getExportFileName(QWidget *parent,
     QFileDialogArgs args;
     args.parent = parent;
     args.caption = caption;
-    args.directory = path;
+    args.directory = (dir == 0 || dir.isNull()) ? path : dir;
     args.selection = "";
     args.filter = filter;
     args.mode = AnyFile;
-//#ifdef Q_WS_MAC
     args.options = DontUseNativeDialog;
-//#else
-//    args.options = options;
-//#endif
     
     // create a qt dialog
     QtSpacescapeExportFileDialog dialog(args);
@@ -104,31 +101,54 @@ QString QtSpacescapeExportFileDialog::getExportFileName(QWidget *parent,
     q->addItem("2048");
     q->addItem("4096");
     QLabel *sizeLabel = new QLabel("Image Size:", parent);
-
+    if(imageSize && !imageSize->isNull()) {
+        q->setCurrentText(*imageSize);
+    }
+    
+    QLabel *orientationLabel = new QLabel("Export For:", parent);
+    QComboBox *orientationCombo = new QComboBox(parent);
+    orientationCombo->addItem("OGRE 3D");
+    orientationCombo->addItem("UNREAL");
+    orientationCombo->addItem("UNITY");
+    orientationCombo->addItem("SOURCE");
+    if(orientation && !orientation->isNull()) {
+        orientationCombo->setCurrentText(*orientation);
+    }
+    
     if (dynamic_cast<QGridLayout*>(l) != 0) {
         QGridLayout* grid = dynamic_cast<QGridLayout*>(l);
         const int numRows = grid->rowCount();
-//        const int numCols = grid->columnCount();
         grid->addWidget(sizeLabel, numRows, 0, 1, 1);
         grid->addWidget(q, numRows, 1, 1, 1);
+
+        grid->addWidget(orientationLabel, numRows + 1, 0, 1, 1);
+        grid->addWidget(orientationCombo, numRows + 1, 1, 1, 1);
     }
 
     dialog.setAcceptMode(AcceptSave);
-    if (selectedFilter)
+    if (selectedFilter && !selectedFilter->isNull()) {
         dialog.selectNameFilter(*selectedFilter);
+    }
+    
     if (dialog.exec() == QDialog::Accepted) {
 
         if (selectedFilter)
             *selectedFilter = dialog.selectedNameFilter();
 
         *imageSize = q->currentText();
+        *orientation = orientationCombo->currentText();
 
         delete q;
         delete sizeLabel;
+        delete orientationCombo;
+        delete orientationLabel;
         return dialog.selectedFiles().value(0);
     }
 
     delete q;
     delete sizeLabel;
+    delete orientationCombo;
+    delete orientationLabel;
+    
     return QString();
 }

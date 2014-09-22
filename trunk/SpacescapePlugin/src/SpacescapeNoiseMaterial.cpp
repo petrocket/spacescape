@@ -416,10 +416,8 @@ namespace Ogre
             params->setNamedConstant("outerColor",ColourValue(0.0,0.0,0.0));
             params->setNamedConstant("powerAmt",(float)1.0);
             params->setNamedConstant("shelfAmt",(float)0.0);
-#ifdef EXR_SUPPORT
             params->setNamedConstant( "hdrPowerAmt", (float)1.0 );
             params->setNamedConstant( "hdrMultiplier", (float)1.0);
-#endif
 
             // create ridged technique
             material->createTechnique();
@@ -485,10 +483,8 @@ namespace Ogre
             params->setNamedConstant("powerAmt",(float)1.0);
             params->setNamedConstant("shelfAmt",(float)0.0);
             params->setNamedConstant("offset",(float)1.0);
-#ifdef EXR_SUPPORT
             params->setNamedConstant( "hdrPowerAmt", (float)1.0 );
             params->setNamedConstant( "hdrMultiplier", (float)1.0);
-#endif
 
             material->load();
         }

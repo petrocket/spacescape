@@ -62,7 +62,9 @@ namespace Ogre
 		enum SpacescapeRTTOrientation
 		{
 			SRO_DEFAULT_ORIENTATION = 0,
-			SRO_UNREAL_ORIENTATION
+			SRO_UNREAL_ORIENTATION,
+			SRO_UNITY_ORIENTATION,
+			SRO_SOURCE_ORIENTATION,
 		};
 
         typedef std::vector<SpacescapeLayer*> SpacescapeLayerList;
@@ -125,6 +127,11 @@ namespace Ogre
 		/// @copydoc Plugin::initialise
 		void initialise();
 
+        /** Is High defintion rendering enabled?
+         @return true if enabled, false if disabled
+         */
+        bool isHDREnabled();
+        
         /** Load a config file
         @param stream The stream of the file to read
         @return true on success, false on error
@@ -169,13 +176,23 @@ namespace Ogre
         */
         bool saveConfigFile(const String& filename);
 
+        /** Show or hide the debug box which has the orientation and outlines
+        * of all skybox faces
+        @param visible true to show, false to hide
+        */
+        void setDebugBoxVisible(bool visible);
+
+        /** Enable/Disable HDR mode
+         @param enable true to enable, false to disable
+         */
+        void setHDREnabled(bool enabled);
+        
         /** Show or hide a layer
         @param layerId the layer to hide/show
         @param visible true to show, false to hide
         */
         void setLayerVisible(unsigned int layerId, bool visible);
         
-        void setDebugBoxVisible(bool visible);
 
 		/// @copydoc Plugin::shutdown
 		void shutdown();
@@ -252,6 +269,9 @@ namespace Ogre
         SceneNode* mSceneNode;
 
         ManualObject* mDebugBox;
+        
+        // enable high definition rendering mode
+        bool mHDREnabled;
         
         // a unique id used for getting unique material/texture names
         unsigned int mUniqueId;

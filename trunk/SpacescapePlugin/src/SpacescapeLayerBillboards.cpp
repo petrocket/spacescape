@@ -37,13 +37,10 @@ THE SOFTWARE.
 #include "OgreTechnique.h"
 #include "OgreHighLevelGpuProgram.h"
 
-#ifdef EXR_SUPPORT
 #include "OgreHighLevelGpuProgramManager.h"
-#endif
 
 namespace Ogre
 {
-#ifdef EXR_SUPPORT
     static const String spacescape_billboards_glsl_vp = "attribute vec2 uv0;\n\
     uniform mat4 worldViewProj;\n\
     varying vec3 hdrColor;\n\
@@ -64,7 +61,6 @@ namespace Ogre
         gl_FragColor = vec4(hdrColor.r * d.r,hdrColor.g * d.g,hdrColor.b * d.b,d.a);\n\
     }";
 
-#endif
     
     /** Constructor
     */
@@ -75,10 +71,8 @@ namespace Ogre
         mDestBlendFactor(SBF_ONE),
 //        mDestBlendFactor(SBF_ONE_MINUS_SOURCE_COLOUR),
         mFarColor(ColourValue(1.0,1.0,1.0)),
-#ifdef EXR_SUPPORT
         mHDRPower(1.0),
         mHDRMultiplier(1.0),
-#endif
         mMaskEnabled(false),
         mMaskGain(0.5),
         mMaskLacunarity(2.0),
@@ -96,12 +90,7 @@ namespace Ogre
         mStarDataFilename("")
     {
         mMaterial.setNull();
-#ifdef EXR_SUPPORT
-        mTextureName = "hdr-flare-white2.exr";
-#else
         mTextureName = "default.png";
-#endif
-        //mStarDataFilename = "/Users/alex/Documents/workspace/spacescape/spacescape-git/stars-all.csv";
     }
 
     /** Destructor
@@ -148,9 +137,10 @@ namespace Ogre
             // random distance
             double dist = rand() / ((double) RAND_MAX);
 
-#ifdef EXR_SUPPORT
-            dist = powf(dist, mHDRPower);
-#endif
+            if(mHDREnabled) {
+                dist = powf(dist, mHDRPower);
+            }
+
             // size is based on distance and min/max allowed sizes
             // closer distances are larger
             Real size = mMinSize + (mMaxSize - mMinSize) * (1.0 - dist);
@@ -160,10 +150,10 @@ namespace Ogre
             c = mNearColor + (dist * (mFarColor - mNearColor));
             b->setColour(c);
             
-#ifdef EXR_SUPPORT
-            c *= mHDRMultiplier;
-            b->mHDRColour = c;
-#endif
+            if(mHDREnabled) {
+                c *= mHDRMultiplier;
+                b->mHDRColour = c;
+            }
         }
 
         mBuilt = true;
@@ -286,9 +276,10 @@ namespace Ogre
             // random distance
             float dist = rand() / ((double) RAND_MAX);
 
-#ifdef EXR_SUPPORT
-            dist = powf(dist, mHDRPower);
-#endif
+            if(mHDREnabled) {
+                dist = powf(dist, mHDRPower);
+            }
+
             // size is based on distance and min/max allowed sizes
             // closer distances are larger
             Real size = mMinSize + (mMaxSize - mMinSize) * (1.0 - dist);
@@ -297,11 +288,11 @@ namespace Ogre
             // color is based on distance (linear interpolation here)
             c = mNearColor + (dist * (mFarColor - mNearColor));
             b->setColour(c);
-            
-#ifdef EXR_SUPPORT
-            c *= mHDRMultiplier;
-            b->mHDRColour = c;
-#endif
+
+            if(mHDREnabled) {
+                c *= mHDRMultiplier;
+                b->mHDRColour = c;
+            }
         }
 
         for(int i = 0 ; i < 6; ++i) {
@@ -369,9 +360,9 @@ namespace Ogre
                 }
             }
             else {
-                if(xOffset == -1 || yOffset == -1 || zOffset == -1 || nameOffset == -1) {
+                if(xOffset == -1 || yOffset == -1 || zOffset == -1 || distanceOffset == -1 || magOffset == -1) {
                     Ogre::LogManager::getSingleton().getDefaultLog()->stream() <<
-                    "CSV file first line must have x,y,z,spectrum,absmag,distance,name";
+                    "CSV file first line must have x,y,z,absmag,distance";
                     break;
                 }
                 
@@ -413,27 +404,42 @@ namespace Ogre
                 // closer distances are larger
                 Real size = mMinSize + (mMaxSize - mMinSize) * (1.0 - dist);
                 b->setDimensions(size, size);
+
+                ColourValue c;
                 
-                ColourValue c = getColourValueFromBV(Ogre::StringConverter::parseReal(elems[bvOffset]));
-                
-                b->setColour(c);
-                
-                mag = (magMax - magMin) - brightness - magMin;
-#ifdef EXR_SUPPORT
-                if(mHDRPower != 1.0) {
-                    mag *= magRatio;
-                    mag = pow(mag,mHDRPower);
-                    mag *= (magMax - magMin);
+                if(bvOffset != -1) {
+                    c = getColourValueFromBV(Ogre::StringConverter::parseReal(elems[bvOffset]));
+                    b->setColour(c);
+                    
+                    mag = (magMax - magMin) - brightness - magMin;
+                    
+                    if(mHDREnabled) {
+                        if(mHDRPower != 1.0) {
+                            mag *= magRatio;
+                            mag = pow(mag,mHDRPower);
+                            mag *= (magMax - magMin);
+                        }
+                        c *= mag;
+                        c *= mHDRMultiplier;
+                        b->mHDRColour = c;
+                    }
                 }
-#endif
+                else {
+                    if(mHDREnabled) {
+                        dist = powf(dist, mHDRPower);
+                    }
+                    
+                    // color is based on distance (linear interpolation here)
+                    c = mNearColor + (dist * (mFarColor - mNearColor));
+                    b->setColour(c);
+                    
+                    if(mHDREnabled) {
+                        c *= mHDRMultiplier;
+                        b->mHDRColour = c;
+                    }
+                }
                 
-               
-                c *= mag;
-#ifdef EXR_SUPPORT
-                c *= mHDRMultiplier;
-//                c *=
-                b->mHDRColour = c;
-#endif
+
 //                Ogre::LogManager::getSingleton().getDefaultLog()->stream() <<
 //                "Billboard: mag: " << Ogre::StringConverter::toString(mag) << "(" << elems[magOffset] << ")";
 //                Ogre::LogManager::getSingleton().getDefaultLog()->stream() <<
@@ -582,7 +588,6 @@ namespace Ogre
                 shouldUpdate |= mTextureName != ii->second;
                 mTextureName = ii->second;
             }
-#ifdef EXR_SUPPORT
             else if(ii->first == "hdrPower") {
                 shouldUpdate |= mHDRPower != StringConverter::parseReal(ii->second);
                 mHDRPower = StringConverter::parseReal(ii->second);
@@ -591,7 +596,6 @@ namespace Ogre
                 shouldUpdate |= mHDRMultiplier != StringConverter::parseReal(ii->second);
                 mHDRMultiplier = StringConverter::parseReal(ii->second);
             }
-#endif
             else if(ii->first == "dataFile") {
                 shouldUpdate |= mStarDataFilename != ii->second;
                 mStarDataFilename = ii->second;
@@ -636,44 +640,44 @@ namespace Ogre
             // create a single texture unit state for our billboard texture
             mMaterial->getTechnique(0)->getPass(0)->createTextureUnitState();
             
-#ifdef EXR_SUPPORT
-            GpuProgramParametersSharedPtr params;
-            HighLevelGpuProgramPtr gpuProgram;
-            Pass* pass = mMaterial->getTechnique(0)->getPass(0);
-            
-            // load the vertex program
-            gpuProgram = HighLevelGpuProgramManager::getSingleton().
-            createProgram("spacescape_billboards_glsl_vp",
-                          ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                          "glsl",
-                          GPT_VERTEX_PROGRAM);
-            gpuProgram->setSource(spacescape_billboards_glsl_vp);
-            gpuProgram->load();
-            
-            // set the vertex program
-            pass->setVertexProgram("spacescape_billboards_glsl_vp");
-            
-            // set vertex program params
-            params = pass->getVertexProgramParameters();
-            params->setNamedAutoConstant("worldViewProj",GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
-            
-            // load the fragment program
-            gpuProgram = HighLevelGpuProgramManager::getSingleton().
-            createProgram("spacescape_billboards_glsl_fp",
-                          ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                          "glsl",
-                          GPT_FRAGMENT_PROGRAM);
-            gpuProgram->setSource(spacescape_billboards_glsl_fp);
-            
-            params = gpuProgram->getDefaultParameters();
-            params->setNamedConstant("tex",(int)0);
-            
-            gpuProgram->load();
-            
-            
-            // set the fragment program
-            pass->setFragmentProgram("spacescape_billboards_glsl_fp");
-#endif
+            if(mHDREnabled) {
+                GpuProgramParametersSharedPtr params;
+                HighLevelGpuProgramPtr gpuProgram;
+                Pass* pass = mMaterial->getTechnique(0)->getPass(0);
+                
+                // load the vertex program
+                gpuProgram = HighLevelGpuProgramManager::getSingleton().
+                createProgram("spacescape_billboards_glsl_vp",
+                              ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                              "glsl",
+                              GPT_VERTEX_PROGRAM);
+                gpuProgram->setSource(spacescape_billboards_glsl_vp);
+                gpuProgram->load();
+                
+                // set the vertex program
+                pass->setVertexProgram("spacescape_billboards_glsl_vp");
+                
+                // set vertex program params
+                params = pass->getVertexProgramParameters();
+                params->setNamedAutoConstant("worldViewProj",GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
+                
+                // load the fragment program
+                gpuProgram = HighLevelGpuProgramManager::getSingleton().
+                createProgram("spacescape_billboards_glsl_fp",
+                              ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                              "glsl",
+                              GPT_FRAGMENT_PROGRAM);
+                gpuProgram->setSource(spacescape_billboards_glsl_fp);
+                
+                params = gpuProgram->getDefaultParameters();
+                params->setNamedConstant("tex",(int)0);
+                
+                gpuProgram->load();
+                
+                
+                // set the fragment program
+                pass->setFragmentProgram("spacescape_billboards_glsl_fp");
+            }
         }
         
         // set blending
@@ -683,23 +687,19 @@ namespace Ogre
         if(!mTextureName.empty() && TextureManager::getSingleton().getByName(mTextureName).isNull()) {
             try {
                 // try to load
-#ifdef EXR_SUPPORT
-                TextureManager::getSingleton().load(mTextureName,
+                if(mHDREnabled) {
+                    TextureManager::getSingleton().load(mTextureName,
                                                     ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,TEX_TYPE_2D,
                                                     0,
                                                     1.0,
                                                     false,
                                                     PF_FLOAT32_RGBA,
                                                     false);
-//                virtual TexturePtr load(
-//                                        const String& name, const String& group,
-//                                        TextureType texType = TEX_TYPE_2D, int numMipmaps = MIP_DEFAULT,
-//                                        Real gamma = 1.0f, bool isAlpha = false,
-//                                        PixelFormat desiredFormat = PF_UNKNOWN, 
-//                                        bool hwGammaCorrection = false);
-#else
-                TextureManager::getSingleton().load(mTextureName,ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-#endif
+                }
+                else {
+                    TextureManager::getSingleton().load(mTextureName,
+                                                        ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+                }
             }
             catch(...) {
                 // couldn't find the file
@@ -707,18 +707,7 @@ namespace Ogre
         }
 
         if(!mTextureName.empty() && !TextureManager::getSingleton().getByName(mTextureName).isNull()) {
-//#ifdef EXR_SUPPORT
-//            TexturePtr tex = TextureManager::getSingleton().getByName(mTextureName);
-//            Ogre::LogManager::getSingleton().getDefaultLog()->stream() << "tex format is " <<
-//            Ogre::StringConverter::toString(tex->getFormat());
-//
-//            mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureFiltering(TFO_ANISOTROPIC);
-//            mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTexture(tex);
-//#else
-//            Ogre::LogManager::getSingleton().getDefaultLog()->stream() << "billboard texture is " <<
-//            mTextureName;
             mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureName(mTextureName);
-//#endif
         }
 
         // make sure material is loaded
@@ -752,9 +741,7 @@ namespace Ogre
         mParams["numBillboards"] = StringConverter::toString(mNumBillboards);
         mParams["sourceBlendFactor"] = getBlendMode(mSourceBlendFactor);
         mParams["texture"] = mTextureName;
-#ifdef EXR_SUPPORT
         mParams["hdrPower"] = StringConverter::toString(mHDRPower);
         mParams["hdrMultiplier"] = StringConverter::toString(mHDRMultiplier);
-#endif
     }
 }

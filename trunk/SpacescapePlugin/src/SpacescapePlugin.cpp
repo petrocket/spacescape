@@ -52,6 +52,7 @@ namespace Ogre
 
     SpacescapePlugin::SpacescapePlugin() :
         mDebugBox(0),
+        mHDREnabled(false),
         mSceneNode(0),
         mUniqueId(0)
 	{
@@ -368,7 +369,8 @@ namespace Ogre
 				MaterialPtr boxMat = matMgr.create(matName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 				boxMat->load();
 				boxMat->setReceiveShadows(false);
-				boxMat->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SceneBlendType::SBT_TRANSPARENT_ALPHA);
+				boxMat->getTechnique(0)->getPass(0)->setSceneBlending(SBT_TRANSPARENT_ALPHA);
+//				boxMat->getTechnique(0)->getPass(0)->setSceneBlending(Ogre::SceneBlendType::SBT_TRANSPARENT_ALPHA);
 				boxMat->getTechnique(0)->getPass(0)->setLightingEnabled(false);
 				boxMat->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
 				boxMat->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
@@ -582,6 +584,12 @@ namespace Ogre
     void SpacescapePlugin::initialise()
 	{
 	}
+    
+    bool SpacescapePlugin::isHDREnabled()
+    {
+        return mHDREnabled;
+    }
+    
 
     /** Load a config file
     @param stream The stream of the file to read
@@ -977,6 +985,48 @@ namespace Ogre
         buildDebugBox(n);
     }
     
+    void SpacescapePlugin::setHDREnabled(bool enabled)
+    {
+        if(mHDREnabled == enabled) return;
+        
+        mHDREnabled = enabled;
+        
+        // re-create all layers
+        for(unsigned int i = 0; i < mLayers.size(); i++) {
+            String layerName = mLayers[i]->getName();
+            int layerType = mLayers[i]->getLayerType();
+            NameValuePairList params = mLayers[i]->getParams();
+            
+            // detach old object from the layer scene node
+            SceneNode* n =(SceneNode*)mSceneNode->getChild("SpacescapeLayer" + StringConverter::toString(i));
+            n->detachAllObjects();
+            
+            // delete the layer
+            OGRE_DELETE mLayers[i];
+            
+            // create the new layer
+            if(layerType == SpacescapePlugin::SLT_BILLBOARDS) {
+                mLayers[i] = OGRE_NEW SpacescapeLayerBillboards(layerName,this);
+            }
+            else if(layerType == SpacescapePlugin::SLT_NOISE) {
+                mLayers[i] = OGRE_NEW SpacescapeLayerNoise(layerName,this);
+            }
+            else {
+                mLayers[i] = OGRE_NEW SpacescapeLayerPoints(layerName,this);
+            }
+            
+            mLayers[i]->setLayerID(i);
+            // set hdr enabled before calling init
+            mLayers[i]->setHDREnabled(enabled);
+            mLayers[i]->init(params);
+            mLayers[i]->getMovableObject()->setRenderQueueGroup(RENDER_QUEUE_SKIES_EARLY + i);
+            
+            // attach the layer to the scene so it can be displayed
+            n->attachObject(mLayers[i]->getMovableObject());
+        }
+    }
+    
+    
     /** Show or hide a layer
     @param layerId the layer to hide/show
     @param visible true to show, false to hide
@@ -1132,12 +1182,7 @@ namespace Ogre
             }
         }
 
-#ifdef EXR_SUPPORT
-        Ogre::PixelFormat pixelFormat = PF_FLOAT32_RGB;
-//        Ogre::PixelFormat pixelFormat = PF_BYTE_RGB;
-#else
-        Ogre::PixelFormat pixelFormat = PF_BYTE_RGB;
-#endif
+        Ogre::PixelFormat pixelFormat = mHDREnabled ? PF_FLOAT32_RGB : PF_BYTE_RGB;
         if(createTexture) {
             // create the rtt texture
             rtt = TextureManager::getSingleton().createManual(
@@ -1243,13 +1288,30 @@ namespace Ogre
 
         if(type == TEX_TYPE_2D) {
             String suffixes[6] = {
-                "right1",
-                "left2",
-                "top3",
-                "bottom4",
-                "front5",
-                "back6"
+                "_right1",
+                "_left2",
+                "_top3",
+                "_bottom4",
+                "_front5",
+                "_back6"
             };
+            
+            if(orientation == SRO_UNITY_ORIENTATION) {
+                suffixes[0] = "_right";
+                suffixes[1] = "_left";
+                suffixes[2] = "_up";
+                suffixes[3] = "_down";
+                suffixes[4] = "_front";
+                suffixes[5] = "_back";
+            }
+            else if(orientation == SRO_SOURCE_ORIENTATION) {
+                suffixes[0] = "RT";
+                suffixes[1] = "LF";
+                suffixes[2] = "UP";
+                suffixes[3] = "DN";
+                suffixes[4] = "FT";
+                suffixes[5] = "BK";
+            }
 
             // default extension/type is png
             String ext = ".png";
@@ -1260,17 +1322,17 @@ namespace Ogre
                 basename = filename.substr(0,filename.length() - 4);
             }
             
-#ifdef EXR_SUPPORT
-			Ogre::PixelFormat pixelFormat = ext == ".exr" ? PF_FLOAT32_RGB : PF_BYTE_RGB;
-#else
-			Ogre::PixelFormat pixelFormat = PF_BYTE_RGB;
-#endif
+            Ogre::PixelFormat pixelFormat = PF_BYTE_RGB;
+            if(mHDREnabled && (ext == ".exr" || ext == ".dds")) {
+                pixelFormat = PF_FLOAT32_RGB;
+            }
+            
             // write out six textures
             for(int i = 0; i < 6; ++i) {
                 Image* img = OGRE_NEW Image();
 
                 Ogre::LogManager::getSingleton().getDefaultLog()->stream() << 
-                    "Saving image " << basename << "_" << suffixes[i] << ext;
+                    "Saving image " << basename  << suffixes[i] << ext;
 
                 // update progress
                 updateProgress(progressAmount,"Exporting " + suffixes[i]);
@@ -1291,7 +1353,7 @@ namespace Ogre
                 // tell the image to save out in the requested format
                 // this internal Ogre function will handle format issues
                 // filename is basename with our suffix and the original extension
-                img->save(basename + "_" + suffixes[i] + ext);
+                img->save(basename + suffixes[i] + ext);
 
                 OGRE_FREE(data,MEMCATEGORY_GENERAL);
                 OGRE_DELETE img;
@@ -1304,11 +1366,7 @@ namespace Ogre
             // assume cubic/3d .dds texture
             Image* img = OGRE_NEW Image();
 
-#ifdef EXR_SUPPORT
-			Ogre::PixelFormat pixelFormat = PF_FLOAT32_RGBA;
-#else
-			Ogre::PixelFormat pixelFormat = PF_BYTE_RGB;
-#endif
+            Ogre::PixelFormat pixelFormat = mHDREnabled ? PF_FLOAT32_RGBA : PF_R8G8B8;
 			size_t numBytes = img->calculateSize(numMips, 6, size, size, 1, pixelFormat);
 
             // allocate room for this image and its mip maps

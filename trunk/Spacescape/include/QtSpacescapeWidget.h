@@ -92,6 +92,8 @@ public:
     */
     std::vector<Ogre::SpacescapeLayer *> getLayers();
 
+    bool isHDREnabled();
+    
     /** Move a SpacescapeLayer down in the list
     @param layerID The layer ID of the layer to move
     @return true on success
@@ -133,6 +135,8 @@ public:
     void setProgressListener(Ogre::SpacescapeProgressListener* listener) { mProgressListener = listener; }
 
     void setDebugBoxVisible(bool visible);
+
+    void setHDREnabled(bool enabled);
     
     /** Update the params or a SpacescapeLayer
     @param layerID The layer ID of the layer to move

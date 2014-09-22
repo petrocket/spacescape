@@ -107,14 +107,12 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     mPropertyTitles["gain"] = QString("Gain");
     mPropertyTitles["innerColor"] = QString("Inner Color");
     mPropertyTitles["lacunarity"] = QString("Lacunarity");
-#ifdef EXR_SUPPORT
     // in non-hdr mode color fades linearly based on distance
     // but in hdr mode we may want other options
     mPropertyTitles["hdrPower"] = QString("HDR Power");
     
     // option multiplier to use in HDR mode
     mPropertyTitles["hdrMultiplier"] = QString("HDR Multiplier");
-#endif
     mPropertyTitles["maskEnabled"] = QString("Mask Enabled");
     mPropertyTitles["maskGain"] = QString("Mask Gain");
     mPropertyTitles["maskInnerColor"] = QString("Mask Inner Color");
@@ -149,9 +147,7 @@ QtSpacescapeMainWindow::QtSpacescapeMainWindow(QWidget *parent) :
     mPropertyTitles["sourceBlendFactor"] = QString("Source Blend Factor");
     mPropertyTitles["visible"] = QString("Layer Visible");
     
-#ifdef EXR_SUPPORT
     mDebugLayerLoaded = false;
-#endif
 }
 
 /** Destructor
@@ -161,7 +157,6 @@ QtSpacescapeMainWindow::~QtSpacescapeMainWindow()
     delete ui;
 }
 
-#ifdef EXR_SUPPORT
 void QtSpacescapeMainWindow::paintEvent(QPaintEvent *event)
 {
     QMainWindow::paintEvent(event);
@@ -177,7 +172,6 @@ void QtSpacescapeMainWindow::paintEvent(QPaintEvent *event)
         mDebugLayerLoaded = true;
     }
 }
-#endif
 
 
 /** A change event was received
@@ -210,11 +204,13 @@ QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& ke
         << "dest_alpha" << "src_alpha" << "one_minus_dest_alpha" 
         << "one_minus_src_alpha";
     textureSizes << "256" << "512" << "1024" << "2048" << "4096";
-#ifdef EXR_SUPPORT
-    billboardTextures << "hdr-flare-blue.exr" << "hdr-flare-red.exr" << "hdr-flare-yellow.exr" << "hdr-flare-purple.exr" << "hdr-flare-white.exr"  << "hdr-flare-white2.exr";
-    billboardTextures << "hdr-flare-blue-2spires.exr" << "hdr-flare-blue-4spires.exr" << "hdr-flare-blue1.exr" << "hdr-flare-bluepurple-4spire.exr" << "hdr-flare-bluepurple-multispire.exr" << "hdr-flare-pink1.exr" << "hdr-flare-red-2spires.exr" << "hdr-flare-redpurple-multispire.exr";
-#endif
-    billboardTextures << "default.png" << "flare-blue-purple1.png" << "flare-blue-purple2.png" << "flare-blue-purple3.png" << "flare-blue-spikey1.png" << "flare-green1.png" << "flare-inverted-blue-purple3.png" << "flare-red-yellow1.png" << "flare-red1.png" << "flare-white-small1.png" << "sun.png";
+    if(ui->ogreWindow->isHDREnabled()) {
+        billboardTextures << "hdr-flare-blue.exr" << "hdr-flare-red.exr" << "hdr-flare-yellow.exr" << "hdr-flare-purple.exr" << "hdr-flare-white.exr"  << "hdr-flare-white2.exr";
+        billboardTextures << "hdr-flare-blue-2spires.exr" << "hdr-flare-blue-4spires.exr" << "hdr-flare-blue1.exr" << "hdr-flare-bluepurple-4spire.exr" << "hdr-flare-bluepurple-multispire.exr" << "hdr-flare-pink1.exr" << "hdr-flare-red-2spires.exr" << "hdr-flare-redpurple-multispire.exr";
+    }
+    else {
+        billboardTextures << "default.png" << "flare-blue-purple1.png" << "flare-blue-purple2.png" << "flare-blue-purple3.png" << "flare-blue-spikey1.png" << "flare-green1.png" << "flare-inverted-blue-purple3.png" << "flare-red-yellow1.png" << "flare-red1.png" << "flare-white-small1.png" << "sun.png";
+    }
     int propertyType = getPropertyType(key);
     QtVariantProperty* property;
 
@@ -388,14 +384,12 @@ QLatin1String QtSpacescapeMainWindow::getPropertyStatusTip(const Ogre::String& p
     else if(prop == "lacunarity" || prop == "maskLacunarity") {
         return QLatin1String("A multiplier that determines how quickly the frequency increases for each successive octave.");
     }
-#ifdef EXR_SUPPORT
     else if(prop == "hdrPower") {
         return QLatin1String("How distance affects the transition between near and far colours.");
     }
     else if(prop == "hdrMultiplier") {
         return QLatin1String("Multiply the final by this value.");
     }
-#endif
     else if(prop == "dataFile") {
         return QLatin1String("A CSV file with x,y,z,distance (in parsecs), mag (magnitude), BV fields.");
     }
@@ -588,6 +582,12 @@ QtProperty* QtSpacescapeMainWindow::insertLayerProperties(Ogre::SpacescapeLayer*
             pl->first == "visible" || pl->first == "seed") {
             continue;
         }
+        
+        // skip hdr stuff if not enabled
+        if(pl->first == "hdrMultiplier" || pl->first == "hdrPower") {
+            if(!ui->ogreWindow->isHDREnabled())
+                continue;
+        }
 
         if(pl->first == "dataFile") {
             QtFilePathManager *mgr = new QtFilePathManager;
@@ -651,7 +651,8 @@ void QtSpacescapeMainWindow::onCopyLayerClicked()
         }
         else {
             // insert before the copied property
-            insertLayerProperties(ui->ogreWindow->getLayers()[newLayerId], ui->layerProperties->properties()[bl.size() - layerId - 2]);
+            insertLayerProperties(ui->ogreWindow->getLayers()[newLayerId],
+                                  ui->layerProperties->properties()[bl.size() - layerId - 2]);
         }
     }
 }
@@ -676,15 +677,15 @@ void QtSpacescapeMainWindow::onEnableHDR()
     static bool hdrEnabled = false;
     hdrEnabled = !hdrEnabled;
 
-    // @TODO
-//    ui->ogreWindow->setDebugBoxVisible(debugVisible);
-    
+    ui->ogreWindow->setHDREnabled(hdrEnabled);
     if(hdrEnabled) {
         ui->actionEnableHDR->setText(QApplication::translate("MainWindow", "Disable HDR", 0));
     }
     else {
         ui->actionEnableHDR->setText(QApplication::translate("MainWindow", "Enable HDR", 0));
     }
+    
+    refreshProperties();
 }
 
 
@@ -694,45 +695,64 @@ void QtSpacescapeMainWindow::onExport()
 {
     QString imageSize;
     QString selectedFilter;
+    QString outputTypes;
+    QSettings settings;
+    QString orientation;
+    
+    if(ui->ogreWindow->isHDREnabled()) {
+        outputTypes = QLatin1String("6 EXR files(*.exr);;Single DDS Cube Map(*.dds)");
+    }
+    else {
+        outputTypes = QLatin1String("6 PNG files(*.png);;6 JPG files(*.jpg);;6 TGA files(*.tga);;Single DDS Cube Map(*.dds)");
+    }
+    
+    if(!settings.value("LastExportDir").isNull()) {
+        mLastExportDir = settings.value("LastExportDir").toString();
+    }
+    if(!settings.value("selectedFilter").isNull()) {
+        selectedFilter = settings.value("selectedFilter").toString();
+    }
+    if(!settings.value("imageSize").isNull()) {
+        imageSize = settings.value("imageSize").toString();
+    }
+    if(!settings.value("orientation").isNull()) {
+        orientation = settings.value("orientation").toString();
+    }
+    
 	QString filename = QtSpacescapeExportFileDialog::getExportFileName(
 		this,
 		"Export Skybox",
 		mLastExportDir,
-#ifdef EXR_SUPPORT
-		QLatin1String("Single DDS Cube Map UNREAL(*.dds);;Single DDS Cube Map(*.dds);;6 EXR files(*.exr);;6 PNG files(*.png);;6 JPG files(*.jpg)"),
-#else
-        QLatin1String("6 PNG files(*.png);;6 JPG files(*.jpg)"),
-#endif
+		outputTypes,
         &selectedFilter,
         0,
-        &imageSize
+        &imageSize,
+        &orientation
     );
 
+    settings.setValue("selectedFilter", selectedFilter);
+    settings.setValue("imageSize", imageSize);
+    settings.setValue("orientation", orientation);
+    
     // disable ogre window till done exporting to prevent crashes
     ui->ogreWindow->setDisabled(true);
 
-	bool unreal = false;
     if(!filename.isNull() && !filename.isEmpty()) {
         // make sure we have an extension on the filename
         QFileInfo fi(filename);
         if(fi.completeSuffix().isNull() || fi.completeSuffix().isEmpty()) {
-#ifdef EXR_SUPPORT
             if(selectedFilter == "6 EXR files(*.exr)") {
                 filename += ".exr";
             }
-			else if (selectedFilter == "Single DDS Cube Map UNREAL(*.dds)") {
-				filename += ".dds";
-				unreal = true;
-			}
-			else if (selectedFilter == "6 JPG files(*.jpg)") {
-#else
-            if(selectedFilter == "6 JPG files(*.jpg)") {
-#endif
-                filename += ".jpg";
-            }
 			else if (selectedFilter == "Single DDS Cube Map(*.dds)") {
 				filename += ".dds";
-			}
+            }
+			else if (selectedFilter == "6 JPG files(*.jpg)") {
+                filename += ".jpg";
+            }
+            else if (selectedFilter == "6 TGA files(*.tga)") {
+                filename += ".tga";
+            }
             else {
                 filename += ".png";
             }
@@ -741,13 +761,28 @@ void QtSpacescapeMainWindow::onExport()
         mLastExportDir = fi.absolutePath();
 
 		// save the last export dir in the registry
-		QSettings settings;
 		settings.setValue("LastExportDir",mLastExportDir);
 
         ui->statusBar->showMessage("Exporting skybox " + filename);
 
+        bool cubeMap = selectedFilter == "Single DDS Cube Map(*.dds)" ;
+        
+        int skyboxOrientation = 0;
+        if(orientation == "UNREAL") {
+            skyboxOrientation = 1;
+        }
+        else if(orientation == "UNITY") {
+            skyboxOrientation = 2;
+        }
+        else if(orientation == "SOURCE") {
+            skyboxOrientation = 3;
+        }
+        
         // ogre can't export dds files doh!
-		ui->ogreWindow->exportSkybox(filename, imageSize.toUInt(), selectedFilter == "Single DDS Cube Map(*.dds)" || selectedFilter == "Single DDS Cube Map UNREAL(*.dds)", unreal ? 1 : 0);
+		ui->ogreWindow->exportSkybox(filename,
+                                     imageSize.toUInt(),
+                                     cubeMap,
+                                     skyboxOrientation);
 
         ui->statusBar->showMessage("Exported skybox " + filename,3000);
     }
@@ -1024,7 +1059,7 @@ void QtSpacescapeMainWindow::refreshProperties()
         for(int i = layers.size() - 1; i >= 0; i--) {
             QString layerNum;
             layerNum.setNum(layers.size() - i);
-            ui->statusBar->showMessage("Updating layer properties " + layerNum + " of " + numLayers);
+            //ui->statusBar->showMessage("Updating layer properties " + layerNum + " of " + numLayers);
             layer = insertLayerProperties(layers[i], layer);
         }
     }
@@ -1098,11 +1133,13 @@ void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QVariant &
 #ifdef Q_WS_MAC
         else if(propertyStr == "texture") {
             QStringList billboardTextures;
-#ifdef EXR_SUPPORT
-            billboardTextures << "hdr-flare-blue.exr" << "hdr-flare-red.exr" << "hdr-flare-yellow.exr" << "hdr-flare-purple.exr" << "hdr-flare-white.exr" << "hdr-flare-white2.exr";
-            billboardTextures << "hdr-flare-blue-2spires.exr" << "hdr-flare-blue-4spires.exr" << "hdr-flare-blue1.exr" << "hdr-flare-bluepurple-4spire.exr" << "hdr-flare-bluepurple-multispire.exr" << "hdr-flare-pink1.exr" << "hdr-flare-red-2spires.exr" << "hdr-flare-redpurple-multispire.exr";
-#endif
-            billboardTextures << "default.png" << "flare-blue-purple1.png" << "flare-blue-purple2.png" << "flare-blue-purple3.png" << "flare-blue-spikey1.png" << "flare-green1.png" << "flare-inverted-blue-purple3.png" << "flare-red-yellow1.png" << "flare-red1.png" << "flare-white-small1.png" << "sun.png";
+            if(ui->ogreWindow->isHDREnabled()) {
+                billboardTextures << "hdr-flare-blue.exr" << "hdr-flare-red.exr" << "hdr-flare-yellow.exr" << "hdr-flare-purple.exr" << "hdr-flare-white.exr" << "hdr-flare-white2.exr";
+                billboardTextures << "hdr-flare-blue-2spires.exr" << "hdr-flare-blue-4spires.exr" << "hdr-flare-blue1.exr" << "hdr-flare-bluepurple-4spire.exr" << "hdr-flare-bluepurple-multispire.exr" << "hdr-flare-pink1.exr" << "hdr-flare-red-2spires.exr" << "hdr-flare-redpurple-multispire.exr";
+            }
+            else {
+                billboardTextures << "default.png" << "flare-blue-purple1.png" << "flare-blue-purple2.png" << "flare-blue-purple3.png" << "flare-blue-spikey1.png" << "flare-green1.png" << "flare-inverted-blue-purple3.png" << "flare-red-yellow1.png" << "flare-red1.png" << "flare-white-small1.png" << "sun.png";
+            }
             params[propertyStr] = Ogre::String(billboardTextures[value.toUInt()].toStdString());
         }
 #endif

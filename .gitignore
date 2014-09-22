@@ -5,3 +5,7 @@ Makefile
 app.log
 trunk/Spacescape/external/QtPropertyBrowser5/doc
 trunk/Spacescape/spacescape/
+trunk/Ogre.framework
+trunk/RenderSystem_GL.framework
+trunk/Spacescape/Images.xcassets
+trunk/SpacescapePlugin/external/openexr

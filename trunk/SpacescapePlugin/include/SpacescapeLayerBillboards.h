@@ -121,14 +121,12 @@ namespace Ogre
         // far color
         Ogre::ColourValue mFarColor; 
 
-#ifdef EXR_SUPPORT
         // in non-hdr mode color fades linearly based on distance
         // but in hdr mode we may want other options
         Real mHDRPower;
         
         // option multiplier to use in HDR mode
         Real mHDRMultiplier;
-#endif
         
         // flag to enable/disable the noise mask
         bool mMaskEnabled;

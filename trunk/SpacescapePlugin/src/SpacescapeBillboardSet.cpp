@@ -43,6 +43,8 @@
 #include "OgreLogManager.h"
 #include <algorithm>
 
+#define EXR_SUPPORT
+
 namespace Ogre {
     // Init statics
     RadixSort<SpacescapeBillboardSet::SpacescapeActiveBillboardList, SpacescapeBillboard*, float> SpacescapeBillboardSet::mRadixSorter;

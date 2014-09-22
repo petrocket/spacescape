@@ -85,6 +85,11 @@ namespace Ogre
         */
         virtual void setDisplayHighRes(bool displayHighRes) { mDisplayHighRes = displayHighRes; }
 
+        /** Set hdr enabled
+        @param enabled true to enable, false to disable
+        */
+        virtual void setHDREnabled(bool enabled);
+        
         /** Set the layer id
         @param id The new layer id
         */
@@ -166,18 +171,12 @@ namespace Ogre
         @param scale Initial scale amount applied to unit sphere noise coords
         @param offset Used for ridged noise
         */
-#ifdef EXR_SUPPORT
         void renderNoiseToTexture( TexturePtr& texture, unsigned int seed,
                                   const String& noiseType, ColourValue innerColor,
                                   ColourValue outerColor, unsigned int octaves, Real lacunarity,
                                   Real gain, Real power, Real threshold, Real dither, Real scale, Real offset,
                                   Real hdrPower = 1.0, Real hdrMultiplier = 1.0);
-#else
-        void renderNoiseToTexture( TexturePtr& texture, unsigned int seed,
-            const String& noiseType, ColourValue innerColor, 
-            ColourValue outerColor, unsigned int octaves, Real lacunarity, 
-            Real gain, Real power, Real threshold, Real dither, Real scale, Real offset);
-#endif
+        
         /** Ridge function for Ridged FBM noise
         @param noiseVal
         @param offset
@@ -304,6 +303,9 @@ namespace Ogre
         // gradients for noise
         Vector3 mGradients[512];
 
+        // enable hdr mode
+        bool mHDREnabled;
+        
         // unique layer index - used for layer/draw order 0 is furthest away
         unsigned int mLayerID;
 

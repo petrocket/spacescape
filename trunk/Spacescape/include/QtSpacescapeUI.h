@@ -223,9 +223,9 @@ public:
 "#layerProperties QTreeView {\n"
 "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(22, 22, 22, 255), stop:0.901366 rgba(67, 67, 67, 255), stop:0.960546 rgba(76, 76, 76, 255), stop:1 rgba(88, 88, 88, 255));\n"
 "alternate-background-color: #1a1a1a;\n"
-"border:1px solid #000;\n"
-"border-color:rgb(0,0,0);\n"
+"border:none;\n"
 "color: rgb(200, 200, 200);\n"
+"show-decoration-selected: 0;"
 "}\n"
 "#helpText {\n"
 "border:1px solid #444;\n"
@@ -292,13 +292,20 @@ public:
         sizePolicy1.setVerticalStretch(0);
         sizePolicy1.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
         frame->setSizePolicy(sizePolicy1);
-        frame->setFrameShape(QFrame::StyledPanel);
-        frame->setFrameShadow(QFrame::Raised);
+        frame->setFrameShape(QFrame::NoFrame);
+        
+        //frame->setFrameShape(QFrame::StyledPanel);
+        //frame->setFrameShadow(QFrame::Raised);
         horizontalLayout = new QHBoxLayout(frame);
+#ifdef Q_WS_MAC
+        horizontalLayout->setSpacing(15);
+#else
         horizontalLayout->setSpacing(5);
+#endif
         horizontalLayout->setContentsMargins(11, 11, 11, 11);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         horizontalLayout->setContentsMargins(0, 3, 0, 0);
+        
         newLayer = new QPushButton(frame);
         newLayer->setObjectName(QString::fromUtf8("newLayer"));
         QIcon icon;

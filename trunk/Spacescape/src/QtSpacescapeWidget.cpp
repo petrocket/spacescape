@@ -197,6 +197,11 @@ void QtSpacescapeWidget::initRenderWindow() {
     }
 }
 
+bool QtSpacescapeWidget::isHDREnabled()
+{
+    return pluginReady() ? getPlugin()->isHDREnabled() : false;
+}
+
 /** The user moved the mouse, if tracking process it
 @param e The event data
 */
@@ -355,6 +360,14 @@ void QtSpacescapeWidget::setDebugBoxVisible(bool visible)
     }
 }
 
+void QtSpacescapeWidget::setHDREnabled(bool enabled)
+{
+    Ogre::SpacescapePlugin* plugin = getPlugin();
+    if(plugin) {
+        plugin->setHDREnabled(enabled);
+    }
+}
+
 /** Change the visibility of a SpacescapeLayer
 @param layerID The layer ID of the layer to show/hide
 @param visible Visibility flag
@@ -431,12 +444,10 @@ void QtSpacescapeWidget::setupScene(void) {
     mCameraNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
     mCameraNode->attachObject(mCamera);
 
-    startTimer(20);
+    startTimer(200);
     
-#ifdef EXR_SUPPORT
 //    Ogre::NameValuePairList params;
 //    addLayer(1, params);
-#endif
 }
 
 /** Handle a timer event - calls update()

@@ -53,6 +53,7 @@ namespace Ogre
     SpacescapeLayer::SpacescapeLayer(const String& name,SpacescapePlugin* plugin) :
         ManualObject(name),
         mDisplayHighRes(false),
+        mHDREnabled(false),
         mRTTManualObject(0),
         mPlugin(plugin),
         mSeed(0)
@@ -65,29 +66,7 @@ namespace Ogre
         // create our noise material
         mNoiseMaterial = OGRE_NEW_T(SpacescapeNoiseMaterial,MEMCATEGORY_GENERAL);
 
-		// get the right FBO pixel format to use
-#ifdef EXR_SUPPORT
-//		PixelFormat validPixelFormats[] = {PF_BYTE_RGBA, PF_BYTE_BGRA, PF_BYTE_RGBA};
-        // this looks really wierd
-		PixelFormat validPixelFormats[] = {PF_FLOAT32_RGB, PF_BYTE_BGRA, PF_BYTE_RGBA};
-        int numFormats = 3;
-#else
-		PixelFormat validPixelFormats[] = {PF_BYTE_BGRA, PF_BYTE_RGBA};
-        int numFormats = 2;
-#endif
-		for(int i = 0; i < numFormats; ++i) {
-			if(TextureManager::getSingletonPtr()->isEquivalentFormatSupported(
-				TEX_TYPE_3D, validPixelFormats[i],TU_RENDERTARGET)) {
-				mFBOPixelFormat = validPixelFormats[i];
-				break;
-			}
-		}
-        
-#ifdef EXR_SUPPORT
-        mMaskFBOPixelFormat = PF_BYTE_RGBA;
-#else
-        mMaskFBOPixelFormat = mFBOPixelFormat;
-#endif
+        setHDREnabled(mHDREnabled);
     }
 
     /* Destructor
@@ -347,10 +326,9 @@ namespace Ogre
 		Real power, Real threshold,
 		Real dither,
 		Real scale,
-		Real offset
-#ifdef EXR_SUPPORT
-		, Real hdrPower, Real hdrMultiplier
-#endif
+		Real offset,
+        Real hdrPower,
+        Real hdrMultiplier
 		)
 	{
 		// update the rtt material
@@ -578,6 +556,36 @@ namespace Ogre
         return noiseSum / amplitudeSum;  
     }
 
+    /** Set hdr enabled
+     @param enabled true to enable, false to disable
+     */
+    void SpacescapeLayer::setHDREnabled(bool enabled)
+    {
+        mHDREnabled = enabled;
+        
+        PixelFormat preferredNonHDRFormat = PF_A8R8G8B8;
+        
+        // get the right FBO pixel format to use
+//        PixelFormat validPixelFormats[] = {PF_BYTE_RGBA, PF_BYTE_BGRA};
+//        int numFormats = 2;
+//        for(int i = 0; i < numFormats; ++i) {
+//            if(TextureManager::getSingletonPtr()->isEquivalentFormatSupported(
+//               TEX_TYPE_3D, validPixelFormats[i],TU_RENDERTARGET)) {
+//                preferredNonHDRFormat = validPixelFormats[i];
+//                break;
+//            }
+//        }
+        
+        mMaskFBOPixelFormat = preferredNonHDRFormat;
+        
+        if(mHDREnabled) {
+            mFBOPixelFormat = PF_FLOAT32_RGBA;
+        }
+        else {
+            mFBOPixelFormat = preferredNonHDRFormat;
+        }
+    }
+    
     /** 3D simplex noise
     // SimplexNoise1234
     // Copyright � 2003-2005, Stefan Gustavson

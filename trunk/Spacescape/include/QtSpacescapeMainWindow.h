@@ -147,16 +147,11 @@ public Q_SLOTS:
     void valueChanged(QtProperty *property, const QVariant &value);
     void valueChanged(QtProperty *property, const QString &value);
 
-#ifdef EXR_SUPPORT
     void paintEvent(QPaintEvent *event);
-
-#endif
     
 private:
     
-#ifdef EXR_SUPPORT
     bool mDebugLayerLoaded;
-#endif
     /** Utility function for creating a property from a key/value pair
     @param key The key
     @param value The value

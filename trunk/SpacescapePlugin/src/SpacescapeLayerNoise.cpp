@@ -99,10 +99,8 @@ namespace Ogre
         mLacunarity(2.0),
         mMaterialName("NoiseMaterial"),
         mNoiseType("fbm"),
-#ifdef EXR_SUPPORT
         mHDRPower(1.0),
         mHDRMultiplier(1.0),
-#endif
         mOuterColor(0.0,0.0,0.0),
         mOctaves(2),
         mOffset(1.0),
@@ -452,7 +450,6 @@ namespace Ogre
                 shouldUpdate |= mSourceBlendFactor != getBlendMode(ii->second);
                 mSourceBlendFactor = getBlendMode(ii->second);
             }
-#ifdef EXR_SUPPORT
             else if(ii->first == "hdrPower") {
                 shouldUpdate |= mHDRPower != StringConverter::parseReal(ii->second);
                 mHDRPower = StringConverter::parseReal(ii->second);
@@ -461,7 +458,6 @@ namespace Ogre
                 shouldUpdate |= mHDRMultiplier != StringConverter::parseReal(ii->second);
                 mHDRMultiplier = StringConverter::parseReal(ii->second);
             }
-#endif
         }
 
         // update our saved params
@@ -578,10 +574,9 @@ namespace Ogre
             mShelfAmount,
             mDitherAmount,
             mScale,
-            mOffset
-#ifdef EXR_SUPPORT
-			,mHDRPower,mHDRMultiplier
-#endif
+            mOffset,
+            mHDRPower,
+            mHDRMultiplier
         );
 
         // build the skybox with our cubic texture
@@ -716,10 +711,8 @@ namespace Ogre
         params->setNamedConstant( "gain",       mGain );
         params->setNamedConstant( "innerColor", mInnerColor );
         params->setNamedConstant( "lacunarity", mLacunarity );
-#ifdef EXR_SUPPORT
         params->setNamedConstant( "hdrPowerAmt", mHDRPower);
         params->setNamedConstant( "hdrMultiplier", mHDRMultiplier);
-#endif
         params->setNamedConstant( "octaves",    (int)mOctaves );
         params->setNamedConstant( "outerColor", mOuterColor );
         params->setNamedConstant( "powerAmt",   mPowerAmount );
@@ -841,9 +834,7 @@ namespace Ogre
         mParams["scale"] = StringConverter::toString(mScale);
         mParams["shelfAmount"] = StringConverter::toString(mShelfAmount);
         mParams["sourceBlendFactor"] = getBlendMode(mSourceBlendFactor);
-#ifdef EXR_SUPPORT
         mParams["hdrPower"] = StringConverter::toString(mHDRPower);
         mParams["hdrMultiplier"] = StringConverter::toString(mHDRMultiplier);
-#endif
     }
 }
