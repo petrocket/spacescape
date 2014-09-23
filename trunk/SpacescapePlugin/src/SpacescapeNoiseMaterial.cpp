@@ -136,7 +136,7 @@ namespace Ogre
                 float noiseSum = fbmNoise(noiseScale * v, octaves, lacunarity, gain);\n\
 \n\
                 // add a crazy amount of dithering noise\n\
-                //noiseSum += fbmNoise(v * 10000.0, 2, lacunarity, gain) * ditherAmt;\n\
+                noiseSum += fbmNoise(v * 10000.0, 2, lacunarity, gain) * ditherAmt;\n\
 \n\
                 // get noiseSum in range 0..1\n\
                 noiseSum = (noiseSum*0.5) + 0.5;\n\
@@ -155,7 +155,7 @@ namespace Ogre
                 gl_FragColor.w = noiseSum * hdrMultiplier;\n\
                 //gl_FragColor.xyz = mix(outerColor, innerColor, noiseSum);\n\
                 //gl_FragColor.w = noiseSum;\n\
-				gl_FragColor = vec4(noiseSum,noiseSum,noiseSum,1.0);\n\
+				//gl_FragColor = vec4(noiseSum,noiseSum,noiseSum,1.0);\n\
             }";
     static const String spacescape_noise_glsl_ridged_fp = "uniform sampler2D permTexture;\n\
             uniform sampler1D gradTexture;\n\
@@ -321,8 +321,8 @@ namespace Ogre
                     256,
                     1,
                     0,
-					PF_FLOAT32_RGB,
-                    //PF_BYTE_RGB,
+					//PF_FLOAT32_RGB,
+                    PF_BYTE_RGB,
                     TU_STATIC_WRITE_ONLY
             );
 
@@ -391,14 +391,14 @@ namespace Ogre
             // create texture unit states for the two textures
             pass->createTextureUnitState("permTexture");
             pass->getTextureUnitState(0)->setTextureName("spacescape_permutation_texture");
-            //pass->getTextureUnitState(0)->setTextureFiltering(TFO_NONE);
-			pass->getTextureUnitState(0)->setTextureFiltering(TFO_TRILINEAR);
+            pass->getTextureUnitState(0)->setTextureFiltering(TFO_NONE);
+			//pass->getTextureUnitState(0)->setTextureFiltering(TFO_TRILINEAR);
             pass->getTextureUnitState(0)->setTextureAddressingMode(TextureUnitState::TAM_WRAP);
             
             pass->createTextureUnitState("gradTexture");
             pass->getTextureUnitState(1)->setTextureName("spacescape_gradient_texture");
-            //pass->getTextureUnitState(1)->setTextureFiltering(TFO_NONE);
-			pass->getTextureUnitState(1)->setTextureFiltering(TFO_TRILINEAR);
+            pass->getTextureUnitState(1)->setTextureFiltering(TFO_NONE);
+			//pass->getTextureUnitState(1)->setTextureFiltering(TFO_TRILINEAR);
             pass->getTextureUnitState(1)->setTextureAddressingMode(TextureUnitState::TAM_WRAP);
 
             // set vertex program params
@@ -457,14 +457,14 @@ namespace Ogre
             // create texture unit states for the two textures
             pass->createTextureUnitState("permTexture");
             pass->getTextureUnitState(0)->setTextureName("spacescape_permutation_texture");
-            //pass->getTextureUnitState(0)->setTextureFiltering(TFO_NONE);
-			pass->getTextureUnitState(0)->setTextureFiltering(TFO_TRILINEAR);
+            pass->getTextureUnitState(0)->setTextureFiltering(TFO_NONE);
+			//pass->getTextureUnitState(0)->setTextureFiltering(TFO_TRILINEAR);
             pass->getTextureUnitState(0)->setTextureAddressingMode(TextureUnitState::TAM_WRAP);
 
             pass->createTextureUnitState("gradTexture");
             pass->getTextureUnitState(1)->setTextureName("spacescape_gradient_texture");
-            //pass->getTextureUnitState(1)->setTextureFiltering(TFO_NONE);
-			pass->getTextureUnitState(1)->setTextureFiltering(TFO_TRILINEAR);
+            pass->getTextureUnitState(1)->setTextureFiltering(TFO_NONE);
+			//pass->getTextureUnitState(1)->setTextureFiltering(TFO_TRILINEAR);
             pass->getTextureUnitState(1)->setTextureAddressingMode(TextureUnitState::TAM_WRAP);
 
             // set vertex program params

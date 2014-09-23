@@ -683,31 +683,73 @@ namespace Ogre
         // set blending
         mMaterial->getTechnique(0)->getPass(0)->setSceneBlending(mSourceBlendFactor,mDestBlendFactor);
 
-        // load texture if not loaded yet
-        if(!mTextureName.empty() && TextureManager::getSingleton().getByName(mTextureName).isNull()) {
+		String::size_type index_of_slash = mTextureName.find_last_of('/');
+		String relativeTextureName = mTextureName;
+		if (index_of_slash != std::string::npos) {
+			relativeTextureName = mTextureName.substr(index_of_slash + 1);
+		}
+
+		// load texture if not loaded yet
+		if (!relativeTextureName.empty() && TextureManager::getSingleton().getByName(relativeTextureName).isNull()) {
             try {
-                // try to load
-                if(mHDREnabled) {
-                    TextureManager::getSingleton().load(mTextureName,
-                                                    ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,TEX_TYPE_2D,
-                                                    0,
-                                                    1.0,
-                                                    false,
-                                                    PF_FLOAT32_RGBA,
-                                                    false);
-                }
-                else {
-                    TextureManager::getSingleton().load(mTextureName,
-                                                        ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-                }
+				if (index_of_slash != std::string::npos) {
+					std::ifstream ifs(mTextureName.c_str(), std::ios::binary | std::ios::in);
+					if (ifs.is_open()) {
+						Ogre::String tex_ext;
+						Ogre::String::size_type index_of_extension = mTextureName.find_last_of('.');
+						if (index_of_extension != Ogre::String::npos) {
+							tex_ext = mTextureName.substr(index_of_extension + 1);
+							Ogre::DataStreamPtr data_stream(new Ogre::FileStreamDataStream(mTextureName, &ifs, false));
+							Ogre::Image img;
+							img.load(data_stream, tex_ext);
+							if (mHDREnabled) {
+								Ogre::TextureManager::getSingleton().loadImage(relativeTextureName,
+									Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+									img,
+									Ogre::TEX_TYPE_2D,
+									0,
+									1.0f,
+									false,
+									PF_FLOAT32_RGBA,
+									false);
+							}
+							else {
+								Ogre::TextureManager::getSingleton().loadImage(relativeTextureName,
+									Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
+									img, 
+									Ogre::TEX_TYPE_2D, 
+									0, 
+									1.0f);
+							}
+						}
+						ifs.close();
+					}
+				}
+				else {
+					// try to load
+					if (mHDREnabled) {
+						TextureManager::getSingleton().load(relativeTextureName,
+							ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, TEX_TYPE_2D,
+							0,
+							1.0,
+							false,
+							PF_FLOAT32_RGBA,
+							false);
+					}
+					else {
+						TextureManager::getSingleton().load(relativeTextureName,
+							ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+					}
+				}
             }
             catch(...) {
                 // couldn't find the file
+				
             }
         }
 
-        if(!mTextureName.empty() && !TextureManager::getSingleton().getByName(mTextureName).isNull()) {
-            mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureName(mTextureName);
+		if (!relativeTextureName.empty() && !TextureManager::getSingleton().getByName(relativeTextureName).isNull()) {
+			mMaterial->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureName(relativeTextureName);
         }
 
         // make sure material is loaded

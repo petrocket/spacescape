@@ -562,27 +562,13 @@ namespace Ogre
     void SpacescapeLayer::setHDREnabled(bool enabled)
     {
         mHDREnabled = enabled;
-        
-        PixelFormat preferredNonHDRFormat = PF_A8R8G8B8;
-        
-        // get the right FBO pixel format to use
-//        PixelFormat validPixelFormats[] = {PF_BYTE_RGBA, PF_BYTE_BGRA};
-//        int numFormats = 2;
-//        for(int i = 0; i < numFormats; ++i) {
-//            if(TextureManager::getSingletonPtr()->isEquivalentFormatSupported(
-//               TEX_TYPE_3D, validPixelFormats[i],TU_RENDERTARGET)) {
-//                preferredNonHDRFormat = validPixelFormats[i];
-//                break;
-//            }
-//        }
-        
-        mMaskFBOPixelFormat = preferredNonHDRFormat;
+		mMaskFBOPixelFormat = PF_A8R8G8B8;
         
         if(mHDREnabled) {
             mFBOPixelFormat = PF_FLOAT32_RGBA;
         }
         else {
-            mFBOPixelFormat = preferredNonHDRFormat;
+			mFBOPixelFormat = PF_A8R8G8B8;
         }
     }
     

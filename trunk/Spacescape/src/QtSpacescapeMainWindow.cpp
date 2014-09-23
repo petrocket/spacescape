@@ -240,12 +240,13 @@ QtVariantProperty* QtSpacescapeMainWindow::createProperty(const Ogre::String& ke
         else if(key == "previewTextureSize") {
             enumList = &textureSizes;    
         }
+/*
 #ifdef Q_WS_MAC
         else if(key == "texture") {
             enumList = &billboardTextures;
         }
 #endif
-
+*/
         property->setAttribute(QLatin1String("enumNames"), *enumList);
 
         int valueIndex = 0;
@@ -488,17 +489,15 @@ int QtSpacescapeMainWindow::getPropertyType(const Ogre::String& name)
         name == "sourceBlendFactor" ||
         name == "noiseType" ||
         name == "previewTextureSize" ||
-#ifdef Q_WS_MAC
-        name == "texture" ||
-#endif
+//#ifdef Q_WS_MAC
+//        name == "texture" ||
+//#endif
         name == "maskNoiseType") {
             return QtVariantPropertyManager::enumTypeId();
     }
     else if(name == "name" ||
-            name == "texture") {
-        return QVariant::String;
-    }
-    else if(name == "dataFile") {
+            name == "texture" ||
+			name == "dataFile") {
         return QVariant::String;
     }
     else if(name == "innerColor" ||
@@ -592,7 +591,7 @@ QtProperty* QtSpacescapeMainWindow::insertLayerProperties(Ogre::SpacescapeLayer*
         if(pl->first == "dataFile") {
             QtFilePathManager *mgr = new QtFilePathManager;
             QtProperty *pathProperty = mgr->addProperty("Data File");
-            mgr->setValue(pathProperty, "");
+			mgr->setValue(pathProperty, QLatin1String(pl->second.c_str()));
             mgr->setFilter(pathProperty, "Source files (*.csv)");
             QtFileEditFactory *fact = new QtFileEditFactory;
             ui->layerProperties->setFactoryForManager(mgr, fact);
@@ -602,6 +601,19 @@ QtProperty* QtSpacescapeMainWindow::insertLayerProperties(Ogre::SpacescapeLayer*
             connect(mgr, SIGNAL(valueChanged(QtProperty *, const QString &)),
                     this, SLOT(valueChanged(QtProperty *, const QString &)));
         }
+		else if (pl->first == "texture") {
+			QtFilePathManager *mgr = new QtFilePathManager;
+			QtProperty *pathProperty = mgr->addProperty("Billboard Texture");
+			mgr->setValue(pathProperty, QLatin1String(pl->second.c_str()));
+			mgr->setFilter(pathProperty, "Image files (*.png *.dds *.jpg *.tga *.exr)");
+			QtFileEditFactory *fact = new QtFileEditFactory;
+			ui->layerProperties->setFactoryForManager(mgr, fact);
+			layerProperties->addSubProperty(pathProperty);
+
+			// add a signal for when properties are changed
+			connect(mgr, SIGNAL(valueChanged(QtProperty *, const QString &)),
+				this, SLOT(valueChanged(QtProperty *, const QString &)));
+		}
         else {
             // create the sub property
             QtVariantProperty* subProperty = createProperty(pl->first, pl->second);
@@ -1130,6 +1142,7 @@ void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QVariant &
         else if(propertyStr == "noiseType" || propertyStr == "maskNoiseType") {
             params[propertyStr] = value == "0" ? "fbm" : "ridged";
         }
+/*
 #ifdef Q_WS_MAC
         else if(propertyStr == "texture") {
             QStringList billboardTextures;
@@ -1143,6 +1156,7 @@ void QtSpacescapeMainWindow::valueChanged(QtProperty *property, const QVariant &
             params[propertyStr] = Ogre::String(billboardTextures[value.toUInt()].toStdString());
         }
 #endif
+*/
         else if(propertyStr == "type") {
             QStringList layerTypes;
             layerTypes << "points" << "billboards" << "noise";
