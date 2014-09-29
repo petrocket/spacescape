@@ -28,6 +28,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 #include <QApplication>
+#include <qdir.h>
 #include "QtSpacescapeMainWindow.h"
 
 #ifdef WIN32
@@ -41,6 +42,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char*, int nSho
 
 #else
 int main(int argc, char *argv[]) {
+#endif
+#ifdef Q_WS_MAC
+    QDir dir(argv[0]);
+    dir.cdUp();
+    dir.cdUp();
+    dir.cd("PlugIns");
+    QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+    printf("after change, libraryPaths=(%s)\n", QCoreApplication::libraryPaths().join(",").toUtf8().data());
 #endif
     QApplication app(argc, argv);
     QtSpacescapeMainWindow w;

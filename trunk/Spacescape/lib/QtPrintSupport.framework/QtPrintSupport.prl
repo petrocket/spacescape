@@ -1,0 +1,6 @@
+
+QMAKE_PRO_INPUT = printsupport.pro
+QMAKE_PRL_TARGET = QtPrintSupport
+QMAKE_PRL_CONFIG = lex yacc depend_includepath testcase_targets import_plugins import_qpa_plugin sdk rez qt warn_on release link_prl app_bundle incremental global_init_link_order lib_version_first plugin_no_soname clang_pch_style shared qpa no_mocdepend release qt_framework osx macx mac darwin unix posix gcc clang llvm compile_examples qpa largefile precompile_header sse2 sse3 ssse3 sse4_1 sse4_2 avx avx2 absolute_library_soname pcre use_libmysqlclient_r prefix_build force_independent create_prl link_prl prepare_docs qt_docs_targets no_private_qt_headers_warning QTDIR_build exceptions_off testcase_exceptions qt_example_installs warning_clean release ReleaseBuild Release build_pass need_fwd_pri qt_install_module qmake_cache target_qt debug_and_release build_all create_cmake lib_bundle sliced_bundle qt_framework explicitlib hide_symbols create_pc create_libtool explicitlib release ReleaseBuild Release build_pass have_target dll exclusive_builds objective_c no_autoqmake thread uic opengl moc resources
+QMAKE_PRL_VERSION = 5.3.1
+QMAKE_PRL_LIBS = -F/Users/alex/Qt/5.3/clang_64/lib -framework QtWidgets -framework QtGui -framework QtCore 
