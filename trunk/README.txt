@@ -1,4 +1,4 @@
-Spacescape version 0.2 - released 3/13/2010
+Spacescape
 Copyright 2010 Alex Peterson, All Rights Reserved.
 
 This file is part of Spacescape
