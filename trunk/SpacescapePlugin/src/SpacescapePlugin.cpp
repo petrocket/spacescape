@@ -43,7 +43,7 @@ THE SOFTWARE.
 //#include "half.h"
 #include "OgreLogManager.h"
 #include "OgreCamera.h"
-#include "OgreViewPort.h"
+#include "OgreViewport.h"
 #include "OgreTechnique.h"
 
 namespace Ogre 
