@@ -46,7 +46,8 @@ QtOgreWidget::QtOgreWidget(QWidget* parent, Qt::WindowFlags f) : QWidget(parent)
 //QtOgreWidget::QtOgreWidget(QWidget *parent) : QWidget(parent) {
 	setAttribute(Qt::WA_PaintOnScreen);
 	setAttribute(Qt::WA_NoBackground);
-	
+    setAttribute(Qt::WA_NativeWindow);
+
 	mRenderWindow = NULL;
 	mOgreRoot = NULL;
 }
@@ -76,7 +77,7 @@ void QtOgreWidget::configure(void) {
 	SetCurrentDirectory(path.toStdString().c_str());
 #endif
 
-#if defined(Q_WS_X11)
+#if defined(Q_OS_UNIX)
         mOgreRoot = new Ogre::Root("plugins.cfg", "app.cfg", "app.log");
 #else
     #ifdef _DEBUG
