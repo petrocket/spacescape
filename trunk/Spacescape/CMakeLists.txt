@@ -10,7 +10,7 @@ INCLUDE_DIRECTORIES(include/)
 INCLUDE_DIRECTORIES(external/QtPropertyBrowser5/src/)
 INCLUDE_DIRECTORIES(../SpacescapePlugin/include/)
 
-LINK_DIRECTORIES("${OGRE_LIBRARY_DIR_DBG}" "${OGRE_LIBRARY_DIR_REL}")
+LINK_DIRECTORIES("${OGRE_LIBRARY_DIRS}")
 
 if(POCO_INCLUDE_DIR)
 	INCLUDE_DIRECTORIES(${POCO_INCLUDE_DIR})
@@ -120,7 +120,7 @@ ELSEIF(WIN32)
 ENDIF()
 
 TARGET_LINK_LIBRARIES(Spacescape SpacescapePlugin "${OGRE_LIBRARIES}" Qt5::Widgets)
-TARGET_LINK_LIBRARIES(Spacescape debug ${QtPropertyBrowser_Library_DBG} optimized ${QtPropertyBrowser_Library_REL})
+TARGET_LINK_LIBRARIES(Spacescape ${QtPropertyBrowser_Libraries})
 
 IF(WIN32)
    set_target_properties(Spacescape PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")

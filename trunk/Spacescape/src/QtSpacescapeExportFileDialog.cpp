@@ -56,7 +56,7 @@ QtSpacescapeExportFileDialog::QtSpacescapeExportFileDialog(QWidget *parent, Qt::
 {
 }
 QtSpacescapeExportFileDialog::QtSpacescapeExportFileDialog(const QFileDialogArgs &args) :
-    QFileDialog(args)
+    QFileDialog(args.parent, args.caption, args.directory, args.filter)
 {
 }
 
