@@ -306,13 +306,18 @@ namespace Ogre
                 Pass* pass = mMaterial->getTechnique(0)->getPass(0);
                 
                 // load the vertex program
-                gpuProgram = HighLevelGpuProgramManager::getSingleton().
-                createProgram("spacescape_points_glsl_vp",
-                              ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                              "glsl",
-                              GPT_VERTEX_PROGRAM);
-                gpuProgram->setSource(spacescape_points_glsl_vp);
-                gpuProgram->load();
+                gpuProgram = HighLevelGpuProgramManager::getSingleton().getByName("spacescape_points_glsl_vp");
+
+                if(!gpuProgram)
+                {
+                    gpuProgram = HighLevelGpuProgramManager::getSingleton().
+                    createProgram("spacescape_points_glsl_vp",
+                                  ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                  "glsl",
+                                  GPT_VERTEX_PROGRAM);
+                    gpuProgram->setSource(spacescape_points_glsl_vp);
+                    gpuProgram->load();
+                }
                 
                 // set the vertex program
                 pass->setVertexProgram("spacescape_points_glsl_vp");
@@ -322,14 +327,18 @@ namespace Ogre
                 params->setNamedAutoConstant("worldViewProj",GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
                 
                 // load the fragment program
-                gpuProgram = HighLevelGpuProgramManager::getSingleton().
-                createProgram("spacescape_points_glsl_fp",
-                              ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                              "glsl",
-                              GPT_FRAGMENT_PROGRAM);
-                gpuProgram->setSource(spacescape_points_glsl_fp);
-                gpuProgram->load();
+                gpuProgram = HighLevelGpuProgramManager::getSingleton().getByName("spacescape_points_glsl_fp");
 
+                if(!gpuProgram)
+                {
+                    gpuProgram = HighLevelGpuProgramManager::getSingleton().
+                    createProgram("spacescape_points_glsl_fp",
+                                  ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                  "glsl",
+                                  GPT_FRAGMENT_PROGRAM);
+                    gpuProgram->setSource(spacescape_points_glsl_fp);
+                    gpuProgram->load();
+                }
                 
                 // set the fragment program
                 pass->setFragmentProgram("spacescape_points_glsl_fp");
